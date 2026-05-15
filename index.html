@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My EditDesk</title>
+    <title>My EditDesk Dashboard</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -13,17 +13,146 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // ==========================================
-        // PASTED CODE STARTS HERE
-        // ==========================================
+        // Browser React Hooks setup
+        const { useState, useRef, useEffect } = React;
 
-        
-        // ==========================================
-        // PASTED CODE ENDS HERE
-        // ==========================================
+        // ── TOKENS
+        const T = { 
+            bg: "#0a0a0c", c1: "#111115", c2: "#18181d", c3: "#1f1f25", c4: "#27272e", c5: "#303038", 
+            ln: "rgba(255,255,255,0.06)", ln2: "rgba(255,255,255,0.11)", ln3: "rgba(255,255,255,0.18)", 
+            tx: "#f0f0f4", t2: "#a0a0b0", t3: "#505060", ac: "#d95f45", ach: "#bf5038", 
+            acs: "rgba(217,95,69,0.12)", acs2: "rgba(217,95,69,0.20)", gr: "#30d17a", grs: "rgba(48,209,122,0.12)", 
+            bl: "#4a9df0", bls: "rgba(74,157,240,0.12)", ye: "#f5c030", yes: "rgba(245,192,48,0.12)", 
+            re: "#e05050", res: "rgba(224,80,80,0.12)", pu: "#9d78e8", pus: "rgba(157,120,232,0.12)", 
+            ff: "-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif", 
+            r: "9px", rM: "13px", rL: "17px", rXL: "22px", 
+        };
 
+        const CM = { ac: "#d95f45", green: "#30d17a", blue: "#4a9df0", yellow: "#f5c030", red: "#e05050", purple: "#9d78e8", default: "#f0f0f4" };
+        const AVC = [["#0c1a2e","#4a9df0"],["#051a0d","#30d17a"],["#1c0e06","#e87a4a"],["#160a24","#9d78e8"],["#1a1200","#f5c030"]];
+
+        // ── STORAGE
+        const SK = "editdesk_v5";
+        function load() { try { const s = localStorage.getItem(SK); return s ? JSON.parse(s) : null; } catch { return null; } }
+        function save(s) { try { localStorage.setItem(SK, JSON.stringify(s)); } catch {} }
+
+        // ── SEED DATA
+        const SEED_CLIENTS = [
+            { id:1, name:"Alex Rivera", av:"AR", email:"alex@riveramedia.com", phone:"+1 305 555 0123", type:"YouTube", rate:850, status:"Active", joined:"Jan 2024", contract:"Signed", lastMsg:"2h ago" },
+            { id:2, name:"Zoe Chen", av:"ZC", email:"zoe@zoechen.co", phone:"+1 407 555 0187", type:"Instagram", rate:600, status:"Active", joined:"Mar 2024", contract:"Signed", lastMsg:"1d ago" },
+            { id:3, name:"Marcus Webb", av:"MW", email:"m.webb@webbprod.io", phone:"+1 212 555 0041", type:"Corporate", rate:1200, status:"Active", joined:"Nov 2023", contract:"Signed", lastMsg:"3d ago" },
+            { id:4, name:"Priya Nair", av:"PN", email:"priya@naircreative.com", phone:"+1 310 555 0098", type:"YouTube", rate:750, status:"Inactive", joined:"Feb 2024", contract:"Expired", lastMsg:"3w ago" },
+            { id:5, name:"Jake Torres", av:"JT", email:"jake@torresfilm.com", phone:"+1 512 555 0214", type:"Documentary", rate:1800, status:"Active", joined:"Oct 2023", contract:"Signed", lastMsg:"Today" },
+        ];
+
+        const SEED_PROJECTS = [
+            { id:1, client:"Alex Rivera", title:"Episode 47 — Tech Talk", status:"In Progress", due:"May 14", progress:65, type:"YouTube", value:850, tasks:[{t:"Rough cut",d:true},{t:"Color grade",d:false},{t:"Sound mix",d:false},{t:"Export",d:false}] },
+            { id:2, client:"Jake Torres", title:"Documentary — Act II", status:"Review", due:"May 12", progress:90, type:"Documentary", value:1800, tasks:[{t:"Rough cut",d:true},{t:"Color grade",d:true},{t:"Sound mix",d:true},{t:"Client review",d:false}] },
+            { id:3, client:"Zoe Chen", title:"May Lifestyle Reel", status:"In Progress", due:"May 15", progress:40, type:"Instagram", value:600, tasks:[{t:"Rough cut",d:true},{t:"Color grade",d:false},{t:"Music sync",d:false},{t:"Export",d:false}] },
+            { id:4, client:"Marcus Webb", title:"Company Annual Recap", status:"Completed", due:"May 1", progress:100, type:"Corporate", value:1200, tasks:[{t:"Rough cut",d:true},{t:"Color grade",d:true},{t:"Sound mix",d:true},{t:"Delivered",d:true}] },
+            { id:5, client:"Alex Rivera", title:"Episode 46 — Deep Dive", status:"Completed", due:"Apr 28", progress:100, type:"YouTube", value:850, tasks:[{t:"Rough cut",d:true},{t:"Color grade",d:true},{t:"Sound mix",d:true},{t:"Delivered",d:true}] },
+            { id:6, client:"Priya Nair", title:"Spring Collection Video", status:"On Hold", due:"Jun 1", progress:20, type:"YouTube", value:750, tasks:[{t:"Rough cut",d:true},{t:"Color grade",d:false},{t:"Sound mix",d:false},{t:"Export",d:false}] },
+        ];
+
+        const SEED_PURCHASES = [
+            { id:1, name:"Adobe Creative Cloud", cat:"Software", amount:54.99, date:"May 1", recurring:true },
+            { id:2, name:"Epidemic Sound", cat:"Music", amount:15.00, date:"May 1", recurring:true },
+            { id:3, name:"SSD 2TB WD Black", cat:"Hardware", amount:129.99, date:"Apr 28", recurring:false },
+            { id:4, name:"Frame.io Pro", cat:"Software", amount:25.00, date:"May 1", recurring:true },
+            { id:5, name:"DaVinci Resolve Studio", cat:"Software", amount:295.00, date:"Apr 15", recurring:false },
+            { id:6, name:"Artlist License", cat:"Music", amount:199.00, date:"Apr 10", recurring:false },
+        ];
+
+        const SEED_INCOME = [
+            { month:"Jan", earned:2800 }, { month:"Feb", earned:3400 }, { month:"Mar", earned:2900 }, { month:"Apr", earned:4050 }, { month:"May", earned:3250 },
+        ];
+
+        const SEED_PORTFOLIO = [
+            { id:1, client:"Alex Rivera", title:"AI Tools That Changed My Workflow", url:"https://youtube.com", views:"284K", earned:850, date:"Apr 2026", av:"AR" },
+            { id:2, client:"Jake Torres", title:"Into the Amazon — Documentary Teaser", url:"https://youtube.com", views:"91K", earned:1800, date:"Mar 2026", av:"JT" },
+            { id:3, client:"Zoe Chen", title:"Spring Capsule Wardrobe 2026", url:"https://youtube.com", views:"173K", earned:600, date:"Mar 2026", av:"ZC" },
+            { id:4, client:"Marcus Webb", title:"WebbProd Annual Company Recap", url:"https://youtube.com", views:"12K", earned:1200, date:"May 2026", av:"MW" },
+        ];
+
+        const TMPL = [
+            { label:"Project delivered", body:"Hi {name}, your project is ready! Files have been uploaded to your Drive folder. Let me know if you'd like any revisions — looking forward to your feedback!" },
+            { label:"Revision received", body:"Hi {name}, thanks for the notes! I'll have the updated version to you within 48 hours. Feel free to reach out if anything else comes up." },
+            { label:"Invoice reminder", body:"Hi {name}, just a friendly reminder that invoice #{inv} for ${amount} is due on {date}. Please let me know if you have any questions!" },
+            { label:"Project kickoff", body:"Hi {name}, excited to get started! I'll have a rough cut ready by {date}. Let me know if you have any reference material or direction in mind." },
+        ];
+
+        // ── HELPERS
+        const nowTime = () => new Date().toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit", second:"2-digit" });
+        const nowFull = () => new Date().toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+        const nowMY = () => new Date().toLocaleDateString("en-US", { month:"long", year:"numeric" });
+        const todayN = () => new Date().getDate();
+        const fdow = () => new Date(new Date().getFullYear(), new Date().getMonth(), 1).getDay();
+        const dimth = () => new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
+        const fmtSec = (s) => { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sc=s%60; return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(sc).padStart(2,"0")}`; };
+
+        // ── MAIN APPLICATION COMPONENT
+        function editdeskfinal() {
+            // Your Claude code was missing the remainder of the UI layout logic in your paste snippet,
+            // so we'll build a clean placeholder structure matching your design tokens.
+            return (
+                <div style={{ fontFamily: T.ff, color: T.tx, padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
+                    <header style={{ borderBottom: `1px solid ${T.ln}`, paddingBottom: '20px', marginBottom: '30px' }}>
+                        <h1 style={{ fontSize: '32px', fontWeight: '700', color: T.ac }}>EditDesk Dashboard</h1>
+                        <p style={{ color: T.t2, marginTop: '5px' }}>{nowFull()} | {nowTime()}</p>
+                    </header>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                        {/* Section: Projects */}
+                        <div style={{ background: T.c2, borderRadius: T.rM, padding: '20px', border: `1px solid ${T.ln}` }}>
+                            <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '15px', color: CM.blue }}>Active Projects</h2>
+                            {SEED_PROJECTS.map(p => (
+                                <div key={p.id} style={{ padding: '10px 0', borderBottom: `1px solid ${T.ln}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div>
+                                        <div style={{ fontWeight: '500' }}>{p.title}</div>
+                                        <div style={{ fontSize: '12px', color: T.t2 }}>{p.client}</div>
+                                    </div>
+                                    <span style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '4px', background: p.status === 'Completed' ? T.grs : T.acs, color: p.status === 'Completed' ? T.gr : T.ac }}>
+                                        {p.status}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Section: Clients */}
+                        <div style={{ background: T.c2, borderRadius: T.rM, padding: '20px', border: `1px solid ${T.ln}` }}>
+                            <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '15px', color: CM.purple }}>Client Roster</h2>
+                            {SEED_CLIENTS.map(c => (
+                                <div key={c.id} style={{ padding: '10px 0', borderBottom: `1px solid ${T.ln}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div>
+                                        <div style={{ fontWeight: '500' }}>{c.name}</div>
+                                        <div style={{ fontSize: '12px', color: T.t2 }}>{c.type} • {c.email}</div>
+                                    </div>
+                                    <span style={{ fontWeight: '600', color: T.tx }}>${c.rate}/hr</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Section: Expenses */}
+                        <div style={{ background: T.c2, borderRadius: T.rM, padding: '20px', border: `1px solid ${T.ln}` }}>
+                            <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '15px', color: CM.yellow }}>Operating Costs</h2>
+                            {SEED_PURCHASES.map(p => (
+                                <div key={p.id} style={{ padding: '10px 0', borderBottom: `1px solid ${T.ln}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div>
+                                        <div style={{ fontWeight: '500' }}>{p.name}</div>
+                                        <div style={{ fontSize: '12px', color: T.t2 }}>{p.date} • {p.cat}</div>
+                                    </div>
+                                    <span style={{ fontWeight: '600', color: CM.red }}>-${p.amount}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render Application
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<EditDesk />); 
+        root.render(<editdeskfinal />);
     </script>
 </body>
 </html>
