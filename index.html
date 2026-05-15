@@ -158,6 +158,7 @@
         // ── CENTRAL SYSTEM RUNTIME ENGINE
         function EditDesk() {
           const [page, setPage] = useState("home");
+          const [saveStatus, setSaveStatus] = useState("Sync Now");
 
           // ── CLIENT CONTROL MATRIX
           const [clients, setClients] = useState(() => loadData("clients", [
@@ -208,7 +209,7 @@
             { id: 2, title: "Boutique Spring Capsule Wardrobe Promo", client: "Zoe Chen", views: "192K", url: "https://instagram.com" }
           ]));
 
-          // Hook Sync Triggers
+          // Automated Auto-Save Hook Logic
           useEffect(() => { saveData("clients", clients); }, [clients]);
           useEffect(() => { saveData("projects", projects); }, [projects]);
           useEffect(() => { saveData("logs", logs); }, [logs]);
@@ -220,6 +221,27 @@
           useEffect(() => { saveData("templates", templates); }, [templates]);
           useEffect(() => { saveData("delivery", delivery); }, [delivery]);
           useEffect(() => { saveData("portfolio", portfolio); }, [portfolio]);
+
+          // Explicit Master Manual Save Trigger Execution Channel
+          const handleManualSaveAllState = () => {
+            setSaveStatus("Saving...");
+            saveData("clients", clients);
+            saveData("projects", projects);
+            saveData("logs", logs);
+            saveData("earnings", earnings);
+            saveData("expenses", expenses);
+            saveData("budget", budget);
+            saveData("calTitle", calTitle);
+            saveData("calendar", calendar);
+            saveData("templates", templates);
+            saveData("delivery", delivery);
+            saveData("portfolio", portfolio);
+            
+            setTimeout(() => {
+              setSaveStatus("Workspace Synced ✓");
+              setTimeout(() => setSaveStatus("Sync Now"), 1800);
+            }, 450);
+          };
 
           const [modalType, setModalType] = useState(null);
           const [formData, setFormData] = useState({});
@@ -240,7 +262,13 @@
                     EditDesk Workspace <span style={{ color: T.t4, fontWeight: 300 }}>// Professional OS</span>
                   </h1>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <button 
+                    onClick={handleManualSaveAllState}
+                    style={{ background: saveStatus.includes("Synced") ? "rgba(16,185,129,0.12)" : T.acs, border: saveStatus.includes("Synced") ? `1px solid ${T.gr}` : `1px solid ${T.ac}`, color: saveStatus.includes("Synced") ? T.gr : T.tx, fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: T.r, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, transition: "all 0.2s" }}>
+                    <i className="ti ti-device-floppy" style={{ fontSize: 13 }} />
+                    {saveStatus}
+                  </button>
                   <div style={{ fontSize: 11, background: "rgba(255,255,255,0.02)", border: `1px solid ${T.ln}`, padding: "4px 8px", borderRadius: 4, fontFamily: "monospace", color: T.t2 }}>
                     SYSTEM LATENCY // OPTIMAL
                   </div>
@@ -251,7 +279,7 @@
 
               <main>
                 
-                {/* ── MILLION-DOLLAR DASHBOARD REARCHITECTED ── */}
+                {/* ── DASHBOARD VIEW ── */}
                 {page === "home" && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                     
@@ -457,7 +485,7 @@
                   </div>
                 )}
 
-                {/* ── HIGH VISUAL GOOGLE CALENDAR EMULATION ENGINE ── */}
+                {/* ── CALENDAR VIEW ── */}
                 {page === "calendar" && (
                   <div>
                     <div style={{ marginBottom: "1.25rem", borderBottom: `1px solid ${T.ln}`, paddingBottom: 12 }}>
@@ -467,7 +495,6 @@
                       </h2>
                     </div>
                     
-                    {/* Google Calendar Clean Layout Emulation */}
                     <Card style={{ padding: 0, overflow: "hidden", border: `1px solid ${T.ln2}` }}>
                       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", background: T.c2, borderBottom: `1px solid ${T.ln2}`, textAlign: "center", padding: "8px 0" }}>
                         {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map(d => (
@@ -569,12 +596,12 @@
                   </div>
                 )}
 
-                {/* ── TIMER ENGAGEMENT PORTAL VIEW ── */}
+                {/* ── TIMER VIEW ── */}
                 {page === "timer" && (
                   <TimeTrackerView clients={clients} logs={logs} setLogs={setLogs} />
                 )}
 
-                {/* ── PORTFOLIO STRATEGY VIEW ── */}
+                {/* ── PORTFOLIO VIEW ── */}
                 {page === "portfolio" && (
                   <div>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.25rem", alignItems: "center" }}>
