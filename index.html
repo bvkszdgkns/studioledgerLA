@@ -14,10 +14,9 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // Browser React Hooks setup
         const { useState, useRef, useEffect } = React;
 
-        // ── TOKENS
+        // ── DESIGN SYSTEM TOKENS
         const T = {
           bg: "#0a0a0c", c1: "#111115", c2: "#18181d", c3: "#1f1f25", c4: "#27272e", c5: "#303038",
           ln: "rgba(255,255,255,0.06)", ln2: "rgba(255,255,255,0.11)", ln3: "rgba(255,255,255,0.18)",
@@ -34,12 +33,12 @@
         const CM = { ac: "#d95f45", green: "#30d17a", blue: "#4a9df0", yellow: "#f5c030", red: "#e05050", purple: "#9d78e8", default: "#f0f0f4" };
         const AVC = [["#0c1a2e","#4a9df0"],["#051a0d","#30d17a"],["#1c0e06","#e87a4a"],["#160a24","#9d78e8"],["#1a1200","#f5c030"]];
          
-        // ── STORAGE
+        // ── STORAGE MANAGEMENT
         const SK = "editdesk_v5";
         function load() { try { const s = localStorage.getItem(SK); return s ? JSON.parse(s) : null; } catch { return null; } }
         function save(s) { try { localStorage.setItem(SK, JSON.stringify(s)); } catch {} }
          
-        // ── SEED DATA
+        // ── SEED INITIAL STATE DATA
         const SEED_CLIENTS = [
           { id:1, name:"Alex Rivera",  av:"AR", email:"alex@riveramedia.com",   phone:"+1 305 555 0123", type:"YouTube",     rate:850,  status:"Active",   joined:"Jan 2024", contract:"Signed",  lastMsg:"2h ago" },
           { id:2, name:"Zoe Chen",     av:"ZC", email:"zoe@zoechen.co",         phone:"+1 407 555 0187", type:"Instagram",   rate:600,  status:"Active",   joined:"Mar 2024", contract:"Signed",  lastMsg:"1d ago" },
@@ -80,17 +79,12 @@
           { label:"Project kickoff",    body:"Hi {name}, excited to get started! I'll have a rough cut ready by {date}. Let me know if you have any reference material or direction in mind." },
         ];
          
-        // ── HELPERS
+        // ── TIME & STRING HELPERS
         const nowTime = () => new Date().toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit", second:"2-digit" });
         const nowFull = () => new Date().toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" });
-        const nowMY   = () => new Date().toLocaleDateString("en-US", { month:"long", year:"numeric" });
-        const todayN  = () => new Date().getDate();
-        const fdow    = () => new Date(new Date().getFullYear(), new Date().getMonth(), 1).getDay();
-        const dimth   = () => new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
         const fmtSec  = (s) => { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sc=s%60; return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(sc).padStart(2,"0")}`; };
-        const fmtHr   = (s) => (s/3600).toFixed(2)+"h";
          
-        // ── PRIMITIVES
+        // ── CORE PRIMITIVES / COMPONENTS
         function Av({ label="", idx=0, size=38 }) {
           const [bg,fg] = AVC[idx % AVC.length];
           return <div style={{ width:size, height:size, borderRadius:"50%", background:bg, color:fg, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:600, fontSize:size*0.29, flexShrink:0 }}>{label}</div>;
@@ -154,7 +148,6 @@
         function Hdiv() { return <div style={{ height:".5px", background:T.ln, margin:".75rem 0" }} />; }
         function SL({ children }) { return <p style={{ margin:"0 0 .7rem", fontSize:10, fontWeight:600, color:T.t3, textTransform:"uppercase", letterSpacing:".09em" }}>{children}</p>; }
          
-        // ── EDITABLE VALUE
         function EV({ value, onChange, num=false }) {
           const [ed, se] = useState(false);
           const [dr, sd] = useState(String(value));
@@ -168,7 +161,6 @@
             onMouseLeave={e=>e.currentTarget.style.borderBottomColor="transparent"}>{typeof value==="number"?value.toLocaleString():value}</span>;
         }
          
-        // ── STAT CARD
         function SC2({ card, onUpdate, onRemove }) {
           const [hov, sh] = useState(false);
           const vc = CM[card.color] || T.tx;
@@ -186,7 +178,6 @@
           </div>;
         }
          
-        // ── STAT GRID
         function SGrid({ cards, setCards }) {
           const [showAdd, sa] = useState(false);
           const [form, sf] = useState({ label:"", value:"", sub:"", pre:"", color:"default" });
@@ -224,8 +215,10 @@
                 <Btn v="ghost" onClick={()=>sa(false)}>Cancel</Btn>
               </div>
             </Modal>}
-          </>;// ── NAV
+          </>;
         }
+         
+        // ── NAVIGATION
         const PAGES = [
           { id:"home",      icon:"ti-layout-dashboard", label:"Dashboard"   },
           { id:"clients",   icon:"ti-users",            label:"Clients"     },
@@ -233,7 +226,7 @@
           { id:"finance",   icon:"ti-chart-bar",        label:"Earnings"    },
           { id:"expenses",  icon:"ti-receipt",          label:"Expenses"    },
           { id:"calendar",  icon:"ti-calendar",         label:"Calendar"    },
-          { id:"templates", icon:"ti-template", label:"Templates"   },
+          { id:"templates", icon:"ti-template",         label:"Templates"   },
           { id:"delivery",  icon:"ti-package",          label:"Delivery"    },
           { id:"timer",     icon:"ti-clock",            label:"Time Tracker"},
           { id:"portfolio", icon:"ti-player-play",      label:"Portfolio"   },
@@ -249,77 +242,7 @@
             })}
           </div>;
         }
-         
-        // ── SAVE BAR
-        function SaveBar({ dirty, onSave, onDiscard }) {
-          if (!dirty) return null;
-          return <div style={{ position:"fixed", bottom:24, left:"50%", transform:"translateX(-50%)", zIndex:500, background:T.c1, border:`1px solid ${T.ln2}`, borderRadius:T.rXL, padding:"10px 18px", display:"flex", alignItems:"center", gap:12, boxShadow:"0 20px 60px rgba(0,0,0,.7)", backdropFilter:"blur(20px)", whiteSpace:"nowrap" }}>
-            <div style={{ width:7, height:7, borderRadius:"50%", background:T.ye, boxShadow:`0 0 8px ${T.ye}`, flexShrink:0 }} />
-            <span style={{ fontSize:13, color:T.t2, fontFamily:T.ff }}>Unsaved changes</span>
-            <Btn v="ghost" onClick={onDiscard} style={{ padding:"5px 12px", fontSize:12 }}>Discard</Btn>
-            <Btn v="save" onClick={onSave} style={{ padding:"5px 14px", fontSize:12 }}><i className="ti ti-device-floppy" style={{ fontSize:13 }} />Save</Btn>
-          </div>;
-        }
-         
-        // ── MSG MODAL
-        function MsgModal({ client, msgs, onClose, onSend }) {
-          const [inp, si] = useState("");
-          const bot = useRef();
-          useEffect(()=>{ bot.current?.scrollIntoView({behavior:"smooth"}); }, [msgs]);
-          const send = () => { if(!inp.trim()) return; onSend(client.id, inp.trim()); si(""); };
-          return <Modal onClose={onClose}>
-            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:"1rem", paddingBottom:"1rem", borderBottom:`1px solid ${T.ln}` }}>
-              <Av label={client.av} idx={client.id-1} />
-              <div style={{ flex:1 }}><p style={{ margin:0, fontWeight:600, fontSize:15, color:T.tx }}>{client.name}</p><p style={{ margin:0, fontSize:11, color:T.t3 }}>{client.type}</p></div>
-              <button onClick={onClose} style={{ background:"none", border:"none", color:T.t3, fontSize:18, cursor:"pointer" }}><i className="ti ti-x" /></button>
-            </div>
-            <div style={{ maxHeight:260, overflowY:"auto", display:"flex", flexDirection:"column", gap:10, marginBottom:"1rem" }}>
-              {msgs.map((m,i)=><div key={i} style={{ display:"flex", flexDirection:m.from==="me"?"row-reverse":"row", alignItems:"flex-end", gap:8 }}>
-                <div style={{ background:m.from==="me"?T.ac:T.c3, color:"#fff", borderRadius:m.from==="me"?"14px 14px 3px 14px":"14px 14px 14px 3px", padding:"9px 13px", fontSize:13, maxWidth:"78%", lineHeight:1.55 }}>
-                  <p style={{ margin:0 }}>{m.text}</p>
-                  <p style={{ margin:"4px 0 0", fontSize:10, opacity:.5, textAlign:m.from==="me"?"right":"left" }}>{m.time}</p>
-                </div>
-              </div>)}
-              <div ref={bot} />
-            </div>
-            <div style={{ display:"flex", gap:8 }}>
-              <FI value={inp} onChange={e=>si(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder="Message…" style={{ flex:1 }} />
-              <Btn v="primary" onClick={send}><i className="ti ti-send" style={{ fontSize:13 }} /></Btn>
-            </div>
-          </Modal>;
-        }
-         
-        // ── INV MODAL
-        function InvModal({ client, project, onClose }) {
-          const [paid, sp] = useState(false);
-          const inv = `INV-${String(client.id).padStart(3,"0")}${Date.now().toString().slice(-4)}`;
-          const due = new Date(); due.setDate(due.getDate()+14);
-          const ds = due.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
-          return <Modal onClose={onClose}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"1.2rem" }}>
-              <div><p style={{ margin:"0 0 2px", fontSize:10, color:T.t3, textTransform:"uppercase", letterSpacing:".09em" }}>Invoice</p><p style={{ margin:0, fontWeight:700, fontSize:22, color:T.tx, letterSpacing:"-.025em" }}>{inv}</p></div>
-              <div style={{ textAlign:"right" }}><SChip s={paid?"Active":"Pending"} /><p style={{ margin:"6px 0 0", fontSize:11, color:T.t3 }}>Due {ds}</p></div>
-            </div>
-            <Hdiv />
-            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:".5rem" }}>
-              <div><p style={{ margin:"0 0 2px", fontSize:10, color:T.t3, textTransform:"uppercase" }}>Bill to</p><p style={{ margin:0, fontWeight:600, color:T.tx }}>{client.name}</p><p style={{ margin:0, fontSize:12, color:T.t3 }}>{client.email}</p></div>
-              <div style={{ textAlign:"right" }}><p style={{ margin:"0 0 2px", fontSize:10, color:T.t3, textTransform:"uppercase" }}>Project</p><p style={{ margin:0, fontSize:13, color:T.tx }}>{project||"Video editing services"}</p></div>
-            </div>
-            <Hdiv />
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"1.2rem" }}>
-              <p style={{ margin:0, color:T.t2, fontSize:14 }}>Video editing services</p>
-              <p style={{ margin:0, fontWeight:700, fontSize:22, color:T.ac, letterSpacing:"-.025em" }}>${client.rate.toLocaleString()}</p>
-            </div>
-            <div style={{ display:"flex", gap:8 }}>
-              <Btn v="primary" style={{ flex:1, justifyContent:"center" }} onClick={()=>navigator.clipboard?.writeText(`Invoice ${inv}\nTo: ${client.name}\nAmount: $${client.rate}\nDue: ${ds}`)}>
-                <i className="ti ti-copy" style={{ fontSize:13 }} />Copy Invoice
-              </Btn>
-              <Btn v="ghost" onClick={()=>sp(p=>!p)}>{paid?<><i className="ti ti-x" style={{ fontSize:13 }} />Unpaid</>:<><i className="ti ti-check" style={{ fontSize:13 }} />Mark Paid</>}</Btn>
-              <button onClick={onClose} style={{ background:"none", border:"none", color:T.t3, cursor:"pointer", fontSize:18 }}><i className="ti ti-x" /></button>
-            </div>
-          </Modal>;
-        }
-         
+
         // ── HOME PAGE
         function HomePage({ clients, projects, setPage, cards, setCards }) {
           const [time, st] = useState(nowTime());
@@ -389,20 +312,12 @@
                       <SChip s={cl.status} /><Chip color="dim">{cl.type}</Chip>
                     </div>
                     <p style={{ margin:0, fontSize:11, color:T.t3 }}>{cl.email} · {cl.phone}</p>
-                    <div style={{ display:"flex", gap:8, alignItems:"center", marginTop:4 }}>
-                      <span style={{ fontSize:10, color:T.t3 }}>Contract:</span><SChip s={cl.contract} />
-                      <span style={{ fontSize:10, color:T.t3 }}>Last: {cl.lastMsg}</span>
-                    </div>
                   </div>
                   <div style={{ textAlign:"right", flexShrink:0, display:"flex", flexDirection:"column", gap:6, alignItems:"flex-end" }}>
                     <p style={{ margin:0, fontWeight:700, fontSize:15, color:T.tx }}>
                       $<EV value={cl.rate} onChange={v=>setClients(p=>p.map(x=>x.id===cl.id?{...x,rate:Number(v)}:x))} num />
                       <span style={{ fontWeight:400, color:T.t3, fontSize:11 }}>/mo</span>
                     </p>
-                    <div style={{ display:"flex", gap:6 }}>
-                      <Btn v="ghost" onClick={()=>onMsg(cl)} style={{ fontSize:11, padding:"4px 10px" }}><i className="ti ti-message" style={{ fontSize:12 }} />Chat</Btn>
-                      <Btn v="ghost" onClick={()=>onInv(cl)} style={{ fontSize:11, padding:"4px 10px" }}><i className="ti ti-file-invoice" style={{ fontSize:12 }} />Invoice</Btn>
-                    </div>
                   </div>
                 </div>
               </Card>)}
@@ -444,47 +359,293 @@
                     </div>
                     <div style={{ textAlign:"right", flexShrink:0 }}>
                       <p style={{ margin:0, fontWeight:700, fontSize:15, color:T.tx }}>${p.value.toLocaleString()}</p>
-                      <p style={{ margin:"3px 0 5px", fontSize:10, color:T.t3 }}>{p.tasks.filter(t=>t.d).length}/{p.tasks.length} tasks</p>
-                      <i className={`ti ${exp===p.id?"ti-chevron-up":"ti-chevron-down"}`} style={{ fontSize:11, color:T.t3 }} />
+                      <i className={`ti ${exp===p.id?"ti-chevron-up":"ti-chevron-down"}`} style={{ fontSize:11, color:T.t3, marginLeft: 6 }} />
                     </div>
                   </div>
                 </Card>
-                {exp===p.id&&<div style={{ background:T.c3, border:`1px solid ${T.ln}`, borderTop:"none", borderRadius:`0 0 ${T.rL} ${T.rL}`, padding:"1rem 1.25rem" }}>
-                    <SL>Tasks</SL>
+                {exp===p.id && (
+                  <div style={{ background:T.c3, border:`1px solid ${T.ln}`, borderTop:"none", borderRadius:`0 0 ${T.rL} ${T.rL}`, padding:"1rem 1.25rem" }}>
+                    <SL>Tasks Checklist</SL>
                     <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-                        {p.tasks.map((t,ti)=>(
-                            <label key={ti} style={{ display:"flex", alignItems:"center", gap:10, cursor:"pointer", fontSize:13, color:t.d?T.t3:T.tx }}>
-                                <input type="checkbox" checked={t.d} onChange={()=>tog(p.id,ti)} style={{ accentColor:T.ac }} />
-                                <span style={{ textDecoration:t.d?"line-through":"none" }}>{t.t}</span>
-                            </label>
-                        ))}
+                      {p.tasks.map((t,ti)=>(
+                        <label key={ti} style={{ display:"flex", alignItems:"center", gap:10, cursor:"pointer", fontSize:13, color:t.d?T.t3:T.tx }}>
+                          <input type="checkbox" checked={t.d} onChange={()=>tog(p.id,ti)} style={{ accentColor:T.ac }} />
+                          <span style={{ textDecoration: t.d?"line-through":"none" }}>{t.t}</span>
+                        </label>
+                      ))}
                     </div>
-                </div>}
+                  </div>
+                )}
               </div>)}
             </div>
           </div>;
         }
 
-        // ── MAIN LAYOUT WRAPPER (EditDesk)
+        // ── DEDICATED TIME TRACKER PAGE
+        function TimerPage({ clients, projects }) {
+          const [active, setActive] = useState(false);
+          const [sec, setSec] = useState(0);
+          const [selClient, setSelClient] = useState(clients[0]?.name || "");
+          const [cutType, setCutType] = useState("Rough Cut Work");
+          const [logs, setLogs] = useState([
+            { id: 1, client: "Alex Rivera", task: "VFX Assembly & Tracking", duration: 5400, date: "Today" },
+            { id: 2, client: "Jake Torres", task: "Color Correcting — Act II Scene 4", duration: 10800, date: "Yesterday" },
+            { id: 3, client: "Zoe Chen", task: "Audio Levelling & Music Splicing", duration: 2400, date: "May 12" }
+          ]);
+
+          useEffect(() => {
+            let t = null;
+            if (active) {
+              t = setInterval(() => setSec(s => s + 1), 1000);
+            } else {
+              clearInterval(t);
+            }
+            return () => clearInterval(t);
+          }, [active]);
+
+          const handleLogSession = () => {
+            if (sec === 0) return;
+            const newLog = { id: Date.now(), client: selClient, task: cutType, duration: sec, date: "Today" };
+            setLogs([newLog, ...logs]);
+            setSec(0);
+            setActive(false);
+          };
+
+          return <div>
+            <h2 style={{ margin:"0 0 1.25rem", fontSize:22, fontWeight:700, color:T.tx, letterSpacing:"-.03em" }}>Time Tracker</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "start" }}>
+              <Card style={{ padding: "2rem" }}>
+                <SL>Live Edit Session Stopwatch</SL>
+                <div style={{ fontSize: 52, fontWeight: 300, fontFamily: "monospace", color: active ? T.ac : T.tx, margin: "1rem 0", letterSpacing: "-0.04em" }}>
+                  {fmtSec(sec)}
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: "1.5rem" }}>
+                  <div>
+                    <label style={{ fontSize: 11, color: T.t2, display: "block", marginBottom: 4 }}>Client Destination</label>
+                    <FS value={selClient} onChange={e => setSelClient(e.target.value)}>
+                      {clients.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                    </FS>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 11, color: T.t2, display: "block", marginBottom: 4 }}>Editing Stage / Note</label>
+                    <FI value={cutType} onChange={e => setCutType(e.target.value)} placeholder="e.g., Audio Balance, Rendering Fixes" />
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <Btn v={active ? "danger" : "primary"} onClick={() => setActive(!active)}>
+                    <i className={`ti ${active ? 'ti-player-pause' : 'ti-player-play'}`} />
+                    {active ? "Pause Station" : "Start Timing"}
+                  </Btn>
+                  {sec > 0 && <Btn v="save" onClick={handleLogSession}><i className="ti ti-archive" />Log Session</Btn>}
+                </div>
+              </Card>
+
+              <Card>
+                <SL>Logged Time History (Proof of Work)</SL>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: "380px", overflowY: "auto" }}>
+                  {logs.map(l => (
+                    <div key={l.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: T.c3, padding: "10px 14px", borderRadius: T.r, border: `1px solid ${T.ln}` }}>
+                      <div>
+                        <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: T.tx }}>{l.task}</p>
+                        <p style={{ margin: 0, fontSize: 11, color: T.t3 }}>{l.client} • {l.date}</p>
+                      </div>
+                      <div style={{ fontVeriantNumeric: "tabular-nums", fontSize: 13, fontWeight: 700, color: T.bl }}>
+                        {fmtSec(l.duration)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+          </div>;
+        }
+
+        // ── DEDICATED FINANCE EARNINGS PAGE
+        function FinancePage() {
+          return <div>
+            <h2 style={{ margin:"0 0 1.25rem", fontSize:22, fontWeight:700, color:T.tx, letterSpacing:"-.03em" }}>Earnings Breakdown</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 12 }}>
+              <Card><SL>Historical Invoicing Milestones</SL>
+                {SEED_INCOME.map((inc, idx) => (
+                  <div key={idx} style={{ display:"flex", alignItems:"center", gap:12, marginBottom: 12 }}>
+                    <span style={{ width: 40, fontSize: 12, color: T.t2 }}>{inc.month}</span>
+                    <div style={{ flex: 1, background: "rgba(255,255,255,0.02)", height: 16, borderRadius: 4, overflow: "hidden" }}>
+                      <div style={{ width: `${(inc.earned/5000)*100}%`, height: "100%", background: T.gr }} />
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: T.tx }}>${inc.earned}</span>
+                  </div>
+                ))}
+              </Card>
+              <Card>
+                <SL>Quarterly Target Status</SL>
+                <div style={{ textAlign: "center", padding: "1rem 0" }}>
+                  <p style={{ margin: 0, fontSize: 36, fontWeight: 800, color: T.gr }}>$16,400</p>
+                  <p style={{ margin: 0, fontSize: 12, color: T.t3, marginBottom: "1rem" }}>Total Gross YTD Income</p>
+                  <Bar v={74} color={T.gr} />
+                  <p style={{ margin: "6px 0 0", fontSize: 11, color: T.t2 }}>74% of Phase 1 Milestone hit</p>
+                </div>
+              </Card>
+            </div>
+          </div>;
+        }
+
+        // ── DEDICATED EXPENSES PAGE
+        function ExpensesPage() {
+          return <div>
+            <h2 style={{ margin:"0 0 1.25rem", fontSize:22, fontWeight:700, color:T.tx, letterSpacing:"-.03em" }}>Operational Expenses</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {SEED_PURCHASES.map(exp => (
+                <Card key={exp.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ background: T.c3, width: 34, height: 34, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <i className="ti ti-receipt" style={{ color: T.re }} />
+                    </div>
+                    <div>
+                      <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: T.tx }}>{exp.name}</p>
+                      <p style={{ margin: 0, fontSize: 11, color: T.t3 }}>{exp.cat} • Bill Date: {exp.date}</p>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: T.tx }}>${exp.amount.toFixed(2)}</p>
+                    <Chip color={exp.recurring ? "purple" : "dim"}>{exp.recurring ? "Monthly Auto-renew" : "One-off Asset"}</Chip>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>;
+        }
+
+        // ── DEDICATED CALENDAR PAGE
+        function CalendarPage() {
+          return <div>
+            <h2 style={{ margin:"0 0 1.25rem", fontSize:22, fontWeight:700, color:T.tx, letterSpacing:"-.03em" }}>Production Calendar</h2>
+            <Card>
+              <SL>May 2026 Deadlines Matrix</SL>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6, textAlign: "center", marginTop: "1rem" }}>
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => <div key={d} style={{ fontSize: 11, fontWeight: 600, color: T.t3 }}>{d}</div>)}
+                {Array.from({ length: 31 }).map((_, n) => {
+                  const dayNum = n + 1;
+                  const hasDeadline = dayNum === 12 || dayNum === 14 || dayNum === 15;
+                  return (
+                    <div key={n} style={{ background: hasDeadline ? T.acs : T.c3, padding: "12px 0", borderRadius: T.r, border: hasDeadline ? `1px solid ${T.ac}` : "1px solid transparent", position: "relative" }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: hasDeadline ? T.ac : T.t2 }}>{dayNum}</span>
+                      {hasDeadline && <div style={{ width: 4, height: 4, background: T.ac, borderRadius: "50%", position: "absolute", bottom: 4, left: "46%" }} />}
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+          </div>;
+        }
+
+        // ── DEDICATED TEMPLATES PAGE
+        function TemplatesPage() {
+          return <div>
+            <h2 style={{ margin:"0 0 1.25rem", fontSize:22, fontWeight:700, color:T.tx, letterSpacing:"-.03em" }}>Clipboard Messaging Templates</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {TMPL.map((t, idx) => (
+                <Card key={idx} style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 12 }}>
+                  <div>
+                    <SL>{t.label}</SL>
+                    <p style={{ margin: 0, fontSize: 13, color: T.t2, lineHeight: 1.5 }}>{t.body}</p>
+                  </div>
+                  <Btn v="ghost" style={{ alignSelf: "flex-start" }} onClick={() => navigator.clipboard.writeText(t.body)}>
+                    <i className="ti ti-copy" />Copy Boilerplate Text
+                  </Btn>
+                </Card>
+              ))}
+            </div>
+          </div>;
+        }
+
+        // ── DEDICATED DELIVERY PAGE
+        function DeliveryPage() {
+          return <div>
+            <h2 style={{ margin:"0 0 1.25rem", fontSize:22, fontWeight:700, color:T.tx, letterSpacing:"-.03em" }}>Review Hub & Export Delivery</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <Card>
+                <SL>Active Frame.io & Drive Pipelines</SL>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div style={{ background: T.c3, padding: 12, borderRadius: T.r }}>
+                    <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>Alex Rivera — Episode 47</p>
+                    <p style={{ margin: "2px 0 8px", fontSize: 11, color: T.t3 }}>V1 Review Node Active</p>
+                    <FI style={{ fontSize: 11, padding: 6 }} readOnly value="https://frame.io/share/node-x78b942" />
+                  </div>
+                  <div style={{ background: T.c3, padding: 12, borderRadius: T.r }}>
+                    <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>Jake Torres — Documentary Cut</p>
+                    <p style={{ margin: "2px 0 8px", fontSize: 11, color: T.t3 }}>Final Master Signoff Drive</p>
+                    <FI style={{ fontSize: 11, padding: 6 }} readOnly value="https://drive.google.com/drive/u/prod-torres" />
+                  </div>
+                </div>
+              </Card>
+              <Card>
+                <SL>Standard Master Export Specs</SL>
+                <div style={{ fontSize: 12, color: T.t2, display: "flex", flexDirection: "column", gap: 6 }}>
+                  <div>• <strong>YouTube Standard:</strong> ProRes 422 HQ, 3840x2160, 23.976fps, Rec709</div>
+                  <div>• <strong>Instagram Reels:</strong> H.264 High Profile, 1080x1920, 30fps, AAC Audio</div>
+                  <div>• <strong>Corporate Archives:</strong> DNxHR HQX Wrapper, 10-bit Depth uncompressed</div>
+                </div>
+              </Card>
+            </div>
+          </div>;
+        }
+
+        // ── DEDICATED PORTFOLIO PAGE
+        function PortfolioPage() {
+          return <div>
+            <h2 style={{ margin:"0 0 1.25rem", fontSize:22, fontWeight:700, color:T.tx, letterSpacing:"-.03em" }}>Public Content Portfolio</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {SEED_PORTFOLIO.map(p => (
+                <Card key={p.id}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                    <Chip color="ac">{p.date}</Chip>
+                    <span style={{ fontSize: 12, color: T.gr, fontWeight: 700 }}><i className="ti ti-eye" style={{ marginRight: 4 }} />{p.views} views</span>
+                  </div>
+                  <h4 style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 600, color: T.tx }}>{p.title}</h4>
+                  <p style={{ margin: "0 0 12px", fontSize: 11, color: T.t3 }}>Produced for {p.client}</p>
+                  <Btn v="ghost" onClick={() => window.open(p.url, '_blank')} style={{ padding: "4px 10px", fontSize: 11 }}>
+                    <i className="ti ti-external-link" />View Live Post
+                  </Btn>
+                </Card>
+              ))}
+            </div>
+          </div>;
+        }
+
+        // ── APPLICATION CONTAINER (EditDesk)
         function EditDesk() {
             const [page, setPage] = useState("home");
             const [clients, setClients] = useState(SEED_CLIENTS);
             const [projects, setProjects] = useState(SEED_PROJECTS);
             
-            // Base Metric State Cards
+            // Dashboard metric configuration cards array
             const [cards, setCards] = useState([
                 { id: 1, label: "Active Clients", value: 4, sub: "1 pending update", color: "purple", num: true, pre: "" },
                 { id: 2, label: "Monthly Income", value: 3250, sub: "+12% from Apr", color: "green", num: true, pre: "$" },
                 { id: 3, label: "Pending Pipeline", value: 4250, sub: "3 scope sheets out", color: "blue", num: true, pre: "$" }
             ]);
 
-            // Simple active navigation view switcher
+            // Modular View Engine routing
             const renderView = () => {
                 switch(page) {
                     case "clients": 
                         return <ClientsPage clients={clients} setClients={setClients} onMsg={()=>{}} onInv={()=>{}} cards={cards} setCards={setCards} />;
                     case "projects": 
                         return <ProjectsPage projects={projects} setProjects={setProjects} cards={cards} setCards={setCards} />;
+                    case "timer":
+                        return <TimerPage clients={clients} projects={projects} />;
+                    case "finance":
+                        return <FinancePage />;
+                    case "expenses":
+                        return <ExpensesPage />;
+                    case "calendar":
+                        return <CalendarPage />;
+                    case "templates":
+                        return <TemplatesPage />;
+                    case "delivery":
+                        return <DeliveryPage />;
+                    case "portfolio":
+                        return <PortfolioPage />;
                     default: 
                         return <HomePage clients={clients} projects={projects} setPage={setPage} cards={cards} setCards={setCards} />;
                 }
@@ -507,7 +668,6 @@
             );
         }
 
-        // Render Application Container
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<EditDesk />);
     </script>
