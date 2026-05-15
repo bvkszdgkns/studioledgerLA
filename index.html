@@ -3,83 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EditDesk Personal Dashboard</title>
+    <title>EditDesk Dashboard</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
 <body style="margin: 0; background: #0a0a0c;">
     <div id="root"></div>
 
     <script type="text/babel">
-        // Initialize React Hooks for the browser
         const { useState, useRef, useEffect } = React;
 
-        // ── TOKENS & DATA
-        const T = { 
-            bg: "#0a0a0c", c1: "#111115", c2: "#18181d", c3: "#1f1f25", c4: "#27272e", c5: "#303038", 
-            ln: "rgba(255,255,255,0.06)", tx: "#f0f0f4", t2: "#a0a0b0", ac: "#d95f45", gr: "#30d17a", 
-            bl: "#4a9df0", pu: "#9d78e8", re: "#e05050", ff: "sans-serif", rM: "13px" 
+        // ── TOKENS
+        const T = {
+          bg: "#0a0a0c", c1: "#111115", c2: "#18181d", c3: "#1f1f25", c4: "#27272e", c5: "#303038",
+          ln: "rgba(255,255,255,0.06)", ln2: "rgba(255,255,255,0.11)", ln3: "rgba(255,255,255,0.18)",
+          tx: "#f0f0f4", t2: "#a0a0b0", t3: "#505060",
+          ac: "#d95f45", ach: "#bf5038", acs: "rgba(217,95,69,0.12)", acs2: "rgba(217,95,69,0.20)",
+          gr: "#30d17a", grs: "rgba(48,209,122,0.12)",
+          bl: "#4a9df0", bls: "rgba(74,157,240,0.12)",
+          ye: "#f5c030", yes: "rgba(245,192,48,0.12)",
+          re: "#e05050", res: "rgba(224,80,80,0.12)",
+          pu: "#9d78e8", pus: "rgba(157,120,232,0.12)",
+          ff: "-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif",
+          r: "9px", rM: "13px", rL: "17px", rXL: "22px",
         };
 
+        const CM = { ac: "#d95f45", green: "#30d17a", blue: "#4a9df0", yellow: "#f5c030", red: "#e05050", purple: "#9d78e8", default: "#f0f0f4" };
+        const AVC = [["#0c1a2e","#4a9df0"],["#051a0d","#30d17a"],["#1c0e06","#e87a4a"],["#160a24","#9d78e8"],["#1a1200","#f5c030"]];
+
+        // ── SEED DATA
         const SEED_PROJECTS = [
-            { id:1, client:"Alex Rivera", title:"Episode 47 — Tech Talk", status:"In Progress", value:850 },
-            { id:2, client:"Jake Torres", title:"Documentary — Act II", status:"Review", value:1800 },
-            { id:3, client:"Zoe Chen", title:"May Lifestyle Reel", status:"In Progress", value:600 }
+          { id:1, client:"Alex Rivera", title:"Episode 47 — Tech Talk", status:"In Progress", due:"May 14", progress:65, type:"YouTube", value:850, tasks:[{t:"Rough cut",d:true},{t:"Color grade",d:false},{t:"Sound mix",d:false},{t:"Export",d:false}] },
+          { id:2, client:"Jake Torres", title:"Documentary — Act II", status:"Review", due:"May 12", progress:90, type:"Documentary", value:1800, tasks:[{t:"Rough cut",d:true},{t:"Color grade",d:true},{t:"Sound mix",d:true},{t:"Client review",d:false}] }
         ];
 
-        // ── MAIN COMPONENT
-        function EditDesk() {
-            return (
-                <div style={{ 
-                    fontFamily: T.ff, 
-                    color: T.tx, 
-                    backgroundColor: T.bg, 
-                    minHeight: '100vh', 
-                    padding: '40px' 
-                }}>
-                    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-                        <header style={{ marginBottom: '40px', borderBottom: `1px solid ${T.ln}`, paddingBottom: '20px' }}>
-                            <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: T.ac }}>My EditDesk</h1>
-                            <p style={{ color: T.t2 }}>Personal Production Hub</p>
-                        </header>
-
-                        <div style={{ display: 'grid', gap: '20px' }}>
-                            <h2 style={{ fontSize: '18px', fontWeight: '600' }}>Active Projects</h2>
-                            {SEED_PROJECTS.map(p => (
-                                <div key={p.id} style={{ 
-                                    background: T.c2, 
-                                    padding: '20px', 
-                                    borderRadius: T.rM, 
-                                    border: `1px solid ${T.ln}`,
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center'
-                                }}>
-                                    <div>
-                                        <div style={{ fontWeight: '600' }}>{p.title}</div>
-                                        <div style={{ fontSize: '13px', color: T.t2 }}>{p.client}</div>
-                                    </div>
-                                    <div style={{ textAlign: 'right' }}>
-                                        <div style={{ color: T.gr, fontWeight: 'bold' }}>${p.value}</div>
-                                        <div style={{ fontSize: '11px', opacity: 0.7 }}>{p.status}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        
-                        <footer style={{ marginTop: '50px', color: T.t2, fontSize: '12px', textAlign: 'center' }}>
-                            Ready to edit. Connected via Netlify.
-                        </footer>
-                    </div>
-                </div>
-            );
+        // ── PRIMITIVES
+        function Av({ label="", idx=0, size=38 }) {
+          const [bg,fg] = AVC[idx % AVC.length];
+          return <div style={{ width:size, height:size, borderRadius:"50%", background:bg, color:fg, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:600, fontSize:size*0.29, flexShrink:0 }}>{label}</div>;
         }
 
-        // ── RENDER ENGINE
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<EditDesk />);
-    </script>
-</body>
-</html>
+        function Chip({ children, color="dim" }) {
+          const m = { green:[T.grs,T.gr], blue:[T.bls,T.bl], yellow:[T.yes,T.ye], red:[T.res,T.re], ac:[T.acs,T.ac], purple:[T.pus,T.pu], dim
