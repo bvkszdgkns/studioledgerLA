@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EditDesk Ultra Workspace</title>
     
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3Cfilter id='g' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='2' result='b'/%3E%3CfeMerge%3E%3CfeMergeNode in='b'/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3CfeMergeMerge%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M25 20v60l32-30z' fill='none' stroke='%23ff4f2b' stroke-width='5' stroke-linejoin='round' filter='url(%23g)'/%3E%3Cpath d='M40 45h12v10H40z' fill='%23ff4f2b' filter='url(%23g)'/%3E%3Cpath d='M58 35l22 15-22 15z' fill='none' stroke='%232563eb' stroke-width='5' stroke-linejoin='round' filter='url(%23g)'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/png" href="logo.png">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -81,6 +81,7 @@
           return <span style={{ background:bg, color:fg, fontSize:10, fontWeight:600, padding:"1px 6px", borderRadius:4, letterSpacing:".01em" }}>{children}</span>;
         }
 
+        // Modified for state management changes
         function Card({ children, style={}, onClick }) {
           const [hov, sh] = useState(false);
           return <div onClick={onClick} onMouseEnter={()=>sh(true)} onMouseLeave={()=>sh(false)}
@@ -197,8 +198,7 @@
           
           // ── EXTRA SYSTEM ADAPTER CONFIGURATIONS
           const [budget, setBudget] = useState(() => loadData("budget", 600));
-          const [calTitle, setCalTitle] = useState(() => loadData("calTitle", "Master Studio Delivery Map"));
-          const [calendar, setCalendar] = useState(() => loadData("calendar", { "4": "Alex R. Asset Raw Drop", "12": "Draft V1 Delivery Signoff", "15": "Vanguard Master Broadcast Render" }));
+          const [calendar, setCalendar] = useState(() => loadData("calendar", {}));
           const [templates, setTemplates] = useState(() => loadData("templates", [
             { id: 1, title: "Draft Edit Review Sequence V1", body: "Hi {name}, your review sequence is compiled and posted to our secure timeline hub. Let me know your structural revision marks: {link}" },
             { id: 2, title: "Final Master Delivery Invoiced", body: "Hi {name}, final high-bitrate clean exports are fully rendered. Access assets at the link below following invoice file completion: {link}" }
@@ -219,7 +219,6 @@
           useEffect(() => { saveData("earnings", earnings); }, [earnings]);
           useEffect(() => { saveData("expenses", expenses); }, [expenses]);
           useEffect(() => { saveData("budget", budget); }, [budget]);
-          useEffect(() => { saveData("calTitle", calTitle); }, [calTitle]);
           useEffect(() => { saveData("calendar", calendar); }, [calendar]);
           useEffect(() => { saveData("templates", templates); }, [templates]);
           useEffect(() => { saveData("delivery", delivery); }, [delivery]);
@@ -234,7 +233,6 @@
             saveData("earnings", earnings);
             saveData("expenses", expenses);
             saveData("budget", budget);
-            saveData("calTitle", calTitle);
             saveData("calendar", calendar);
             saveData("templates", templates);
             saveData("delivery", delivery);
@@ -257,7 +255,7 @@
           return (
             <div style={{ fontFamily: T.ff, color: T.tx, padding: '40px 24px', maxWidth: '1040px', margin: '0 auto' }}>
               
-              {/* ── HIGH END TOP APPLICATION SHELL HEADER ── */}
+              {/* ── HEADER ── */}
               <header style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom: "28px" }}>
                 <div>
                   <h1 style={{ fontSize: '15px', fontWeight: '700', letterSpacing:"-0.01em", textTransform: "uppercase", color: "#fff", display:"flex", alignItems:"center", gap: 6 }}>
@@ -488,61 +486,9 @@
                   </div>
                 )}
 
-                {/* ── CALENDAR VIEW ── */}
+                {/* ── LIVE AUTO-UPDATING CALENDAR VIEW ── */}
                 {page === "calendar" && (
-                  <div>
-                    <div style={{ marginBottom: "1.25rem", borderBottom: `1px solid ${T.ln}`, paddingBottom: 12 }}>
-                      <p style={{ margin: 0, fontSize: 10, fontWeight: 600, color: T.ac, textTransform: "uppercase", letterSpacing: "0.06em" }}>Interactive Studio Schedule</p>
-                      <h2 style={{ fontSize: 20, fontWeight: 700, margin: "2px 0 0", color: "#fff" }}>
-                        <EditableRow value={calTitle} onSave={val => setCalTitle(val)} />
-                      </h2>
-                    </div>
-                    
-                    <Card style={{ padding: 0, overflow: "hidden", border: `1px solid ${T.ln2}` }}>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", background: T.c2, borderBottom: `1px solid ${T.ln2}`, textAlign: "center", padding: "8px 0" }}>
-                        {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map(d => (
-                          <div key={d} style={{ fontSize: 10, fontWeight: 700, color: T.t2, letterSpacing: "0.05em" }}>{d}</div>
-                        ))}
-                      </div>
-                      
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", background: "rgba(255,255,255,0.005)" }}>
-                        {Array.from({ length: 28 }).map((_, n) => {
-                          const dayString = String(n + 1);
-                          const currentNote = calendar[dayString] || "";
-                          return (
-                            <div key={n} onClick={() => {
-                              const notePrompt = prompt(`Google-Cal Node Injector // Set notification string row for Date Frame Entry ${dayString}:`, currentNote);
-                              if (notePrompt !== null) {
-                                if (notePrompt.trim() === "") {
-                                  const updatedCal = { ...calendar }; delete updatedCal[dayString]; setCalendar(updatedCal);
-                                } else {
-                                  setCalendar({ ...calendar, [dayString]: notePrompt });
-                                }
-                              }
-                            }}
-                              style={{ borderRight: `1px solid ${T.ln}`, borderBottom: `1px solid ${T.ln}`, padding: "6px", minHeight: 85, cursor: "pointer", transition: "background .12s", display: "flex", flexDirection: "column", gap: 4 }}
-                              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.015)"}
-                              onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                              
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontSize: 11, fontWeight: 600, color: currentNote ? T.ac : T.t3, background: currentNote ? T.acs : "transparent", width: 18, height: 18, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                  {dayString}
-                                </span>
-                              </div>
-
-                              {currentNote && (
-                                <div style={{ background: "rgba(37,99,235,0.12)", borderLeft: `2px solid ${T.bl}`, padding: "2px 4px", borderRadius: "2px", overflow: "hidden" }}>
-                                  <p style={{ margin: 0, fontSize: 9, fontWeight: 500, color: "#cbd5e1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                    {currentNote}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </Card>
-                  </div>
+                  <CalendarView calendar={calendar} setCalendar={setCalendar} />
                 )}
 
                 {/* ── TEMPLATES VIEW ── */}
@@ -613,7 +559,7 @@
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                       {portfolio.map(p => (
-                        <Card key={p.id} style={{ display:"flex", flexDirection:"column", justifyBetween: "space-between", minHeight: 125 }}>
+                        <Card key={p.id} style={{ display: "flex", flexDirection: "column", justifyBetween: "space-between", minHeight: 125 }}>
                           <div>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                               <Chip color="ac">Active Asset</Chip>
@@ -638,7 +584,7 @@
 
               </main>
 
-              {/* ── MODAL POPUP DATA SYSTEM INJECTORS ── */}
+              {/* ── MODALS ── */}
               {modalType && (
                 <Modal onClose={() => setModalType(null)}>
                   <p style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".04em", color: T.ac }}>Add Database Matrix Object</p>
@@ -698,6 +644,129 @@
                   </div>
                 </Modal>
               )}
+            </div>
+          );
+        }
+
+        // ── LIVE AUTONOMOUS CALENDAR COMPONENT ENGINE ──
+        function CalendarView({ calendar, setCalendar }) {
+          const rightNow = new Date();
+          const [viewDate, setViewDate] = useState(rightNow);
+
+          const currentYear = viewDate.getFullYear();
+          const currentMonth = viewDate.getMonth();
+
+          // Get the display string for the current active month selection
+          const monthLabel = viewDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+          // Compute exact calendar cell grids
+          const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+          const totalDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+          const daysArray = [];
+          // Inject empty slot blocks for matching weekday alignments
+          for (let i = 0; i < firstDayIndex; i++) {
+            daysArray.push(null);
+          }
+          // Populate actual days
+          for (let day = 1; day <= totalDaysInMonth; day++) {
+            daysArray.push(day);
+          }
+
+          const handlePrevMonth = () => {
+            setViewDate(new Date(currentYear, currentMonth - 1, 1));
+          };
+
+          const handleNextMonth = () => {
+            setViewDate(new Date(currentYear, currentMonth + 1, 1));
+          };
+
+          return (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", borderBottom: `1px solid ${T.ln}`, paddingBottom: 12 }}>
+                <div>
+                  <p style={{ margin: 0, fontSize: 10, fontWeight: 600, color: T.ac, textTransform: "uppercase", letterSpacing: "0.06em" }}>Autonomous Studio Tracking Grid</p>
+                  <h2 style={{ fontSize: 20, fontWeight: 700, margin: "2px 0 0", color: "#fff" }}>
+                    {monthLabel}
+                  </h2>
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <Btn onClick={handlePrevMonth}><i className="ti ti-chevron-left" /></Btn>
+                  <Btn onClick={() => setViewDate(new Date())}>Today</Btn>
+                  <Btn onClick={handleNextMonth}><i className="ti ti-chevron-right" /></Btn>
+                </div>
+              </div>
+              
+              <Card style={{ padding: 0, overflow: "hidden", border: `1px solid ${T.ln2}` }}>
+                {/* Week Headers */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", background: T.c2, borderBottom: `1px solid ${T.ln2}`, textAlign: "center", padding: "8px 0" }}>
+                  {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map(d => (
+                    <div key={d} style={{ fontSize: 10, fontWeight: 700, color: T.t2, letterSpacing: "0.05em" }}>{d}</div>
+                  ))}
+                </div>
+                
+                {/* Dynamic Day Grid Cells */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", background: "rgba(255,255,255,0.005)" }}>
+                  {daysArray.map((dayNum, index) => {
+                    if (dayNum === null) {
+                      return <div key={`empty-${index}`} style={{ borderRight: `1px solid ${T.ln}`, borderBottom: `1px solid ${T.ln}`, minHeight: 85, background: "rgba(0,0,0,0.15)" }} />;
+                    }
+
+                    // Key storage tracking tag calculation matching specific date
+                    const dateStorageKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                    const currentNote = calendar[dateStorageKey] || "";
+
+                    // Boolean check for today status confirmation matching system clock
+                    const isToday = 
+                      dayNum === rightNow.getDate() && 
+                      currentMonth === rightNow.getMonth() && 
+                      currentYear === rightNow.getFullYear();
+
+                    return (
+                      <div key={dateStorageKey} onClick={() => {
+                        const notePrompt = prompt(`Studio Calendar Engine // Set custom note for ${dateStorageKey}:`, currentNote);
+                        if (notePrompt !== null) {
+                          if (notePrompt.trim() === "") {
+                            const updatedCal = { ...calendar }; delete updatedCal[dateStorageKey]; setCalendar(updatedCal);
+                          } else {
+                            setCalendar({ ...calendar, [dateStorageKey]: notePrompt });
+                          }
+                        }
+                      }}
+                        style={{ borderRight: `1px solid ${T.ln}`, borderBottom: `1px solid ${T.ln}`, padding: "8px", minHeight: 90, cursor: "pointer", transition: "background .12s", display: "flex", flexDirection: "column", gap: 6 }}
+                        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.015)"}
+                        onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                        
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span style={{ 
+                            fontSize: 11, 
+                            fontWeight: 600, 
+                            color: isToday ? "#fff" : (currentNote ? T.ac : T.t2), 
+                            background: isToday ? T.ac : "transparent", 
+                            boxShadow: isToday ? `0 0 10px ${T.ac}` : "none",
+                            width: 20, 
+                            height: 20, 
+                            borderRadius: "50%", 
+                            display: "flex", 
+                            alignItems: "center", 
+                            justifyContent: "center" 
+                          }}>
+                            {dayNum}
+                          </span>
+                        </div>
+
+                        {currentNote && (
+                          <div style={{ background: "rgba(37,99,235,0.12)", borderLeft: `2px solid ${T.bl}`, padding: "2px 5px", borderRadius: "2px", overflow: "hidden" }}>
+                            <p style={{ margin: 0, fontSize: 9, fontWeight: 500, color: "#cbd5e1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {currentNote}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
             </div>
           );
         }
