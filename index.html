@@ -1,851 +1,679 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EditDesk Ultra Workspace</title>
-    
-    <link rel="icon" type="image/png" href="logo.png">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EditDesk Ultra Pro</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; width: 100%; background: #07070b; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif; color: #f0f0f4; -webkit-font-smoothing: antialiased; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .12); border-radius: 2px; }
+    input, select, textarea { outline: none; font-family: inherit; }
+    button { cursor: pointer; font-family: inherit; border: none; background: none; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .fade { animation: fadeUp .35s cubic-bezier(.16, 1, .3, 1) both; }
+    .fade2 { animation: fadeUp .35s .07s cubic-bezier(.16, 1, .3, 1) both; }
+    .fade3 { animation: fadeUp .35s .14s cubic-bezier(.16, 1, .3, 1) both; }
+    .fade4 { animation: fadeUp .35s .21s cubic-bezier(.16, 1, .3, 1) both; }
+    .fade5 { animation: fadeUp .35s .28s cubic-bezier(.16, 1, .3, 1) both; }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 </head>
-<body style="margin:0; background:#050507; min-height:100vh; color:#f4f4f5; font-kerning:normal; -webkit-font-smoothing:antialiased;">
-    <div id="root"></div>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
-    <script type="text/babel">
-        const { useState, useRef, useEffect } = React;
+const T = {
+  bg: "#07070b", c1: "#0d0d12", c2: "#13131a", c3: "#1a1a24", c4: "#23232f", c5: "#2c2c3a",
+  ln: "rgba(255,255,255,.045)", ln2: "rgba(255,255,255,.09)", ln3: "rgba(255,255,255,.15)",
+  tx: "#f0f0f4", t2: "#9ca3af", t3: "#6b7280", t4: "#3f3f50",
+  ac: "#ff4f2b", ach: "#e83d1a", acl: "rgba(255,79,43,.1)", acl2: "rgba(255,79,43,.06)",
+  gr: "#10b981", grl: "rgba(16,185,129,.1)",
+  bl: "#3b82f6", bll: "rgba(59,130,246,.1)",
+  ye: "#f59e0b", yel: "rgba(245,158,11,.1)",
+  re: "#ef4444", rel: "rgba(239,68,68,.1)",
+  pu: "#a78bfa", pul: "rgba(167,139,250,.1)",
+  cy: "#06b6d4", cyl: "rgba(6,182,212,.1)",
+  ff: "'SF Pro Display',-apple-system,BlinkMacSystemFont,sans-serif",
+  r4: "4px", r6: "6px", r8: "8px", r12: "12px", r16: "16px", r20: "20px"
+};
 
-        // ── ULTRA PREMIUM APPLE LUXURY DARK DESIGN SYSTEM
-        const T = {
-          bg: "#050507", 
-          c1: "#0b0b0f", 
-          c2: "#111116", 
-          c3: "#1a1a22", 
-          c4: "#2d2d3a",
-          ln: "rgba(255,255,255,0.04)", 
-          ln2: "rgba(255,255,255,0.09)",
-          tx: "#f4f4f5", 
-          t2: "#9ca3af", 
-          t3: "#6b7280", 
-          t4: "#4b5563",
-          ac: "#ff4f2b", 
-          ach: "#e63e1c", 
-          acs: "rgba(255,79,43,0.08)",
-          gr: "#10b981", 
-          grs: "rgba(16,185,129,0.08)",
-          bl: "#2563eb", 
-          bls: "rgba(37,99,235,0.08)",
-          ye: "#f59e0b", 
-          yes: "rgba(245,158,11,0.08)",
-          re: "#ef4444", 
-          res: "rgba(239,68,68,0.08)",
-          pu: "#8b5cf6", 
-          pus: "rgba(139,92,246,0.08)",
-          ff: "-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text',sans-serif",
-          r: "6px", 
-          rM: "10px", 
-          rL: "14px"
-        };
+const STORAGE_KEY = "editdesk_ultra_pro_v1";
+const USERS_KEY = "editdesk_users_v1";
+const getUsers = () => { try { return JSON.parse(localStorage.getItem(USERS_KEY) || "{}") } catch { return {} } };
+const saveUsers = u => { try { localStorage.setItem(USERS_KEY, JSON.stringify(u)) } catch {} };
+const getUserData = (uid) => { try { return JSON.parse(localStorage.getItem(`${STORAGE_KEY}_${uid}`) || "null") } catch { return null } };
+const saveUserData = (uid, data) => { try { localStorage.setItem(`${STORAGE_KEY}_${uid}`, JSON.stringify(data)) } catch {} };
 
-        const AVC = [["#1e1b4b","#818cf8"],["#064e3b","#34d399"],["#7c2d12","#fb923c"],["#581c87","#c084fc"]];
-        const SK = "editdesk_ultra_v2";
+const defaultUserData = (name) => ({
+  profile: { name, studio: "My Studio", avatar: name.slice(0,2).toUpperCase(), timezone: "EST", currency: "USD", hourlyRate: 75 },
+  clients: [
+    { id: 1, name: "Alex Rivera", type: "YouTube Channel", email: "alex@email.com", phone: "", avatar: "AR", color: "#ff4f2b", status: "Active" },
+    { id: 2, name: "Zoe Chen", type: "Commercial Reels", email: "zoe@email.com", phone: "", avatar: "ZC", color: "#10b981", status: "Active" },
+    { id: 3, name: "Vanguard Media", type: "Corporate Film", email: "hello@vanguard.com", phone: "", avatar: "VM", color: "#3b82f6", status: "Active" }
+  ],
+  projects: [
+    { id: 1, title: "Episode 47 — Tech Deep Dive", client: "Alex Rivera", status: "In Progress", value: 850, editProgress: 65, deadline: "2026-06-10", notes: "B-roll needs grading pass", priority: "High" },
+    { id: 2, title: "May Fashion Haul", client: "Zoe Chen", status: "Review", value: 600, editProgress: 90, deadline: "2026-06-05", notes: "Client requested color pop on cuts", priority: "Medium" },
+    { id: 3, title: "Brand Manifesto 2026", client: "Vanguard Media", status: "In Progress", value: 2400, editProgress: 25, deadline: "2026-06-20", notes: "First rough cut due next week", priority: "High" }
+  ],
+  logs: [
+    { id: 1, client: "Alex Rivera", project: "Episode 47 — Tech Deep Dive", task: "VFX Masking & Grade", duration: 5400, date: "2026-05-15" },
+    { id: 2, client: "Zoe Chen", project: "May Fashion Haul", task: "B-Roll Audio Sync", duration: 3200, date: "2026-05-14" }
+  ],
+  earnings: [
+    { id: 1, label: "Alex Rivera — April", amount: 1200, date: "2026-04-28", method: "Stripe", status: "Paid" },
+    { id: 2, label: "Zoe Chen — April", amount: 600, date: "2026-04-15", method: "PayPal", status: "Paid" },
+    { id: 3, label: "Vanguard — Q1 Retainer", amount: 2400, date: "2026-03-31", method: "Wire", status: "Paid" },
+    { id: 4, label: "Alex Rivera — May", amount: 850, date: "2026-05-20", method: "Stripe", status: "Pending" },
+    { id: 5, label: "Zoe Chen — May", amount: 600, date: "2026-05-18", method: "PayPal", status: "Paid" }
+  ],
+  expenses: [
+    { id: 1, name: "Adobe Creative Cloud", amount: 54.99, cat: "Software", date: "2026-05-01" },
+    { id: 2, name: "Epidemic Sound", amount: 15.00, cat: "Audio", date: "2026-05-01" },
+    { id: 3, name: "Frame.io", amount: 25.00, cat: "Delivery", date: "2026-05-01" },
+    { id: 4, name: "SSD Storage — 2TB", amount: 89.99, cat: "Hardware", date: "2026-05-10" }
+  ],
+  delivery: [
+    { id: 1, client: "Alex Rivera", project: "Episode 47", url: "https://frame.io/share/node-x78b", status: "Awaiting Review", password: "", sent: "2026-05-19" },
+    { id: 2, client: "Zoe Chen", project: "May Fashion Haul", url: "https://drive.google.com/drive/prod-reels", status: "Approved", password: "", sent: "2026-05-17" }
+  ],
+  templates: [
+    { id: 1, title: "Review Ready", subject: "Your edit is ready for review — {project}", body: "Hi {name},\n\nYour review cut for \"{project}\" is live. Please leave timestamped notes by {deadline}.\n\nAccess link: {link}\n\nLooking forward to your feedback!\n\n— {studio}" },
+    { id: 2, title: "Final Delivery", subject: "Final files delivered — {project}", body: "Hi {name},\n\nAll final exports for \"{project}\" are ready. Your invoice is attached.\n\nDownload: {link}\n\nA pleasure working with you!\n\n— {studio}" }
+  ],
+  portfolio: [
+    { id: 1, title: "AI Content Workflow Strategy", client: "Alex Rivera", views: "284K", url: "https://youtube.com", platform: "YouTube" },
+    { id: 2, title: "Spring Capsule Wardrobe Promo", client: "Zoe Chen", views: "192K", url: "https://instagram.com", platform: "Instagram" }
+  ],
+  integrations: { discord: "", youtube: "", instagram: "", notion: "", slack: "" },
+  goals: { monthlyRevenue: 5000, weeklyHours: 40, clientTarget: 5 },
+  timer: { running: false, seconds: 0, client: "", task: "" }
+});
 
-        const loadData = (key, fallback) => {
-          try {
-            const saved = localStorage.getItem(`${SK}_${key}`);
-            return saved ? JSON.parse(saved) : fallback;
-          } catch { return fallback; }
-        };
-        const saveData = (key, data) => {
-          try { localStorage.setItem(`${SK}_${key}`, JSON.stringify(data)); } catch {}
-        };
+const Spinner = () => <div style={{ width: 16, height: 16, border: `2px solid ${T.ln2}`, borderTopColor: T.ac, borderRadius: "50%", animation: "spin .7s linear infinite" }} />;
 
-        const fmtSec = (s) => {
-          const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sc = s % 60;
-          return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(sc).padStart(2,"0")}`;
-        };
+const Badge = ({ children, color = "dim", dot = false }) => {
+  const m = { green: [T.grl, T.gr], blue: [T.bll, T.bl], yellow: [T.yel, T.ye], red: [T.rel, T.re], ac: [T.acl, T.ac], purple: [T.pul, T.pu], cyan: [T.cyl, T.cy], dim: ["rgba(255,255,255,.04)", T.t2] };
+  const [bg, fg] = m[color] || m.dim;
+  return <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: bg, color: fg, fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: T.r4, letterSpacing: ".04em", textTransform: "uppercase" }}>
+    {dot && <span style={{ width: 5, height: 5, borderRadius: "50%", background: fg, flexShrink: 0 }} />}
+    {children}
+  </span>
+};
 
-        // ── CORE SYSTEM INTERACTIVE VISUALS
-        function Av({ label="", idx=0, size=34 }) {
-          const [bg,fg] = AVC[idx % AVC.length] || AVC[0];
-          return <div style={{ width:size, height:size, borderRadius:"50%", background:bg, color:fg, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:600, fontSize:size*0.32, flexShrink:0 }}>{label}</div>;
-        }
+const Avatar = ({ label = "", color = "#ff4f2b", size = 34 }) => {
+  return <div style={{ width: size, height: size, borderRadius: "50%", background: color + "22", border: `1px solid ${color}44`, color: color, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: size * .35, flexShrink: 0 }}>{label.slice(0, 2).toUpperCase()}</div>
+};
 
-        function Chip({ children, color="dim" }) {
-          const m = { green:[T.grs,T.gr], blue:[T.bls,T.bl], yellow:[T.yes,T.ye], red:[T.res,T.re], ac:[T.acs,T.ac], purple:[T.pus,T.pu], dim:["rgba(255,255,255,0.03)",T.t2] };
-          const [bg,fg] = m[color] || m.dim;
-          return <span style={{ background:bg, color:fg, fontSize:10, fontWeight:600, padding:"1px 6px", borderRadius:4, letterSpacing:".01em" }}>{children}</span>;
-        }
+const Btn = ({ children, v = "ghost", sz = "md", style = {}, loading = false, ...p }) => {
+  const [hov, sh] = useState(false);
+  const sizes = { sm: { padding: "4px 10px", fontSize: 11 }, md: { padding: "7px 14px", fontSize: 12 }, lg: { padding: "10px 20px", fontSize: 13 } };
+  const variants = {
+    primary: { background: hov ? T.ach : T.ac, color: "#fff", fontWeight: 600 },
+    ghost: { background: hov ? "rgba(255,255,255,.05)" : "rgba(255,255,255,.015)", color: T.tx, border: `1px solid ${T.ln}`, fontWeight: 500 },
+    danger: { background: hov ? T.rel : "transparent", color: T.re, border: `1px solid ${T.rel}`, fontWeight: 500 },
+    subtle: { background: "transparent", color: T.t2, fontWeight: 400 },
+    green: { background: hov ? "rgba(16,185,129,.18)" : T.grl, color: T.gr, border: `1px solid rgba(16,185,129,.2)`, fontWeight: 600 }
+  };
+  return <button {...p} disabled={loading || p.disabled} onMouseEnter={() => sh(true)} onMouseLeave={() => sh(false)}
+    style={{ display: "inline-flex", alignItems: "center", gap: 6, borderRadius: T.r8, transition: "all .15s", cursor: p.disabled ? "not-allowed" : "pointer", opacity: p.disabled ? .5 : 1, ...sizes[sz], ...(variants[v] || variants.ghost), ...style }}>
+    {loading ? <Spinner /> : children}
+  </button>
+};
 
-        // Modified for state management changes
-        function Card({ children, style={}, onClick }) {
-          const [hov, sh] = useState(false);
-          return <div onClick={onClick} onMouseEnter={()=>sh(true)} onMouseLeave={()=>sh(false)}
-            style={{ background:T.c1, border:`1px solid ${hov&&onClick?T.ln2:T.ln}`, borderRadius:T.rM, padding:"1.25rem", transition:"transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s", cursor:onClick?"pointer":"default", transform:hov&&onClick?"translateY(-1px)":"none", ...style }}>
-            {children}
-          </div>;
-        }
+const Input = ({ style = {}, ...p }) => {
+  const [f, sf] = useState(false);
+  return <input {...p} onFocus={e => { sf(true); p.onFocus && p.onFocus(e) }} onBlur={e => { sf(false); p.onBlur && p.onBlur(e) }}
+    style={{ background: T.c3, border: `1px solid ${f ? T.ac : T.ln}`, borderRadius: T.r8, color: T.tx, fontSize: 13, padding: "9px 12px", width: "100%", transition: "border-color .15s", ...style }} />;
+};
 
-        function FI({ style={}, ...p }) {
-          return <input {...p} style={{ background:T.c2, border:`1px solid ${T.ln}`, borderRadius:T.r, color:T.tx, fontSize:13, padding:"7px 11px", outline:"none", width:"100%", boxSizing:"border-box", fontFamily:T.ff, transition:"border-color .15s", ...style }}
-            onFocus={e => e.target.style.borderColor = T.ac} onBlur={e => e.target.style.borderColor = T.ln} />;
-        }
+const Select = ({ children, style = {}, ...p }) => {
+  return <select {...p} style={{ background: T.c3, border: `1px solid ${T.ln}`, borderRadius: T.r8, color: T.tx, fontSize: 13, padding: "9px 12px", width: "100%", ...style }}>{children}</select>
+};
 
-        function FS({ children, style={}, ...p }) {
-          return <select {...p} style={{ background:T.c2, border:`1px solid ${T.ln}`, borderRadius:T.r, color:T.tx, fontSize:13, padding:"7px 11px", outline:"none", width:"100%", boxSizing:"border-box", fontFamily:T.ff, ...style }}>{children}</select>;
-        }
+const Textarea = ({ style = {}, ...p }) => {
+  const [f, sf] = useState(false);
+  return <textarea {...p} onFocus={() => sf(true)} onBlur={() => sf(false)}
+    style={{ background: T.c3, border: `1px solid ${f ? T.ac : T.ln}`, borderRadius: T.r8, color: T.tx, fontSize: 13, padding: "9px 12px", width: "100%", resize: "vertical", minHeight: 80, fontFamily: T.ff, transition: "border-color .15s", ...style }} />;
+};
 
-        function Btn({ children, v="ghost", style={}, ...p }) {
-          const [hov, sh] = useState(false);
-          const base = { display:"inline-flex", alignItems:"center", gap:5, padding:"6px 12px", borderRadius:T.r, fontSize:12, fontWeight:500, cursor:"pointer", border:"none", transition:"all .15s", fontFamily:T.ff };
-          const vs = {
-            primary: { background:hov?T.ach:T.ac, color:"#fff" },
-            ghost:   { background:hov?"rgba(255,255,255,.04)":"rgba(255,255,255,.01)", color:T.tx, border:`1px solid ${T.ln}` },
-            danger:  { background:hov?T.res:"transparent", color:T.re, border:`1px solid ${T.res}` },
-            delSmall:{ background: hov ? "rgba(239,68,68,0.12)" : "transparent", color: T.t4, padding: "3px 5px", borderRadius: T.r }
-          };
-          return <button {...p} onMouseEnter={()=>sh(true)} onMouseLeave={()=>sh(false)} style={{ ...base, ...(vs[v]||vs.ghost), ...style }}>{children}</button>;
-        }
+const Card = ({ children, style = {}, onClick, glow = false }) => {
+  const [hov, sh] = useState(false);
+  return <div onClick={onClick} onMouseEnter={() => sh(true)} onMouseLeave={() => sh(false)}
+    style={{ background: T.c1, border: `1px solid ${hov && onClick ? T.ln2 : T.ln}`, borderRadius: T.r12, padding: "1.25rem", transition: "all .2s cubic-bezier(.16,1,.3,1)", cursor: onClick ? "pointer" : "default", transform: hov && onClick ? "translateY(-1px)" : "none", boxShadow: glow && hov ? "0 0 0 1px " + T.ac + "33" : "none", ...style }}>
+    {children}
+  </div>
+};
 
-        function Modal({ children, onClose }) {
-          return <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(3,3,5,.85)", zIndex:400, display:"flex", alignItems:"center", justifyContent:"center", backdropFilter:"blur(12px)" }}>
-            <div onClick={e=>e.stopPropagation()} style={{ background:T.c1, border:`1px solid ${T.ln2}`, borderRadius:T.rL, padding:"1.5rem", width:380, maxWidth:"90vw" }}>
-              {children}
-            </div>
-          </div>;
-        }
+const Modal = ({ children, onClose, width = 400 }) => <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(3,3,7,.88)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(16px)", padding: "1rem" }}>
+  <div onClick={e => e.stopPropagation()} style={{ background: T.c1, border: `1px solid ${T.ln2}`, borderRadius: T.r20, padding: "1.75rem", width, maxWidth: "92vw", maxHeight: "90vh", overflowY: "auto", animation: "fadeUp .25s cubic-bezier(.16,1,.3,1)" }}>
+    {children}
+  </div>
+</div>;
 
-        function SL({ children }) { return <p style={{ margin:"0 0 .6rem", fontSize:10, fontWeight:600, color:T.t3, textTransform:"uppercase", letterSpacing:".08em" }}>{children}</p>; }
+const SectionLabel = ({ children, style = {} }) => <p style={{ margin: "0 0 .5rem", fontSize: 10, fontWeight: 700, color: T.t3, textTransform: "uppercase", letterSpacing: ".1em", ...style }}>{children}</p>;
+const Divider = () => <div style={{ height: 1, background: T.ln, margin: "1rem 0" }} />;
 
-        function EditableRow({ value, onSave, label, type="text" }) {
-          const [editing, setEditing] = useState(false);
-          const [val, setVal] = useState(value);
-          if (editing) {
-            return <div style={{ display: "flex", gap: 4, width: "100%", alignItems: "center" }} onClick={e=>e.stopPropagation()}>
-              <FI type={type} value={val} onChange={e => setVal(e.target.value)} style={{ padding: "3px 6px", fontSize: 12, height:26 }} />
-              <Btn v="primary" style={{ padding: "3px 6px", fontSize: 10 }} onClick={() => { onSave(type==="number" ? Number(val) : val); setEditing(false); }}>Save</Btn>
-              <Btn v="ghost" style={{ padding: "3px 6px", fontSize: 10 }} onClick={() => { setVal(value); setEditing(false); }}>X</Btn>
-            </div>;
-          }
-          return <span onClick={(e) => { e.stopPropagation(); setEditing(true); }} style={{ cursor: "pointer", borderBottom: "1px dashed rgba(255,255,255,0.2)" }} title="Click to rewrite inline">{label || value}</span>;
-        }
+const ProgressBar = ({ value = 0, color = T.ac, height = 3 }) => <div style={{ background: "rgba(255,255,255,.06)", height, borderRadius: 2, overflow: "hidden", width: "100%" }}>
+  <div style={{ width: `${Math.min(100, value)}%`, height: "100%", background: color, borderRadius: 2, transition: "width .5s cubic-bezier(.16,1,.3,1)" }} />
+</div>;
 
-        // ── NAVIGATION ENGINE SETUP
-        const PAGES = [
-          { id:"home", icon:"ti-layout-dashboard", label:"Dashboard" },
-          { id:"clients", icon:"ti-users", label:"Clients" },
-          { id:"projects", icon:"ti-layout-kanban", label:"Projects" },
-          { id:"finance", icon:"ti-chart-bar", label:"Earnings" },
-          { id:"expenses", icon:"ti-receipt", label:"Expenses" },
-          { id:"calendar", icon:"ti-calendar", label:"Calendar" },
-          { id:"templates", icon:"ti-template", label:"Templates" },
-          { id:"delivery", icon:"ti-package", label:"Delivery Hub" },
-          { id:"timer", icon:"ti-clock", label:"Time Tracker" },
-          { id:"portfolio", icon:"ti-player-play", label:"Portfolio" },
-        ];
+const StatCard = ({ label, value, sub, color = T.tx, icon, trend, style = {} }) => <div style={{ background: T.c2, border: `1px solid ${T.ln}`, borderRadius: T.r12, padding: "1.1rem 1.25rem", ...style }}>
+  <div style={{ display: "flex", justifySpaceBetween: "space-between", justifyContent: "space-between", alignItems: "flex-start" }}>
+    <div>
+      <SectionLabel>{label}</SectionLabel>
+      <p style={{ fontSize: 24, fontWeight: 800, color, margin: "2px 0 0", letterSpacing: "-0.03em" }}>{value}</p>
+      {sub && <p style={{ fontSize: 11, color: T.t3, margin: "3px 0 0" }}>{sub}</p>}
+    </div>
+    {icon && <div style={{ width: 36, height: 36, borderRadius: T.r8, background: "rgba(255,255,255,.03)", border: `1px solid ${T.ln}`, display: "flex", alignItems: "center", justifyCenter: "center", justifyContent: "center" }}>
+      <i className={`ti ${icon}`} style={{ fontSize: 16, color: T.t2 }} />
+    </div>}
+  </div>
+</div>;
 
-        function Nav({ page, setPage }) {
-          return <div style={{ display:"flex", gap:2, padding:"0 0 .75rem", borderBottom:`1px solid ${T.ln}`, marginBottom: "1.5rem", flexWrap:"wrap" }}>
-            {PAGES.map(n => {
-              const a = page===n.id;
-              return <button key={n.id} onClick={()=>setPage(n.id)} style={{ display:"flex", alignItems:"center", gap:6, padding:"5px 11px", borderRadius:T.r, background:a?"#161620":"transparent", color:a?T.tx:T.t3, border: a ? `1px solid ${T.ln2}` : '1px solid transparent', fontSize:12, fontWeight:a?500:400, cursor:"pointer", transition:"all .15s", fontFamily:T.ff }}>
-                <i className={`ti ${n.icon}`} style={{ fontSize:13, color: a ? T.ac : T.t3 }} />{n.label}
-              </button>;
-            })}
-          </div>;
-        }
+function AuthScreen({ onAuth }) {
+  const [mode, setMode] = useState("login");
+  const [form, setForm] = useState({ email: "", password: "", name: "", studio: "" });
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+  const up = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
-        // ── CENTRAL SYSTEM RUNTIME ENGINE
-        function EditDesk() {
-          const [page, setPage] = useState("home");
-          const [saveStatus, setSaveStatus] = useState("Sync Now");
+  const handle = async () => {
+    setErr(""); setLoading(true);
+    await new Promise(r => setTimeout(r, 600));
+    const users = getUsers();
+    if (mode === "login") {
+      const user = users[form.email.toLowerCase()];
+      if (!user) { setErr("No account found with that email."); setLoading(false); return; }
+      if (user.password !== form.password) { setErr("Incorrect password."); setLoading(false); return; }
+      onAuth({ ...user, email: form.email.toLowerCase() });
+    } else {
+      if (!form.email || !form.password || !form.name) { setErr("Please fill in all fields."); setLoading(false); return; }
+      if (form.password.length < 6) { setErr("Password must be at least 6 characters."); setLoading(false); return; }
+      const key = form.email.toLowerCase();
+      if (users[key]) { setErr("An account already exists with that email."); setLoading(false); return; }
+      const uid = `user_${Date.now()}`;
+      users[key] = { uid, email: key, password: form.password, name: form.name, studio: form.studio || form.name + " Studio", joined: new Date().toISOString() };
+      saveUsers(users);
+      const data = defaultUserData(form.name);
+      data.profile.studio = form.studio || form.name + " Studio";
+      saveUserData(uid, data);
+      onAuth({ ...users[key] });
+    }
+    setLoading(false);
+  };
 
-          // ── CLIENT CONTROL MATRIX
-          const [clients, setClients] = useState(() => loadData("clients", [
-            { id: 1, name: "Alex Rivera", type: "YouTube Workspace" },
-            { id: 2, name: "Zoe Chen", type: "Commercial Reels" },
-            { id: 3, name: "Vanguard Media", type: "Corporate Documentary" }
-          ]));
-          
-          // ── ACTIVE TIMELINE PROJECT ENGINE
-          const [projects, setProjects] = useState(() => loadData("projects", [
-            { id: 1, title: "Episode 47 — Tech Review", client: "Alex Rivera", status: "In Progress", value: 850, editProgress: 65 },
-            { id: 2, title: "May Fashion Haul Main Sequence", client: "Zoe Chen", status: "Review", value: 600, editProgress: 90 },
-            { id: 3, title: "Corporate Brand Manifesto", client: "Vanguard Media", status: "In Progress", value: 2400, editProgress: 25 }
-          ]));
-          
-          // ── LIVE PRODUCTION TIME LOG MATRIX
-          const [logs, setLogs] = useState(() => loadData("logs", [
-            { id: 1, client: "Alex Rivera", task: "VFX Masking & Grade Tuning", duration: 5400, date: "May 15" },
-            { id: 2, client: "Zoe Chen", task: "Splicing Audio B-Roll Syncs", duration: 3200, date: "May 14" }
-          ]));
-          
-          // ── REVENUE LEDGER MATRIX
-          const [earnings, setEarnings] = useState(() => loadData("earnings", [
-            { id: 1, month: "May Pool", amount: 3850 },
-            { id: 2, month: "April Pool", amount: 4950 }
-          ]));
-          
-          // ── BUSINESS DEDUCTIONS OVERHEAD ENGINE
-          const [expenses, setExpenses] = useState(() => loadData("expenses", [
-            { id: 1, name: "Adobe Creative Suite Engine", amount: 54.99, cat: "Software Subscription" },
-            { id: 2, name: "Epidemic Asset Library Access", amount: 15.00, cat: "Audio Licensing" }
-          ]));
-          
-          // ── EXTRA SYSTEM ADAPTER CONFIGURATIONS
-          const [budget, setBudget] = useState(() => loadData("budget", 600));
-          const [calendar, setCalendar] = useState(() => loadData("calendar", {}));
-          const [templates, setTemplates] = useState(() => loadData("templates", [
-            { id: 1, title: "Draft Edit Review Sequence V1", body: "Hi {name}, your review sequence is compiled and posted to our secure timeline hub. Let me know your structural revision marks: {link}" },
-            { id: 2, title: "Final Master Delivery Invoiced", body: "Hi {name}, final high-bitrate clean exports are fully rendered. Access assets at the link below following invoice file completion: {link}" }
-          ]));
-          const [delivery, setDelivery] = useState(() => loadData("delivery", [
-            { id: 1, client: "Alex Rivera — Ep 47 Tech Review", url: "https://frame.io/share/node-x78b" },
-            { id: 2, client: "Zoe Chen — Lifestyle Sequence Master", url: "https://drive.google.com/drive/u/prod-reels" }
-          ]));
-          const [portfolio, setPortfolio] = useState(() => loadData("portfolio", [
-            { id: 1, title: "Automated AI Content Workflow Strategy", client: "Alex Rivera", views: "284K", url: "https://youtube.com" },
-            { id: 2, title: "Boutique Spring Capsule Wardrobe Promo", client: "Zoe Chen", views: "192K", url: "https://instagram.com" }
-          ]));
+  return <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: T.bg, padding: "2rem" }}>
+    <div style={{ width: "100%", maxWidth: 400 }}>
+      <div style={{ textAlign: "center", marginBottom: "2.5rem" }} className="fade">
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: "1rem" }}>
+          <div style={{ width: 32, height: 32, borderRadius: T.r8, background: T.ac, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <i className="ti ti-cut" style={{ fontSize: 16, color: "#fff" }} />
+          </div>
+          <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff" }}>EditDesk <span style={{ color: T.ac }}>Ultra</span></span>
+        </div>
+        <p style={{ fontSize: 13, color: T.t3, margin: 0 }}>The professional OS for video editors</p>
+      </div>
 
-          // Automated Auto-Save Hook Logic
-          useEffect(() => { saveData("clients", clients); }, [clients]);
-          useEffect(() => { saveData("projects", projects); }, [projects]);
-          useEffect(() => { saveData("logs", logs); }, [logs]);
-          useEffect(() => { saveData("earnings", earnings); }, [earnings]);
-          useEffect(() => { saveData("expenses", expenses); }, [expenses]);
-          useEffect(() => { saveData("budget", budget); }, [budget]);
-          useEffect(() => { saveData("calendar", calendar); }, [calendar]);
-          useEffect(() => { saveData("templates", templates); }, [templates]);
-          useEffect(() => { saveData("delivery", delivery); }, [delivery]);
-          useEffect(() => { saveData("portfolio", portfolio); }, [portfolio]);
+      <div style={{ background: T.c1, border: `1px solid ${T.ln2}`, borderRadius: T.r20, padding: "2rem" }} className="fade2">
+        <div style={{ display: "flex", background: T.c3, borderRadius: T.r8, padding: 3, marginBottom: "1.5rem" }}>
+          {["login", "signup"].map(m => <button key={m} onClick={() => { setMode(m); setErr("") }} style={{ flex: 1, padding: "7px", borderRadius: T.r6, background: mode === m ? T.c1 : "transparent", color: mode === m ? T.tx : T.t3, fontSize: 12, fontWeight: mode === m ? 600 : 400, transition: "all .2s" }}>
+            {m === "login" ? "Sign In" : "Create Account"}
+          </button>)}
+        </div>
 
-          // Explicit Master Manual Save Trigger Execution Channel
-          const handleManualSaveAllState = () => {
-            setSaveStatus("Saving...");
-            saveData("clients", clients);
-            saveData("projects", projects);
-            saveData("logs", logs);
-            saveData("earnings", earnings);
-            saveData("expenses", expenses);
-            saveData("budget", budget);
-            saveData("calendar", calendar);
-            saveData("templates", templates);
-            saveData("delivery", delivery);
-            saveData("portfolio", portfolio);
-            
-            setTimeout(() => {
-              setSaveStatus("Workspace Synced ✓");
-              setTimeout(() => setSaveStatus("Sync Now"), 1800);
-            }, 450);
-          };
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {mode === "signup" && <>
+            <div><SectionLabel>Full Name</SectionLabel><Input placeholder="Your name" value={form.name} onChange={up("name")} /></div>
+            <div><SectionLabel>Studio Name</SectionLabel><Input placeholder="e.g. RiverCut Studio" value={form.studio} onChange={up("studio")} /></div>
+          </>}
+          <div><SectionLabel>Email</SectionLabel><Input type="email" placeholder="you@studio.com" value={form.email} onChange={up("email")} /></div>
+          <div><SectionLabel>Password</SectionLabel><Input type="password" placeholder="••••••••" value={form.password} onChange={up("password")} onKeyDown={e => e.key === "Enter" && handle()} /></div>
+        </div>
 
-          const [modalType, setModalType] = useState(null);
-          const [formData, setFormData] = useState({});
+        {err && <div style={{ marginTop: 12, padding: "9px 12px", borderRadius: T.r8, background: T.rel, border: `1px solid rgba(239,68,68,.2)`, fontSize: 12, color: T.re }}><i className="ti ti-alert-circle" style={{ marginRight: 5 }} />{err}</div>}
 
-          // Calculated Business Financial Aggregates
-          const totalGrossRevenue = earnings.reduce((sum, item) => sum + item.amount, 0);
-          const totalSpentThisMonth = expenses.reduce((sum, item) => sum + item.amount, 0);
-          const projectPipelineValue = projects.reduce((sum, item) => sum + (item.status !== "Completed" ? item.value : 0), 0);
+        <Btn v="primary" sz="lg" style={{ width: "100%", justifyContent: "center", marginTop: 16 }} onClick={handle} loading={loading}>
+          {mode === "login" ? "Sign In to Workspace" : "Create My Studio →"}
+        </Btn>
+      </div>
+    </div>
+  </div>
+}
 
-          return (
-            <div style={{ fontFamily: T.ff, color: T.tx, padding: '40px 24px', maxWidth: '1040px', margin: '0 auto' }}>
-              
-              {/* ── HEADER ── */}
-              <header style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom: "28px" }}>
-                <div>
-                  <h1 style={{ fontSize: '15px', fontWeight: '700', letterSpacing:"-0.01em", textTransform: "uppercase", color: "#fff", display:"flex", alignItems:"center", gap: 6 }}>
-                    <span style={{ width: 8, height: 8, background: T.ac, borderRadius: "50%", display: "inline-block" }}></span>
-                    EditDesk Workspace <span style={{ color: T.t4, fontWeight: 300 }}>// Professional OS</span>
-                  </h1>
+const NAV = [
+  { id: "home", icon: "ti-layout-dashboard", label: "Dashboard" },
+  { id: "clients", icon: "ti-users", label: "Clients" },
+  { id: "projects", icon: "ti-layout-kanban", label: "Projects" },
+  { id: "finance", icon: "ti-receipt", label: "Finances" },
+  { id: "timer", icon: "ti-clock", label: "Tracker" },
+  { id: "delivery", icon: "ti-package", label: "Delivery" },
+  { id: "templates", icon: "ti-template", label: "Templates" }
+];
+
+function Sidebar({ page, setPage, user, data, onLogout }) {
+  const paid = data.earnings?.filter(e => e.status === "Paid").reduce((s, e) => s + e.amount, 0) || 0;
+  const active = data.projects?.filter(p => p.status !== "Completed").length || 0;
+  return <div style={{ width: 220, minWidth: 220, background: T.c1, borderRight: `1px solid ${T.ln}`, display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }}>
+    <div style={{ padding: "1.25rem 1rem", borderBottom: `1px solid ${T.ln}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ width: 28, height: 28, borderRadius: T.r6, background: T.ac, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <i className="ti ti-cut" style={{ fontSize: 13, color: "#fff" }} />
+        </div>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 800, color: "#fff", margin: 0 }}>EditDesk</p>
+          <p style={{ fontSize: 9, color: T.ac, margin: 0, fontWeight: 600, letterSpacing: ".05em", textTransform: "uppercase" }}>Ultra Pro</p>
+        </div>
+      </div>
+    </div>
+
+    <div style={{ padding: "1rem", borderBottom: `1px solid ${T.ln}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <Avatar label={data.profile?.avatar || user.name} color={T.ac} size={32} />
+        <div style={{ overflow: "hidden" }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: T.tx, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.profile?.name || user.name}</p>
+          <p style={{ fontSize: 10, color: T.t3, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.profile?.studio}</p>
+        </div>
+      </div>
+    </div>
+
+    <nav style={{ flex: 1, overflowY: "auto", padding: "0.5rem" }}>
+      {NAV.map(n => {
+        const a = page === n.id;
+        return <button key={n.id} onClick={() => setPage(n.id)}
+          style={{ display: "flex", alignItems: "center", gap: 9, width: "100%", padding: "8px 10px", borderRadius: T.r8, background: a ? T.acl2 : "transparent", color: a ? "#fff" : T.t2, border: a ? `1px solid ${T.acl}` : "1px solid transparent", fontSize: 12, fontWeight: a ? 600 : 400, transition: "all .15s", marginBottom: 1, textAlign: "left" }}>
+          <i className={`ti ${n.icon}`} style={{ fontSize: 14, color: a ? T.ac : T.t3, flexShrink: 0 }} />
+          {n.label}
+          {n.id === "projects" && active > 0 && <span style={{ marginLeft: "auto", background: T.ac, color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 5px", borderRadius: 3 }}>{active}</span>}
+        </button>
+      })}
+    </nav>
+
+    <div style={{ padding: "0.75rem", borderTop: `1px solid ${T.ln}` }}>
+      <button onClick={onLogout} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "7px 10px", borderRadius: T.r8, color: T.t3, fontSize: 12, transition: "all .15s" }}
+        onMouseEnter={e => { e.currentTarget.style.color = T.re }} onMouseLeave={e => { e.currentTarget.style.color = T.t3 }}>
+        <i className="ti ti-logout" style={{ fontSize: 14 }} /> Sign Out
+      </button>
+    </div>
+  </div>
+}
+
+function Dashboard({ data, setPage }) {
+  const paidEarnings = data.earnings.filter(e => e.status === "Paid").reduce((s, e) => s + e.amount, 0);
+  const pendingEarnings = data.earnings.filter(e => e.status === "Pending").reduce((s, e) => s + e.amount, 0);
+  const totalExpenses = data.expenses.reduce((s, e) => s + e.amount, 0);
+  const netProfit = paidEarnings - totalExpenses;
+  const activeProjects = data.projects.filter(p => p.status !== "Completed");
+  const totalLoggedSec = data.logs.reduce((s, l) => s + l.duration, 0);
+  const goal = data.goals || { monthlyRevenue: 5000 };
+  const revenueProgress = Math.min(100, (paidEarnings / goal.monthlyRevenue) * 100);
+
+  return <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <div className="fade">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12 }}>
+        <StatCard label="Total Revenue" value={`$${paidEarnings.toLocaleString()}`} sub="All time collected" color={T.gr} icon="ti-cash" />
+        <StatCard label="Pending" value={`$${pendingEarnings.toLocaleString()}`} sub="Awaiting payment" color={T.ye} icon="ti-clock-pause" />
+        <StatCard label="Net Profit" value={`$${netProfit.toLocaleString()}`} sub="After expenses" color={netProfit >= 0 ? T.gr : T.re} icon="ti-trending-up" />
+        <StatCard label="Hours Logged" value={`${Math.floor(totalLoggedSec / 3600)}h`} sub={`${data.logs.length} sessions`} color={T.bl} icon="ti-clock" />
+      </div>
+    </div>
+
+    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14 }} className="fade2">
+      <Card>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+          <div>
+            <SectionLabel>Active Production Pipeline</SectionLabel>
+            <p style={{ margin: 0, fontSize: 13, color: T.t2 }}>{activeProjects.length} projects in flight</p>
+          </div>
+          <Btn v="ghost" sz="sm" onClick={() => setPage("projects")}><i className="ti ti-arrow-right" style={{ fontSize: 12 }} />View All</Btn>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {activeProjects.map(p => (
+            <div key={p.id} style={{ background: T.c2, border: `1px solid ${T.ln}`, borderRadius: T.r8, padding: "10px 14px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{p.title}</span>
+                  <Badge color={p.status === "Review" ? "yellow" : p.priority === "High" ? "ac" : "blue"}>{p.status}</Badge>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <button 
-                    onClick={handleManualSaveAllState}
-                    style={{ background: saveStatus.includes("Synced") ? "rgba(16,185,129,0.12)" : T.acs, border: saveStatus.includes("Synced") ? `1px solid ${T.gr}` : `1px solid ${T.ac}`, color: saveStatus.includes("Synced") ? T.gr : T.tx, fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: T.r, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, transition: "all 0.2s" }}>
-                    <i className="ti ti-device-floppy" style={{ fontSize: 13 }} />
-                    {saveStatus}
-                  </button>
-                  <div style={{ fontSize: 11, background: "rgba(255,255,255,0.02)", border: `1px solid ${T.ln}`, padding: "4px 8px", borderRadius: 4, fontFamily: "monospace", color: T.t2 }}>
-                    SYSTEM LATENCY // OPTIMAL
-                  </div>
-                </div>
-              </header>
-
-              <Nav page={page} setPage={setPage} />
-
-              <main>
-                
-                {/* ── DASHBOARD VIEW ── */}
-                {page === "home" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                    
-                    {/* Hero Cinematic Stat Panel */}
-                    <div style={{ background: "linear-gradient(135deg, #0e0e14 0%, #12121c 100%)", border: `1px solid ${T.ln2}`, borderRadius: T.rL, padding: "2rem", relative: "true", boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}>
-                      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 24, alignItems: "center" }}>
-                        <div>
-                          <p style={{ margin: 0, fontSize: 10, fontWeight: 600, color: T.ac, textTransform: "uppercase", letterSpacing: "0.1em" }}>Financial Studio Performance Portfolio</p>
-                          <h2 style={{ margin: "4px 0 0", fontSize: 38, fontWeight: 800, color: "#fff", letterSpacing: "-0.04em" }}>
-                            ${totalGrossRevenue.toLocaleString()}
-                          </h2>
-                          <p style={{ margin: "4px 0 0", fontSize: 12, color: T.t2 }}>Aggregated Lifetime Account Contract Value Balance</p>
-                        </div>
-                        <div style={{ borderLeft: `1px solid ${T.ln}`, paddingLeft: 20 }}>
-                          <SL>Pipeline Pipeline Open</SL>
-                          <p style={{ margin:0, fontSize: 18, fontWeight: 700, color: T.bl }}>${projectPipelineValue.toLocaleString()}</p>
-                          <p style={{ margin:0, fontSize: 11, color: T.t3 }}>In-production value</p>
-                        </div>
-                        <div style={{ borderLeft: `1px solid ${T.ln}`, paddingLeft: 20 }}>
-                          <SL>Studio Net Overhead</SL>
-                          <p style={{ margin:0, fontSize: 18, fontWeight: 700, color: T.re }}>${totalSpentThisMonth.toFixed(2)}</p>
-                          <p style={{ margin:0, fontSize: 11, color: T.t3 }}>Monthly operational rate</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Sub Metric Infrastructure Mapping Grid */}
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-                      <Card><SL>Total Client Hub</SL><p style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{clients.length} <span style={{fontSize: 12, color: T.t3, fontWeight:400}}>Accounts</span></p></Card>
-                      <Card><SL>Production Timeline Load</SL><p style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{projects.filter(p=>p.status!=="Completed").length} <span style={{fontSize: 12, color: T.t3, fontWeight:400}}>Active</span></p></Card>
-                      <Card><SL>Logged Time Sheets</SL><p style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{logs.length} <span style={{fontSize: 12, color: T.t3, fontWeight:400}}>Sessions</span></p></Card>
-                      <Card><SL>Review Streams Map</SL><p style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{delivery.length} <span style={{fontSize: 12, color: T.t3, fontWeight:400}}>Pipelines</span></p></Card>
-                    </div>
-
-                    {/* Active Edit Monitor Track List */}
-                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14 }}>
-                      <Card>
-                        <SL>Active Post Production Pipeline Progress Tracking</SL>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 8 }}>
-                          {projects.map(p => (
-                            <div key={p.id} style={{ background: "rgba(255,255,255,0.01)", border: `1px solid ${T.ln}`, padding: "10px 14px", borderRadius: T.r }}>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                                <div>
-                                  <span style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{p.title}</span>
-                                  <span style={{ fontSize: 11, color: T.t3, marginLeft: 8 }}>({p.client})</span>
-                                </div>
-                                <Chip color={p.status === "Review" ? "yellow" : "blue"}>{p.status}</Chip>
-                              </div>
-                              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                <div style={{ flex: 1, background: "rgba(255,255,255,0.03)", height: 4, borderRadius: 2, overflow: "hidden" }}>
-                                  <div style={{ width: `${p.editProgress || 50}%`, height: "100%", background: p.status === "Review" ? T.ye : T.ac }} />
-                                </div>
-                                <span style={{ fontSize: 11, fontFamily: "monospace", color: T.t2 }}>
-                                  <EditableRow type="number" value={p.editProgress || 50} label={`${p.editProgress || 50}%`} onSave={val => setProjects(projects.map(x=>x.id===p.id?{...x,editProgress:val}:x))} />
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </Card>
-
-                      <Card style={{ display: "flex", flexDirection: "column", justifyBetween: "space-between" }}>
-                        <div>
-                          <SL>Studio Quick Launch Actions</SL>
-                          <p style={{ margin: "0 0 16px", fontSize: 12, color: T.t2, lineHeight: 1.4 }}>Direct deployment portals mapped to live database subsets.</p>
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                          <Btn v="primary" onClick={() => setPage("timer")} style={{ justifyContent: "center" }}><i className="ti ti-clock" />Open Live Time Stopwatch</Btn>
-                          <Btn v="ghost" onClick={() => setPage("delivery")} style={{ justifyContent: "center" }}><i className="ti ti-package" />Deploy Asset Delivery Node</Btn>
-                          <Btn v="ghost" onClick={() => setPage("calendar")} style={{ justifyContent: "center" }}><i className="ti ti-calendar" />Review Delivery Calendar Matrix</Btn>
-                        </div>
-                      </Card>
-                    </div>
-
-                  </div>
-                )}
-
-                {/* ── CLIENTS VIEW ── */}
-                {page === "clients" && (
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.25rem", alignItems: "center" }}>
-                      <h2 style={{ fontSize: 15, fontWeight: 700, margin: 0, textTransform: "uppercase", letterSpacing: ".02em" }}>Clients Master Index</h2>
-                      <Btn v="primary" onClick={() => { setFormData({ name: "", type: "YouTube Workspace" }); setModalType("client"); }}><i className="ti ti-plus" />Add New Account Profile</Btn>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {clients.map((c, i) => (
-                        <Card key={c.id} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                          <Av label={c.name.slice(0,2).toUpperCase()} idx={i} />
-                          <div style={{ flex: 1 }}>
-                            <p style={{ margin: 0, fontWeight: 600, fontSize: 13, color: "#fff" }}>
-                              <EditableRow value={c.name} onSave={val => setClients(clients.map(x => x.id === c.id ? { ...x, name: val } : x))} />
-                            </p>
-                            <p style={{ margin: 0, fontSize: 11, color: T.t3 }}>
-                              Channel Scope Stratagem: <EditableRow value={c.type} onSave={val => setClients(clients.map(x => x.id === c.id ? { ...x, type: val } : x))} />
-                            </p>
-                          </div>
-                          <Btn v="delSmall" onClick={() => setClients(clients.filter(x => x.id !== c.id))}><i className="ti ti-trash" /></Btn>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* ── PROJECTS VIEW ── */}
-                {page === "projects" && (
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.25rem", alignItems: "center" }}>
-                      <h2 style={{ fontSize: 15, fontWeight: 700, margin: 0, textTransform: "uppercase", letterSpacing: ".02em" }}>Production Matrix</h2>
-                      <Btn v="primary" onClick={() => { setFormData({ title: "", client: clients[0]?.name || "Generic Client", status: "In Progress", value: 500, editProgress: 10 }); setModalType("project"); }}><i className="ti ti-plus" />Launch Project Track</Btn>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {projects.map(p => (
-                        <Card key={p.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div style={{ flex: 1 }}>
-                            <p style={{ margin: 0, fontWeight: 600, fontSize: 13, color: "#fff" }}>
-                              <EditableRow value={p.title} onSave={val => setProjects(projects.map(x => x.id === p.id ? { ...x, title: val } : x))} />
-                            </p>
-                            <p style={{ margin: 0, fontSize: 11, color: T.t3 }}>
-                              Client Anchor Target: {p.client} • Timeline Node Pipeline Status: <EditableRow value={p.status} onSave={val => setProjects(projects.map(x => x.id === p.id ? { ...x, status: val } : x))} />
-                            </p>
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                            <p style={{ margin: 0, fontWeight: 700, fontSize: 13, fontFamily: "monospace", color: T.tx }}>
-                              $<EditableRow type="number" value={p.value} label={p.value.toLocaleString()} onSave={val => setProjects(projects.map(x => x.id === p.id ? { ...x, value: val } : x))} />
-                            </p>
-                            <Btn v="delSmall" onClick={() => setProjects(projects.filter(x => x.id !== p.id))}><i className="ti ti-trash" /></Btn>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* ── EARNINGS VIEW ── */}
-                {page === "finance" && (
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.25rem", alignItems: "center" }}>
-                      <h2 style={{ fontSize: 15, fontWeight: 700, margin: 0, textTransform: "uppercase", letterSpacing: ".02em" }}>Revenue & Capital Ledger</h2>
-                      <Btn v="primary" onClick={() => { setFormData({ month: "May Pool", amount: 1200 }); setModalType("earning"); }}><i className="ti ti-plus" />Record Income Stream</Btn>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {earnings.map(e => (
-                        <Card key={e.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div>
-                            <p style={{ margin: 0, fontWeight: 600, fontSize: 13, color: "#fff" }}>
-                              <EditableRow value={e.month} onSave={val => setEarnings(earnings.map(x => x.id === e.id ? { ...x, month: val } : x))} /> Allocation Log
-                            </p>
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                            <p style={{ margin: 0, fontWeight: 700, color: T.gr, fontSize: 13, fontFamily: "monospace" }}>
-                              $<EditableRow type="number" value={e.amount} label={e.amount.toLocaleString()} onSave={val => setEarnings(earnings.map(x => x.id === e.id ? { ...x, amount: val } : x))} />
-                            </p>
-                            <Btn v="delSmall" onClick={() => setEarnings(earnings.filter(x => x.id !== e.id))}><i className="ti ti-trash" /></Btn>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* ── EXPENSES VIEW ── */}
-                {page === "expenses" && (
-                  <div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: "1.5rem" }}>
-                      <Card>
-                        <SL>Total Hard Overhead Balance (Month)</SL>
-                        <p style={{ fontSize: 24, fontWeight: 700, margin: 0, color: T.re }}>${totalSpentThisMonth.toFixed(2)}</p>
-                      </Card>
-                      <Card>
-                        <SL>Remaining Operational Runway Cap</SL>
-                        <p style={{ fontSize: 24, fontWeight: 700, margin: 0, color: T.gr }}>
-                          ${(budget - totalSpentThisMonth).toFixed(2)}
-                        </p>
-                        <p style={{ margin: "4px 0 0", fontSize: 11, color: T.t3 }}>
-                          System Target Budget Cap Ceiling: $<EditableRow type="number" value={budget} label={String(budget)} onSave={val => setBudget(val)} />
-                        </p>
-                      </Card>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.25rem", alignItems: "center" }}>
-                      <h2 style={{ fontSize: 12, fontWeight: 700, color: T.t2, margin: 0, textTransform:"uppercase" }}>Expense Injections Log</h2>
-                      <Btn v="primary" onClick={() => { setFormData({ name: "", amount: 20, cat: "Subscription Layer" }); setModalType("expense"); }}><i className="ti ti-plus" />Inject Cost Debit Entry</Btn>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {expenses.map(exp => (
-                        <Card key={exp.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div>
-                            <p style={{ margin: 0, fontWeight: 600, fontSize: 13, color: "#fff" }}>
-                              <EditableRow value={exp.name} onSave={val => setExpenses(expenses.map(x => x.id === exp.id ? { ...x, name: val } : x))} />
-                            </p>
-                            <p style={{ margin: 0, fontSize: 11, color: T.t3 }}>
-                              Operational Group Class: <EditableRow value={exp.cat} onSave={val => setExpenses(expenses.map(x => x.id === exp.id ? { ...x, cat: val } : x))} />
-                            </p>
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                            <p style={{ margin: 0, fontWeight: 700, fontSize: 13, fontFamily: "monospace" }}>
-                              $<EditableRow type="number" value={exp.amount} label={exp.amount.toFixed(2)} onSave={val => setExpenses(expenses.map(x => x.id === exp.id ? { ...x, amount: val } : x))} />
-                            </p>
-                            <Btn v="delSmall" onClick={() => setExpenses(expenses.filter(x => x.id !== exp.id))}><i className="ti ti-trash" /></Btn>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* ── LIVE AUTO-UPDATING CALENDAR VIEW ── */}
-                {page === "calendar" && (
-                  <CalendarView calendar={calendar} setCalendar={setCalendar} />
-                )}
-
-                {/* ── TEMPLATES VIEW ── */}
-                {page === "templates" && (
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.25rem", alignItems: "center" }}>
-                      <h2 style={{ fontSize: 15, fontWeight: 700, margin: 0, textTransform: "uppercase", letterSpacing: ".02em" }}>Messaging Scripts</h2>
-                      <Btn v="primary" onClick={() => { setFormData({ title: "", body: "" }); setModalType("template"); }}><i className="ti ti-plus" />Construct Blueprint Card</Btn>
-                    </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                      {templates.map(t => (
-                        <Card key={t.id} style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 12 }}>
-                          <div>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                              <SL><EditableRow value={t.title} onSave={val => setTemplates(templates.map(x => x.id === t.id ? { ...x, title: val } : x))} /></SL>
-                              <Btn v="delSmall" onClick={() => setTemplates(templates.filter(x => x.id !== t.id))}><i className="ti ti-trash" /></Btn>
-                            </div>
-                            <p style={{ margin: 0, fontSize: 12, color: T.t2, lineHeight: 1.5, background: T.c2, padding: 8, borderRadius: T.r, border: `1px solid ${T.ln}`, fontFamily: "monospace" }}>
-                              <EditableRow value={t.body} onSave={val => setTemplates(templates.map(x => x.id === t.id ? { ...x, body: val } : x))} />
-                            </p>
-                          </div>
-                          <Btn v="ghost" style={{ alignSelf: "flex-start" }} onClick={() => { navigator.clipboard.writeText(t.body); alert("Script text pinned cleanly to system clipboard cache."); }}>
-                            <i className="ti ti-copy" />Copy Boilerplate Sequence
-                          </Btn>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* ── DELIVERY HUB VIEW ── */}
-                {page === "delivery" && (
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.25rem", alignItems: "center" }}>
-                      <h2 style={{ fontSize: 15, fontWeight: 700, margin: 0, textTransform: "uppercase", letterSpacing: ".02em" }}>Review Frame & Share Delivery Pipes</h2>
-                      <Btn v="primary" onClick={() => { setFormData({ client: "", url: "" }); setModalType("delivery"); }}><i className="ti ti-plus" />Mount Asset Link Pipeline</Btn>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      {delivery.map(d => (
-                        <Card key={d.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div style={{ flex: 1, marginRight: 16 }}>
-                            <SL>
-                              <EditableRow value={d.client} onSave={val => setDelivery(delivery.map(x => x.id === d.id ? { ...x, client: val } : x))} />
-                            </SL>
-                            <FI value={d.url} onChange={e => setDelivery(delivery.map(x => x.id === d.id ? { ...x, url: e.target.value } : x))} style={{ fontSize: 11, padding: "4px 8px", fontFamily: "monospace", color: T.t2 }} />
-                          </div>
-                          <div style={{ display: "flex", gap: 4 }}>
-                            <Btn v="ghost" onClick={() => window.open(d.url, '_blank')}><i className="ti ti-external-link" /></Btn>
-                            <Btn v="delSmall" onClick={() => setDelivery(delivery.filter(x => x.id !== d.id))}><i className="ti ti-trash" /></Btn>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* ── TIMER VIEW ── */}
-                {page === "timer" && (
-                  <TimeTrackerView clients={clients} logs={logs} setLogs={setLogs} />
-                )}
-
-                {/* ── PORTFOLIO VIEW ── */}
-                {page === "portfolio" && (
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.25rem", alignItems: "center" }}>
-                      <h2 style={{ fontSize: 15, fontWeight: 700, margin: 0, textTransform: "uppercase", letterSpacing: ".02em" }}>Public Content Port Showreels</h2>
-                      <Btn v="primary" onClick={() => { setFormData({ title: "", client: "", views: "10K", url: "" }); setModalType("portfolio"); }}><i className="ti ti-plus" />Bind Showcase Video Reel</Btn>
-                    </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                      {portfolio.map(p => (
-                        <Card key={p.id} style={{ display: "flex", flexDirection: "column", justifyBetween: "space-between", minHeight: 125 }}>
-                          <div>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                              <Chip color="ac">Active Asset</Chip>
-                              <Btn v="delSmall" onClick={() => setPortfolio(portfolio.filter(x => x.id !== p.id))}><i className="ti ti-trash" /></Btn>
-                            </div>
-                            <h4 style={{ margin: "6px 0 2px", fontSize: 13, fontWeight: 600, color: "#fff" }}>
-                              <EditableRow value={p.title} onSave={val => setPortfolio(portfolio.map(x => x.id === p.id ? { ...x, title: val } : x))} />
-                            </h4>
-                            <p style={{ margin: "0 0 10px", fontSize: 11, color: T.t3 }}>
-                              Client Context: <EditableRow value={p.client} onSave={val => setPortfolio(portfolio.map(x => x.id === p.id ? { ...x, client: val } : x))} /> • Tracked Metrics: <EditableRow value={p.views} onSave={val => setPortfolio(portfolio.map(x => x.id === p.id ? { ...x, views: val } : x))} /> views
-                            </p>
-                          </div>
-                          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                            <FI value={p.url} onChange={e => setPortfolio(portfolio.map(x => x.id === p.id ? { ...x, url: e.target.value } : x))} style={{ fontSize: 11, padding: "3px 6px" }} />
-                            <Btn v="ghost" style={{ padding: "5px 8px" }} onClick={() => window.open(p.url, '_blank')}><i className="ti ti-external-link" /></Btn>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-              </main>
-
-              {/* ── MODALS ── */}
-              {modalType && (
-                <Modal onClose={() => setModalType(null)}>
-                  <p style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".04em", color: T.ac }}>Add Database Matrix Object</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {modalType === "client" && (
-                      <>
-                        <FI placeholder="Client Executive Account Name" value={formData.name || ""} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-                        <FI placeholder="Channel Platform Focus Description" value={formData.type || ""} onChange={e => setFormData({ ...formData, type: e.target.value })} />
-                        <Btn v="primary" onClick={() => { setClients([...clients, { id: Date.now(), ...formData }]); setModalType(null); }}>Save Matrix Entity</Btn>
-                      </>
-                    )}
-                    {modalType === "project" && (
-                      <>
-                        <FI placeholder="Timeline Project Name" value={formData.title || ""} onChange={e => setFormData({ ...formData, title: e.target.value })} />
-                        <FI placeholder="Target Client Assigned" value={formData.client || ""} onChange={e => setFormData({ ...formData, client: e.target.value })} />
-                        <FI type="number" placeholder="Contract Budget Payout Yield" value={formData.value || ""} onChange={e => setFormData({ ...formData, value: Number(e.target.value) })} />
-                        <Btn v="primary" onClick={() => { setProjects([...projects, { id: Date.now(), ...formData }]); setModalType(null); }}>Commit Track Row</Btn>
-                      </>
-                    )}
-                    {modalType === "earning" && (
-                      <>
-                        <FI placeholder="Ledger Target Designation Block" value={formData.month || ""} onChange={e => setFormData({ ...formData, month: e.target.value })} />
-                        <FI type="number" placeholder="Gross Yield Remittance Payout" value={formData.amount || ""} onChange={e => setFormData({ ...formData, amount: Number(e.target.value) })} />
-                        <Btn v="primary" onClick={() => { setEarnings([...earnings, { id: Date.now(), ...formData }]); setModalType(null); }}>Inject Financial Balance</Btn>
-                      </>
-                    )}
-                    {modalType === "expense" && (
-                      <>
-                        <FI placeholder="Asset Operating Expense Item" value={formData.name || ""} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-                        <FI type="number" placeholder="Debit Valuation Core Cost" value={formData.amount || ""} onChange={e => setFormData({ ...formData, amount: Number(e.target.value) })} />
-                        <FI placeholder="Overhead Classification Tag" value={formData.cat || ""} onChange={e => setFormData({ ...formData, cat: e.target.value })} />
-                        <Btn v="primary" onClick={() => { setExpenses([...expenses, { id: Date.now(), ...formData }]); setModalType(null); }}>Mount System Cost</Btn>
-                      </>
-                    )}
-                    {modalType === "template" && (
-                      <>
-                        <FI placeholder="Script Descriptor Label" value={formData.title || ""} onChange={e => setFormData({ ...formData, title: e.target.value })} />
-                        <textarea placeholder="Composition string layout configuration details" value={formData.body || ""} onChange={e => setFormData({ ...formData, body: e.target.value })} style={{ background: T.c2, border:`1px solid ${T.ln}`, borderRadius: T.r, color: T.tx, padding: 8, height: 90, outline: "none", fontSize: 13, fontFamily: T.ff }} />
-                        <Btn v="primary" onClick={() => { setTemplates([...templates, { id: Date.now(), ...formData }]); setModalType(null); }}>Save Composition Template</Btn>
-                      </>
-                    )}
-                    {modalType === "delivery" && (
-                      <>
-                        <FI placeholder="Client Asset Title Pipeline Node" value={formData.client || ""} onChange={e => setFormData({ ...formData, client: e.target.value })} />
-                        <FI placeholder="Secure Hyperlink Asset Tracking Destination Link" value={formData.url || ""} onChange={e => setFormData({ ...formData, url: e.target.value })} />
-                        <Btn v="primary" onClick={() => { setDelivery([...delivery, { id: Date.now(), ...formData }]); setModalType(null); }}>Bind Production Link Node</Btn>
-                      </>
-                    )}
-                    {modalType === "portfolio" && (
-                      <>
-                        <FI placeholder="Public Title Reel Name" value={formData.title || ""} onChange={e => setFormData({ ...formData, title: e.target.value })} />
-                        <FI placeholder="Client Anchor Descriptor" value={formData.client || ""} onChange={e => setFormData({ ...formData, client: e.target.value })} />
-                        <FI placeholder="Target Video Share Hyperlink" value={formData.url || ""} onChange={e => setFormData({ ...formData, url: e.target.value })} />
-                        <Btn v="primary" onClick={() => { setPortfolio([...portfolio, { id: Date.now(), ...formData }]); setModalType(null); }}>Inject Portfolio Reel</Btn>
-                      </>
-                    )}
-                  </div>
-                </Modal>
-              )}
-            </div>
-          );
-        }
-
-        // ── LIVE AUTONOMOUS CALENDAR COMPONENT ENGINE ──
-        function CalendarView({ calendar, setCalendar }) {
-          const rightNow = new Date();
-          const [viewDate, setViewDate] = useState(rightNow);
-
-          const currentYear = viewDate.getFullYear();
-          const currentMonth = viewDate.getMonth();
-
-          // Get the display string for the current active month selection
-          const monthLabel = viewDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-
-          // Compute exact calendar cell grids
-          const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
-          const totalDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-          const daysArray = [];
-          // Inject empty slot blocks for matching weekday alignments
-          for (let i = 0; i < firstDayIndex; i++) {
-            daysArray.push(null);
-          }
-          // Populate actual days
-          for (let day = 1; day <= totalDaysInMonth; day++) {
-            daysArray.push(day);
-          }
-
-          const handlePrevMonth = () => {
-            setViewDate(new Date(currentYear, currentMonth - 1, 1));
-          };
-
-          const handleNextMonth = () => {
-            setViewDate(new Date(currentYear, currentMonth + 1, 1));
-          };
-
-          return (
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", borderBottom: `1px solid ${T.ln}`, paddingBottom: 12 }}>
-                <div>
-                  <p style={{ margin: 0, fontSize: 10, fontWeight: 600, color: T.ac, textTransform: "uppercase", letterSpacing: "0.06em" }}>Autonomous Studio Tracking Grid</p>
-                  <h2 style={{ fontSize: 20, fontWeight: 700, margin: "2px 0 0", color: "#fff" }}>
-                    {monthLabel}
-                  </h2>
-                </div>
-                <div style={{ display: "flex", gap: 6 }}>
-                  <Btn onClick={handlePrevMonth}><i className="ti ti-chevron-left" /></Btn>
-                  <Btn onClick={() => setViewDate(new Date())}>Today</Btn>
-                  <Btn onClick={handleNextMonth}><i className="ti ti-chevron-right" /></Btn>
-                </div>
+                <span style={{ fontSize: 12, fontWeight: 700, color: T.gr }}>${p.value.toLocaleString()}</span>
               </div>
-              
-              <Card style={{ padding: 0, overflow: "hidden", border: `1px solid ${T.ln2}` }}>
-                {/* Week Headers */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", background: T.c2, borderBottom: `1px solid ${T.ln2}`, textAlign: "center", padding: "8px 0" }}>
-                  {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map(d => (
-                    <div key={d} style={{ fontSize: 10, fontWeight: 700, color: T.t2, letterSpacing: "0.05em" }}>{d}</div>
-                  ))}
-                </div>
-                
-                {/* Dynamic Day Grid Cells */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", background: "rgba(255,255,255,0.005)" }}>
-                  {daysArray.map((dayNum, index) => {
-                    if (dayNum === null) {
-                      return <div key={`empty-${index}`} style={{ borderRight: `1px solid ${T.ln}`, borderBottom: `1px solid ${T.ln}`, minHeight: 85, background: "rgba(0,0,0,0.15)" }} />;
-                    }
-
-                    // Key storage tracking tag calculation matching specific date
-                    const dateStorageKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
-                    const currentNote = calendar[dateStorageKey] || "";
-
-                    // Boolean check for today status confirmation matching system clock
-                    const isToday = 
-                      dayNum === rightNow.getDate() && 
-                      currentMonth === rightNow.getMonth() && 
-                      currentYear === rightNow.getFullYear();
-
-                    return (
-                      <div key={dateStorageKey} onClick={() => {
-                        const notePrompt = prompt(`Studio Calendar Engine // Set custom note for ${dateStorageKey}:`, currentNote);
-                        if (notePrompt !== null) {
-                          if (notePrompt.trim() === "") {
-                            const updatedCal = { ...calendar }; delete updatedCal[dateStorageKey]; setCalendar(updatedCal);
-                          } else {
-                            setCalendar({ ...calendar, [dateStorageKey]: notePrompt });
-                          }
-                        }
-                      }}
-                        style={{ borderRight: `1px solid ${T.ln}`, borderBottom: `1px solid ${T.ln}`, padding: "8px", minHeight: 90, cursor: "pointer", transition: "background .12s", display: "flex", flexDirection: "column", gap: 6 }}
-                        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.015)"}
-                        onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                        
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <span style={{ 
-                            fontSize: 11, 
-                            fontWeight: 600, 
-                            color: isToday ? "#fff" : (currentNote ? T.ac : T.t2), 
-                            background: isToday ? T.ac : "transparent", 
-                            boxShadow: isToday ? `0 0 10px ${T.ac}` : "none",
-                            width: 20, 
-                            height: 20, 
-                            borderRadius: "50%", 
-                            display: "flex", 
-                            alignItems: "center", 
-                            justifyContent: "center" 
-                          }}>
-                            {dayNum}
-                          </span>
-                        </div>
-
-                        {currentNote && (
-                          <div style={{ background: "rgba(37,99,235,0.12)", borderLeft: `2px solid ${T.bl}`, padding: "2px 5px", borderRadius: "2px", overflow: "hidden" }}>
-                            <p style={{ margin: 0, fontSize: 9, fontWeight: 500, color: "#cbd5e1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                              {currentNote}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </Card>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <ProgressBar value={p.editProgress || 0} color={p.status === "Review" ? T.ye : T.ac} />
+                <span style={{ fontSize: 10, color: T.t3, minWidth: 28 }}>{p.editProgress || 0}%</span>
+              </div>
             </div>
-          );
-        }
+          ))}
+        </div>
+      </Card>
 
-        // ── LIVE SWAPPING TIME STOPWATCH INTERACTION ENGINE
-        function TimeTrackerView({ clients, logs, setLogs }) {
-          const [active, setActive] = useState(false);
-          const [sec, setSec] = useState(0);
-          const [clientSel, setClientSel] = useState(clients[0]?.name || "General Cut Timeline");
-          const [taskNote, setTaskNote] = useState("Sound Splicing Work & Adjustments");
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <Card>
+          <SectionLabel>Monthly Goal</SectionLabel>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", margin: "4px 0 8px" }}>
+            <span style={{ fontSize: 18, fontWeight: 700, color: T.gr }}>${paidEarnings.toLocaleString()}</span>
+            <span style={{ fontSize: 11, color: T.t4 }}>/ ${goal.monthlyRevenue.toLocaleString()}</span>
+          </div>
+          <ProgressBar value={revenueProgress} color={T.gr} height={6} />
+          <p style={{ margin: "6px 0 0", fontSize: 11, color: T.t3 }}>{revenueProgress.toFixed(0)}% reached</p>
+        </Card>
 
-          useEffect(() => {
-            let t = null;
-            if (active) { t = setInterval(() => setSec(s => s + 1), 1000); } 
-            else { clearInterval(t); }
-            return () => clearInterval(t);
-          }, [active]);
+        <Card>
+          <SectionLabel>Quick Operations</SectionLabel>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+            <Btn v="primary" style={{ justifyContent: "center", width: "100%" }} onClick={() => setPage("timer")}><i className="ti ti-clock" />Launch Tracker</Btn>
+            <Btn v="ghost" style={{ justifyContent: "center", width: "100%" }} onClick={() => setPage("delivery")}><i className="ti ti-package" />Dispatch Assets</Btn>
+          </div>
+        </Card>
+      </div>
+    </div>
+  </div>
+}
 
-          return (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "start" }}>
-              <Card style={{ padding: "1.5rem" }}>
-                <SL>Production Stop Watch Counter Panel</SL>
-                <div style={{ fontSize: 40, fontWeight: 300, fontFamily: "monospace", color: active ? T.ac : T.tx, margin: "0.2rem 0 1rem", letterSpacing: "-0.04em" }}>
-                  {fmtSec(sec)}
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: "1rem" }}>
-                  <div>
-                    <label style={{ fontSize: 10, color: T.t2, display: "block", marginBottom: 3 }}>Client Target Account Anchor</label>
-                    <FS value={clientSel} onChange={e => setClientSel(e.target.value)}>
-                      {clients.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                      <option value="General Cut Timeline">Unlisted Standalone Clip</option>
-                    </FS>
-                  </div>
-                  <div>
-                    <label style={{ fontSize: 10, color: T.t2, display: "block", marginBottom: 3 }}>Editing Phase Activity Description</label>
-                    <FI value={taskNote} onChange={e => setTaskNote(e.target.value)} />
-                  </div>
-                </div>
-                <div style={{ display: "flex", gap: 6 }}>
-                  <Btn v={active ? "danger" : "primary"} onClick={() => setActive(!active)}>
-                    <i className={`ti ${active ? "ti-player-pause" : "ti-player-play"}`} /> {active ? "Freeze Session Stop" : "Initiate Shift Clock"}
-                  </Btn>
-                  {sec > 0 && (
-                    <Btn v="ghost" style={{ borderColor: T.gr, color: T.gr }} onClick={() => {
-                      setLogs([{ id: Date.now(), client: clientSel, task: taskNote, duration: sec, date: "Today" }, ...logs]);
-                      setSec(0); setActive(false);
-                    }}><i className="ti ti-archive" /> Record Audit Log</Btn>
-                  )}
-                </div>
-              </Card>
+function Clients({ data, setData }) {
+  const [modal, setModal] = useState(null);
+  const [form, setForm] = useState({ name: "", type: "", email: "" });
+  const up = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
-              <Card>
-                <SL>Verified Shift Logs (Proof of Work Audit History)</SL>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 310, overflowY: "auto" }}>
-                  {logs.map(l => (
-                    <div key={l.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: T.c2, padding: "8px 12px", borderRadius: T.r, border: `1px solid ${T.ln}` }}>
-                      <div>
-                        <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>
-                          <EditableRow value={l.task} onSave={val => setLogs(logs.map(x => x.id === l.id ? { ...x, task: val } : x))} />
-                        </p>
-                        <p style={{ margin: 0, fontSize: 11, color: T.t3 }}>
-                          {l.client} • {l.date}
-                        </p>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <span style={{ fontSize: 12, fontFamily: "monospace", fontWeight: 700, color: T.bl }}>{fmtSec(l.duration)}</span>
-                        <Btn v="delSmall" onClick={() => setLogs(logs.filter(x => x.id !== l.id))}><i className="ti ti-trash" /></Btn>
-                      </div>
-                    </div>
-                  ))}
-                  {logs.length === 0 && <p style={{ fontSize: 12, color: T.t3, margin: 0, textAlign: "center", padding: "2rem" }}>No sessions logged inside current storage cache arrays.</p>}
-                </div>
-              </Card>
+  const save = () => {
+    if (!form.name) return;
+    const nc = { id: Date.now(), name: form.name, type: form.type, email: form.email, avatar: form.name.slice(0,2), color: T.ac, status: "Active" };
+    setData(d => ({ ...d, clients: [...d.clients, nc] }));
+    setModal(null);
+  };
+
+  return <div>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
+      <div>
+        <h2 style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>Client Roster</h2>
+        <p style={{ fontSize: 12, color: T.t3 }}>{data.clients.length} profiles linked</p>
+      </div>
+      <Btn v="primary" onClick={() => { setForm({ name: "", type: "", email: "" }); setModal("add") }}><i className="ti ti-plus" />Add New Profile</Btn>
+    </div>
+
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {data.clients.map(c => (
+        <Card key={c.id} style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <Avatar label={c.avatar || c.name} color={c.color || T.ac} size={40} />
+          <div style={{ flex: 1 }}>
+            <p style={{ margin: 0, fontWeight: 700, color: "#fff" }}>{c.name}</p>
+            <p style={{ margin: 0, fontSize: 11, color: T.t3 }}>{c.type} • {c.email || "No email verified"}</p>
+          </div>
+          <Badge color="green">{c.status}</Badge>
+        </Card>
+      ))}
+    </div>
+
+    {modal && <Modal onClose={() => setModal(null)}>
+      <h3 style={{ color: "#fff", marginBottom: 16 }}>New Client Profile</h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div><SectionLabel>Client or Agency Name</SectionLabel><Input value={form.name} onChange={up("name")} placeholder="Corporate Producer" /></div>
+        <div><SectionLabel>Category Type</SectionLabel><Input value={form.type} onChange={up("type")} placeholder="Commercial / YouTube" /></div>
+        <div><SectionLabel>Email Endpoint</SectionLabel><Input value={form.email} onChange={up("email")} placeholder="billing@agency.com" /></div>
+        <Btn v="primary" onClick={save} style={{ marginTop: 8, justifyContent: "center" }}>Commit Profile</Btn>
+      </div>
+    </Modal>}
+  </div>
+}
+
+function Projects({ data, setData }) {
+  const [modal, setModal] = useState(null);
+  const [form, setForm] = useState({ title: "", client: "", status: "In Progress", value: "", editProgress: 0, priority: "Medium" });
+  const up = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const save = () => {
+    if (!form.title) return;
+    const np = { ...form, id: Date.now(), value: Number(form.value || 0), editProgress: Number(form.editProgress || 0) };
+    setData(d => ({ ...d, projects: [...d.projects, np] }));
+    setModal(null);
+  };
+
+  return <div>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
+      <div>
+        <h2 style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>Project Matrix</h2>
+        <p style={{ fontSize: 12, color: T.t3 }}>{data.projects.length} timeline entities tracked</p>
+      </div>
+      <Btn v="primary" onClick={() => setModal("add")}><i className="ti ti-plus" />Provision Timeline</Btn>
+    </div>
+
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {data.projects.map(p => (
+        <Card key={p.id}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+            <div>
+              <p style={{ fontWeight: 700, color: "#fff", fontSize: 14 }}>{p.title}</p>
+              <p style={{ fontSize: 11, color: T.t3 }}>{p.client} • Priority: {p.priority}</p>
             </div>
-          );
-        }
+            <span style={{ fontWeight: 700, color: T.gr }}>${p.value}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <ProgressBar value={p.editProgress} color={T.ac} />
+            <span style={{ fontSize: 11, color: T.t2, width: 30 }}>{p.editProgress}%</span>
+          </div>
+        </Card>
+      ))}
+    </div>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<EditDesk />);
-    </script>
+    {modal && <Modal onClose={() => setModal(null)}>
+      <h3 style={{ color: "#fff", marginBottom: 16 }}>Provision Production Timeline</h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div><SectionLabel>Timeline Title</SectionLabel><Input value={form.title} onChange={up("title")} placeholder="Rough Cut Ep. 2" /></div>
+        <div>
+          <SectionLabel>Assigned Client Relationship</SectionLabel>
+          <Select value={form.client} onChange={up("client")}>
+            <option value="">Select Account</option>
+            {data.clients.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+          </Select>
+        </div>
+        <div><SectionLabel>Value Gross ($)</SectionLabel><Input type="number" value={form.value} onChange={up("value")} /></div>
+        <div><SectionLabel>Production Phase Progress (%)</SectionLabel><Input type="number" value={form.editProgress} onChange={up("editProgress")} /></div>
+        <Btn v="primary" onClick={save} style={{ justifyContent: "center", marginTop: 8 }}>Deploy Matrix Entry</Btn>
+      </div>
+    </Modal>}
+  </div>
+}
+
+function Finances({ data, setData }) {
+  const [form, setForm] = useState({ label: "", amount: "", status: "Paid" });
+  const up = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const addE = () => {
+    if (!form.label || !form.amount) return;
+    const ne = { id: Date.now(), label: form.label, amount: Number(form.amount), date: "2026-05-22", method: "Stripe", status: form.status };
+    setData(d => ({ ...d, earnings: [ne, ...d.earnings] }));
+    setForm({ label: "", amount: "", status: "Paid" });
+  };
+
+  return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+    <Card>
+      <h3 style={{ color: "#fff", marginBottom: 12, fontSize: 14 }}>Log Inflow Entity</h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div><SectionLabel>Statement Label</SectionLabel><Input value={form.label} onChange={up("label")} placeholder="Milestone Delivery" /></div>
+        <div><SectionLabel>Gross Allocation ($)</SectionLabel><Input type="number" value={form.amount} onChange={up("amount")} /></div>
+        <div>
+          <SectionLabel>Status Matrix</SectionLabel>
+          <Select value={form.status} onChange={up("status")}>
+            <option value="Paid">Cleared / Settled</option>
+            <option value="Pending">Awaiting Escrow</option>
+          </Select>
+        </div>
+        <Btn v="primary" onClick={addE} style={{ justifyContent: "center" }}>Inject Entry</Btn>
+      </div>
+    </Card>
+
+    <Card style={{ display: "flex", flexDirection: "column" }}>
+      <h3 style={{ color: "#fff", marginBottom: 12, fontSize: 14 }}>Ledger Streams</h3>
+      <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8, maxHeight: 300 }}>
+        {data.earnings.map(e => (
+          <div key={e.id} style={{ display: "flex", justifyContent: "space-between", background: T.c2, padding: "8px 12px", borderRadius: T.r8, alignItems: "center" }}>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>{e.label}</p>
+              <p style={{ fontSize: 10, color: T.t3 }}>{e.date} • {e.method}</p>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: e.status === "Paid" ? T.gr : T.ye }}>${e.amount}</p>
+              <Badge color={e.status === "Paid" ? "green" : "yellow"}>{e.status}</Badge>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
+}
+
+function Tracker({ data, setData }) {
+  const [running, setRunning] = useState(false);
+  const [sec, setSec] = useState(0);
+  const tRef = useRef(null);
+
+  useEffect(() => {
+    if (running) {
+      tRef.current = setInterval(() => setSec(s => s + 1), 1000);
+    } else {
+      clearInterval(tRef.current);
+    }
+    return () => clearInterval(tRef.current);
+  }, [running]);
+
+  const format = (s) => {
+    const h = Math.floor(s / 3600).toString().padStart(2, '0');
+    const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+    const sc = (s % 60).toString().padStart(2, '0');
+    return `${h}:${m}:${sc}`;
+  };
+
+  return <div style={{ maxWidth: 460, margin: "0 auto", textAlign: "center" }}>
+    <Card style={{ padding: "2.5rem 1.5rem" }}>
+      <SectionLabel>Production Engine Session</SectionLabel>
+      <h1 style={{ fontSize: 48, fontFamily: "monospace", fontWeight: 800, margin: "12px 0 24px", color: running ? T.ac : "#fff", letterSpacing: "2px" }}>{format(sec)}</h1>
+      <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+        <Btn v={running ? "danger" : "primary"} sz="lg" onClick={() => setRunning(!running)}>
+          <i className={running ? "ti ti-player-pause" : "ti ti-player-play"} />
+          {running ? "Halt Chrono" : "Engage Chrono"}
+        </Btn>
+        <Btn v="ghost" sz="lg" onClick={() => { setRunning(false); setSec(0); }} disabled={sec === 0}>Flush</Btn>
+      </div>
+    </Card>
+  </div>
+}
+
+function Delivery({ data, setData }) {
+  const [form, setForm] = useState({ client: "", project: "", url: "" });
+  const up = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const deploy = () => {
+    if (!form.url) return;
+    const nd = { id: Date.now(), client: form.client || "External", project: form.project || "Master Assets", url: form.url, status: "Awaiting Review", sent: "2026-05-22" };
+    setData(d => ({ ...d, delivery: [nd, ...d.delivery] }));
+    setForm({ client: "", project: "", url: "" });
+  };
+
+  return <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <Card>
+      <h3 style={{ color: "#fff", marginBottom: 12, fontSize: 14 }}>Deploy Secure Pipeline Node</h3>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, alignItems: "end" }}>
+        <div><SectionLabel>Project Token</SectionLabel><Input value={form.project} onChange={up("project")} placeholder="V1 Render Cut" /></div>
+        <div><SectionLabel>Endpoint Pipeline CDN Asset URL</SectionLabel><Input value={form.url} onChange={up("url")} placeholder="https://frame.io/xyz" /></div>
+        <Btn v="primary" onClick={deploy} style={{ height: 38, justifyContent: "center" }}>Initialize Deployment</Btn>
+      </div>
+    </Card>
+
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {data.delivery.map(d => (
+        <Card key={d.id} style={{ display: "flex", justifySpaceBetween: "space-between", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <p style={{ fontWeight: 700, color: "#fff" }}>{d.project}</p>
+            <p style={{ fontSize: 11, color: T.t3 }}>Target Client: {d.client} • Initialized: {d.sent}</p>
+            <a href={d.url} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: T.bl, textDecoration: "none" }}>{d.url}</a>
+          </div>
+          <Badge color={d.status === "Approved" ? "green" : "yellow"}>{d.status}</Badge>
+        </Card>
+      ))}
+    </div>
+  </div>
+}
+
+function Templates({ data, setData }) {
+  return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+    {data.templates.map(t => (
+      <Card key={t.id} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <h4 style={{ color: "#fff", fontWeight: 700 }}>{t.title}</h4>
+          <i className="ti ti-copy" style={{ color: T.t3, cursor: "pointer" }} />
+        </div>
+        <p style={{ fontSize: 11, color: T.t2, background: T.c3, padding: 6, borderRadius: T.r4 }}>Subject: {t.subject}</p>
+        <div style={{ whiteSpace: "pre-wrap", fontSize: 12, color: T.t3, background: T.c2, padding: 8, borderRadius: T.r6, fontFamily: "monospace", flex: 1 }}>{t.body}</div>
+      </Card>
+    ))}
+  </div>
+}
+
+function Workspace() {
+  const [user, setUser] = useState(null);
+  const [data, setData] = useState(null);
+  const [page, setPage] = useState("home");
+
+  useEffect(() => {
+    const active = localStorage.getItem("editdesk_active_uid");
+    if (active) {
+      const users = getUsers();
+      const matched = Object.values(users).find(u => u.uid === active);
+      if (matched) {
+        setUser(matched);
+        setData(getUserData(active) || defaultUserData(matched.name));
+      }
+    }
+  }, []);
+
+  const handleAuth = (u) => {
+    localStorage.setItem("editdesk_active_uid", u.uid);
+    setUser(u);
+    setData(getUserData(u.uid) || defaultUserData(u.name));
+  };
+
+  const handleLogout = () => {
+    if (user) saveUserData(user.uid, data);
+    localStorage.removeItem("editdesk_active_uid");
+    setUser(null);
+    setData(null);
+  };
+
+  const syncData = (updater) => {
+    setData(prev => {
+      const updated = typeof updater === 'function' ? updater(prev) : updater;
+      if (user) saveUserData(user.uid, updated);
+      return updated;
+    });
+  };
+
+  if (!user || !data) return <AuthScreen onAuth={handleAuth} />;
+
+  return <div style={{ display: "flex", width: "100%", minHeight: "100vh", background: T.bg }}>
+    <Sidebar page={page} setPage={setPage} user={user} data={data} onLogout={handleLogout} />
+    <main style={{ flex: 1, padding: "1.75rem 2.25rem", overflowX: "hidden" }}>
+      {page === "home" && <Dashboard data={data} setPage={setPage} />}
+      {page === "clients" && <Clients data={data} setData={syncData} />}
+      {page === "projects" && <Projects data={data} setData={syncData} />}
+      {page === "finance" && <Finances data={data} setData={syncData} />}
+      {page === "timer" && <Tracker data={data} setData={syncData} />}
+      {page === "delivery" && <Delivery data={data} setData={syncData} />}
+      {page === "templates" && <Templates data={data} setData={syncData} />}
+    </main>
+  </div>
+}
+
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
+root.render(<Workspace />);
+</script>
 </body>
 </html>
