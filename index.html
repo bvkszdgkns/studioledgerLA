@@ -3,708 +3,408 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Vanguard CRM">
   
-  <title>Vanguard Editing — Elite Production CRM</title>
+  <title>Vanguard Studio Engine</title>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-tap-highlight-color: transparent; 
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+    }
     
     :root {
-      --bg: #050508;
-      --c1: #0B0B11;
-      --c2: #12121A;
-      --c3: #181824;
-      --c4: #202030;
-      --c5: #2B2B40;
-      --ln: rgba(212, 175, 55, 0.06);
-      --ln2: rgba(255, 255, 255, 0.06);
-      --ln3: rgba(255, 255, 255, 0.12);
-      --tx: #F2F2F7;
-      --t2: #A1A1AA;
-      --t3: #6F6F76;
-      --t4: #3E3E42;
-      --ac: #D4AF37; 
-      --ach: #C5A028;
-      --acl: rgba(212, 175, 55, 0.08);
-      --acl2: rgba(212, 175, 55, 0.04);
-      --glass: rgba(11, 11, 17, 0.85);
-      --blur: blur(24px);
-      --sh: 0 4px 30px rgba(0, 0, 0, 0.5);
-      --sh2: 0 20px 50px rgba(0, 0, 0, 0.8);
-      --sh-glow: 0 0 30px rgba(212, 175, 55, 0.1);
-      --gr: #34C759;
-      --grl: rgba(52, 199, 89, 0.08);
-      --bl: #0A84FF;
-      --bll: rgba(10, 132, 255, 0.08);
-      --ye: #FF9F0A;
-      --yel: rgba(255, 159, 10, 0.08);
-      --re: #FF453A;
-      --rel: rgba(255, 69, 58, 0.08);
+      --bg: #000000;
+      --card-bg: rgba(28, 28, 30, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text: #FFFFFF;
+      --text-secondary: #8E8E93;
+      --text-tertiary: #48484A;
+      --accent: #D4AF37; 
+      --accent-rgb: 212, 175, 55;
+      --apple-blue: #0A84FF;
+      --apple-green: #30D158;
+      --apple-red: #FF453A;
+      --apple-orange: #FF9F0A;
+      --blur: blur(20px);
     }
 
     .light-mode {
-      --bg: #F8F9FA;
-      --c1: #FFFFFF;
-      --c2: #F1F3F5;
-      --c3: #E9ECEF;
-      --c4: #DEE2E6;
-      --c5: #CED4DA;
-      --ln: rgba(165, 120, 42, 0.1);
-      --ln2: rgba(0, 0, 0, 0.05);
-      --ln3: rgba(0, 0, 0, 0.12);
-      --tx: #1A1A1E;
-      --t2: #495057;
-      --t3: #868E96;
-      --t4: #ADB5BD;
-      --ac: #A5782A;
-      --ach: #8C621F;
-      --acl: rgba(165, 120, 42, 0.08);
-      --acl2: rgba(165, 120, 42, 0.03);
-      --glass: rgba(255, 255, 255, 0.9);
-      --blur: blur(24px);
-      --sh: 0 4px 20px rgba(0, 0, 0, 0.03);
-      --sh2: 0 16px 40px rgba(0, 0, 0, 0.06);
+      --bg: #F2F2F7;
+      --card-bg: rgba(255, 255, 255, 0.8);
+      --card-border: rgba(0, 0, 0, 0.05);
+      --text: #000000;
+      --text-secondary: #636366;
+      --text-tertiary: #C7C7CC;
+      --accent: #A5782A;
+      --accent-rgb: 165, 120, 42;
+      --apple-blue: #007AFF;
+      --apple-green: #34C759;
+      --apple-red: #FF3B30;
+      --apple-orange: #FF9500;
     }
 
     html, body, #root { 
       height: 100%; 
       width: 100%; 
-      background: var(--bg); 
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; 
-      color: var(--tx); 
-      -webkit-font-smoothing: antialiased; 
-      overflow: hidden; 
-      transition: background-color 0.4s ease; 
-    }
-    
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--ln3); border-radius: 10px; }
-    
-    input, select, textarea { outline: none; font-family: inherit; font-size: 16px !important; /* Forces iOS not to auto-zoom */ }
-    button { cursor: pointer; font-family: inherit; border: none; background: none; }
-    
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    .fade { animation: fadeUp .6s cubic-bezier(.16, 1, .3, 1) both; }
-    
-    [contenteditable="true"] {
-      border-radius: 4px;
-      padding: 2px 4px;
-      transition: all 0.2s ease;
-      display: inline-block;
-    }
-    [contenteditable="true"]:hover {
-      background: var(--ln2);
-      box-shadow: 0 0 0 1px var(--ln3);
-    }
-    [contenteditable="true"]:focus {
-      background: var(--c3);
-      outline: none;
-      box-shadow: 0 0 0 1px var(--ac);
+      background-color: var(--bg); 
+      color: var(--text); 
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .luxury-input {
-      background: var(--c2);
-      border: 1px solid var(--ln2);
-      padding: 12px 16px;
-      border-radius: 8px;
-      color: var(--tx);
-      font-size: 14px;
-      letter-spacing: 0.03em;
-      transition: all 0.25s ease;
+    /* iOS App Layout Structure */
+    .app-viewport {
+      display: flex;
+      height: 100%;
       width: 100%;
     }
-    .luxury-input:focus {
-      border-color: var(--ac);
-      background: var(--c3);
+
+    .sidebar {
+      width: 280px;
+      background: rgba(18, 18, 18, 0.6);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border-right: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
-    /* --- IPHONE & MOBILE LAYOUT ENGINE RULES --- */
+    .main-window {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem;
+      padding-top: calc(2rem + env(safe-area-inset-top));
+      padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+    }
+
+    /* iPhone/Mobile Adaptability Layer */
     @media (max-width: 768px) {
-      .app-container {
-        flex-direction: column-reverse !important; /* Places navigation engine bar seamlessly at the bottom */
+      .app-viewport {
+        flex-direction: column-reverse;
       }
-      .sidebar-navigation {
-        width: 100% !important;
-        height: 68px !important;
-        flex-direction: row !important;
-        border-right: none !important;
-        border-top: 1px solid var(--ln) !important;
-        justify-content: space-around !important;
-        padding: 0 8px !important;
-        padding-bottom: env(safe-area-inset-bottom) !important; /* Dynamically protects iPhone gesture home line */
+      .sidebar {
+        width: 100%;
+        height: 75px;
+        flex-direction: row;
+        border-right: none;
+        border-top: 1px solid var(--card-border);
+        padding: 0 12px;
+        padding-bottom: env(safe-area-inset-bottom);
+        justify-content: space-around;
+        align-items: center;
         z-index: 999;
       }
-      .sidebar-navigation .workspace-header,
-      .sidebar-navigation .profile-footer-trigger {
-        display: none !important; /* Hides heavy UI components on mobile bottom-dock navigation */
+      .sidebar-brand, .sidebar-footer {
+        display: none !important;
       }
-      .nav-buttons-container {
+      .navigation-menu {
         flex-direction: row !important;
-        width: 100% !important;
-        justify-content: space-around !important;
-        padding: 0 !important;
+        width: 100%;
+        justify-content: space-around;
         gap: 0 !important;
       }
-      .nav-buttons-container button {
+      .nav-item {
         flex-direction: column !important;
         align-items: center !important;
-        justify-content: center !important;
         gap: 4px !important;
+        font-size: 10px !important;
         padding: 6px 0 !important;
-        font-size: 9px !important;
-        color: var(--t3) !important;
+        width: 50px;
       }
-      .nav-buttons-container button span {
-        font-size: 9px !important;
-        font-weight: 500 !important;
-      }
-      .nav-buttons-container button i {
+      .nav-item i {
         font-size: 20px !important;
       }
-      .main-content-stream {
-        padding: 1.5rem !important;
-        padding-top: calc(1.5rem + env(safe-area-inset-top)) !important; /* Protects dynamic island layout styling */
-      }
-      .stat-grid-layout {
-        grid-templateColumns: repeat(2, 1fr) !important; /* Clean grid splitting on smaller mobile windows */
-        gap: 12px !important;
-      }
-      .split-view-layout {
-        grid-template-columns: 1fr !important; /* Removes columns to layout stacks cleanly vertical */
-        gap: 20px !important;
-      }
-      .form-grid-modifier {
-        grid-template-columns: 1fr !important; /* Stack forms cleanly instead of squeezing row sizes */
+      .main-window {
+        padding: 1.25rem;
+        padding-top: calc(1.5rem + env(safe-area-inset-top));
       }
     }
+
+    /* Apple Premium UI Styling Components */
+    .apple-card {
+      background: var(--card-bg);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1rem;
+    }
+
+    .apple-input {
+      background: rgba(120, 120, 128, 0.12);
+      border: none;
+      color: var(--text);
+      font-size: 16px; /* Prevents auto-zoom on iOS safari */
+      padding: 12px 16px;
+      border-radius: 10px;
+      width: 100%;
+      outline: none;
+      transition: background 0.2s ease;
+    }
+    .apple-input:focus {
+      background: rgba(120, 120, 128, 0.2);
+    }
+
+    .apple-btn {
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.2s;
+    }
+    .apple-btn:active {
+      opacity: 0.7;
+    }
+
+    .accent-glow {
+      text-shadow: 0 0 20px rgba(var(--accent-rgb), 0.4);
+    }
   </style>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
 <div id="root"></div>
 
 <script type="text/babel">
-const { useState, useEffect, useMemo, useRef } = React;
+const { useState, useEffect } = React;
 
-const GLOBAL_AUTH_KEY = "vanguard_auth_email_session";
-const USER_DATA_PREFIX = "vanguard_studio_vault_";
-
-const defaultUserDataStructure = {
-  profile: { name: "Creative Director", studio: "Vanguard Editing", avatar: "VE", color: "#D4AF37", lightMode: false, showGlows: true, rate: 75 },
-  dashboardTitles: { totalRevenue: "Retainers Settled", pending: "Escrow Pipeline", netProfit: "Net Yield", hoursLogged: "Chronos Track" },
-  clients: [
-    { id: 1, name: "Aether Cinema Corp", type: "VFX Production House", email: "management@aether.film", status: "Active" },
-    { id: 2, name: "Kaufman Luxury Group", type: "Commercial Campaign", email: "ops@kaufman.co", status: "Active" }
-  ],
-  projects: [
-    { id: 1, title: "The Sovereign Identity — Master Cut", client: "Aether Cinema Corp", status: "Color Grading", value: 8400, editProgress: 45, deadline: "2026-08-15", priority: "High" },
-    { id: 2, title: "Excellence Heritage Campaign 60s", client: "Kaufman Luxury Group", status: "Rough Cut Assembly", value: 4500, editProgress: 90, deadline: "2026-06-02", priority: "High" }
-  ],
-  logs: [
-    { id: 1, client: "Aether Cinema Corp", project: "The Sovereign Identity", task: "Color Grading Pass Suite", duration: 14400, date: "2026-05-22" }
-  ],
-  earnings: [
-    { id: 1, label: "Kaufman Group — Retainer Milestone 1", amount: 4500, date: "2026-05-10", status: "Paid" },
-    { id: 2, label: "Aether Cinema — Production Front End", amount: 8400, date: "2026-05-18", status: "Pending" }
-  ],
-  expenses: [
-    { id: 1, name: "DaVinci Resolve Server Core Array", amount: 29.99, cat: "Software", date: "2026-05-01" },
-    { id: 2, name: "LTO-9 High Density Storage Lease", amount: 120.00, cat: "Hardware Array", date: "2026-05-01" }
-  ],
-  delivery: [
-    { id: 1, client: "Kaufman Luxury Group", project: "Heritage Promo V3 Super High", url: "https://vanguard.frame.io/kaufman-60s", status: "Awaiting Review", sent: "2026-05-21" }
-  ],
-  templates: [
-    { id: 1, title: "Premium Master Release Cut", subject: "Cinematic Masters Dispatched // {project}", body: "Dear {name},\n\nThe raw ultra-fidelity exhibition files and associated structural passes for \"{project}\" have successfully generated.\n\nAccess the secure cloud vault mirror below:\n{link}\n\nSalutations,\n{studio}" }
-  ],
-  goals: { monthlyRevenue: 25000 }
-};
-
-const Badge = ({ color = "dim", children }) => {
-  const scheme = {
-    green: ["var(--grl)", "var(--gr)"], blue: ["var(--bll)", "var(--bl)"],
-    yellow: ["var(--yel)", "var(--ye)"], red: ["var(--rel)", "var(--re)"],
-    ac: ["var(--acl)", "var(--ac)"], dim: ["var(--ln2)", "var(--t2)"]
-  }[color] || ["var(--ln2)", "var(--t2)"];
-  return <span style={{ background: scheme[0], color: scheme[1], display: "inline-flex", alignItems: "center", fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>{children}</span>
-};
-
-const Editable = ({ text, onSave, tag: Tag = "span", numeric = false, style = {} }) => {
-  const blurHandler = (e) => {
-    let val = e.target.innerText.trim();
-    if (numeric) { val = parseFloat(val.replace(/[^0-9.-]/g, "")) || 0; }
-    onSave(val);
-  };
-  const keyHandler = (e) => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } };
-  return <Tag contentEditable="true" suppressContentEditableWarning onBlur={blurHandler} onKeyDown={keyHandler} style={{ minWidth: "15px", display: "inline-block", ...style }}>{text}</Tag>;
-};
-
-const Card = ({ children, style = {}, glow = false, globalGlow = true }) => (
-  <div style={{ background: "var(--c1)", border: `1px solid var(--ln)`, borderRadius: 12, padding: "1.25rem", boxShadow: (glow && globalGlow) ? "var(--sh-glow)" : "var(--sh)", transition: "all 0.3s ease", ...style }}>
-    {children}
-  </div>
-);
-
-const Btn = ({ children, variant = "ghost", onClick, style = {} }) => {
-  const styles = {
-    primary: { background: "var(--ac)", color: "var(--bg)", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", fontSize: "11px" },
-    ghost: { background: "var(--c3)", color: "var(--tx)", border: `1px solid var(--ln2)` },
-    danger: { background: "var(--rel)", color: "var(--re)", border: `1px solid rgba(255,59,48,0.15)` }
-  }[variant];
-  return <button onClick={onClick} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, fontSize: 12, padding: "10px 18px", borderRadius: 6, transition: "all 0.2s", fontWeight: 500, ...styles, ...style }} onMouseEnter={e => e.currentTarget.style.opacity = 0.85} onMouseLeave={e => e.currentTarget.style.opacity = 1}>{children}</button>
-};
-
-const Field = ({ label, children }) => (
-  <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%" }}><p style={{ fontSize: 10, color: "var(--t3)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>{children}</div>
-);
+// --- SUPABASE CONFIGURATION MATRIX ---
+// Replace these parameters with your real Supabase dashboard endpoints to activate persistent back-ends
+const SUPABASE_URL = "https://your-project-id.supabase.co";
+const SUPABASE_ANON_KEY = "your-anon-public-key";
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 function App() {
-  const [currentUserEmail, setCurrentUserEmail] = useState(() => localStorage.getItem(GLOBAL_AUTH_KEY));
-  const [data, setData] = useState(null);
-  const [page, setPage] = useState("home");
-  
-  const [activeTimer, setActiveTimer] = useState(null); 
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const timerInterval = useRef(null);
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [isLightMode, setIsLightMode] = useState(false);
+  const [supabaseConnected, setSupabaseConnected] = useState(false);
+
+  // Structural mock data structures designed to mirror table frames in Supabase
+  const [clients, setClients] = useState([
+    { id: 1, corporate_name: "Aether Cinema Corp", primary_contact: "Alex Vance", tracking_status: "Active Pipeline" },
+    { id: 2, corporate_name: "Kaufman Luxury Group", primary_contact: "Elena Rostova", tracking_status: "Active Pipeline" }
+  ]);
+
+  const [projects, setProjects] = useState([
+    { id: 1, title: "The Sovereign Identity — Master Cut", client: "Aether Cinema Corp", pipeline_stage: "Color Grading Suite", valuation: 8400, render_progress: 45 },
+    { id: 2, title: "Excellence Heritage Campaign 60s", client: "Kaufman Luxury Group", pipeline_stage: "Rough Assembly Pass", valuation: 4500, render_progress: 90 }
+  ]);
+
+  const [dispatches, setDispatches] = useState([
+    { id: 1, asset_title: "Heritage Promo V3 Super High", destination_url: "https://vanguard.frame.io/kaufman-60s", tracking_status: "Awaiting Client Review" }
+  ]);
+
+  const [financials, setFinancials] = useState({
+    settled_yield: 12900,
+    escrow_pipeline: 8400,
+    overhead_burn: 149.99
+  });
 
   useEffect(() => {
-    if (currentUserEmail) {
-      const userStorageKey = USER_DATA_PREFIX + btoa(currentUserEmail.toLowerCase().trim());
-      const savedData = localStorage.getItem(userStorageKey);
-      if (savedData) {
-        setData(JSON.parse(savedData));
-      } else {
-        const freshData = { ...defaultUserDataStructure };
-        localStorage.setItem(userStorageKey, JSON.stringify(freshData));
-        setData(freshData);
-      }
-    } else {
-      setData(null);
+    if (supabase && SUPABASE_URL !== "https://your-project-id.supabase.co") {
+      setSupabaseConnected(true);
+      // Real-time synchronization hooks from Supabase tables can be pulled safely here
     }
-  }, [currentUserEmail]);
+  }, []);
 
-  useEffect(() => {
-    if (currentUserEmail && data) {
-      const userStorageKey = USER_DATA_PREFIX + btoa(currentUserEmail.toLowerCase().trim());
-      localStorage.setItem(userStorageKey, JSON.stringify(data));
-      if (data.profile?.lightMode) document.body.classList.add("light-mode");
-      else document.body.classList.remove("light-mode");
-    }
-  }, [data, currentUserEmail]);
-
-  useEffect(() => {
-    if (activeTimer) {
-      timerInterval.current = setInterval(() => {
-        setElapsedSeconds(Math.floor((new Date() - new Date(activeTimer.startTime)) / 1000));
-      }, 1000);
-    } else {
-      clearInterval(timerInterval.current);
-      setElapsedSeconds(0);
-    }
-    return () => clearInterval(timerInterval.current);
-  }, [activeTimer]);
-
-  const handleLogout = () => {
-    localStorage.removeItem(GLOBAL_AUTH_KEY);
-    setCurrentUserEmail(null);
-    document.body.classList.remove("light-mode");
+  const toggleAppearanceFramework = () => {
+    setIsLightMode(!isLightMode);
+    document.body.classList.toggle("light-mode");
   };
-
-  const formatTime = (totalSeconds) => {
-    const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-    const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-    const secs = (totalSeconds % 60).toString().padStart(2, '0');
-    return `${hrs}:${mins}:${secs}`;
-  };
-
-  if (!currentUserEmail || !data) {
-    return <AuthGate onAuthSuccess={(email) => {
-      localStorage.setItem(GLOBAL_AUTH_KEY, email);
-      setCurrentUserEmail(email);
-    }} />;
-  }
-
-  const updateProfile = (key, val) => setData(d => ({ ...d, profile: { ...d.profile, [key]: val } }));
-  const updateGoal = (val) => setData(d => ({ ...d, goals: { ...d.goals, monthlyRevenue: val } }));
-  const updateDashboardTitle = (key, val) => setData(d => ({ ...d, dashboardTitles: { ...d.dashboardTitles, [key]: val } }));
-
-  const paidEarnings = data.earnings?.filter(e => e.status === "Paid").reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
-  const pendingEarnings = data.earnings?.filter(e => e.status === "Pending").reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
-  const absoluteExpenses = data.expenses?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
-  const systemNetProfit = paidEarnings - absoluteExpenses;
-  const loggedTotalSeconds = data.logs?.reduce((acc, curr) => acc + Number(curr.duration), 0) || 0;
 
   return (
-    <div style={{ display: "flex", height: "100vh", width: "100vw", background: "var(--bg)", color: "var(--tx)" }} className="app-container">
+    <div className="app-viewport">
       
-      {/* Dynamic Navigation Interface (Adapts natively between Desktop Side Bar and iPhone Dock) */}
-      <div style={{ width: 260, background: "var(--c1)", borderRight: `1px solid var(--ln)`, display: "flex", flexDirection: "column", justifyContent: "space-between" }} className="sidebar-navigation">
-        <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-          
-          <div style={{ padding: "2rem 1.5rem", display: "flex", alignItems: "center", gap: 12, borderBottom: `1px solid var(--ln)` }} className="workspace-header">
-            <div style={{ width: 34, height: 34, borderRadius: 6, background: "var(--ac)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <i className="ti ti-video" style={{ color: "var(--bg)", fontSize: 18 }} />
+      {/* Navigation Ecosystem (Responsive iOS Drawer Bar / Bottom Dock) */}
+      <div className="sidebar">
+        <div style={{ width: "100%" }}>
+          <div className="sidebar-brand" style={{ padding: "24px 20px", display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ width: 30, height: 30, borderRadius: "7px", background: "var(--accent)", display: "flex", alignItems: "center", justifycontent: "center" }}>
+              <i className="ti ti-video" style={{ color: "#000", fontSize: 16 }} />
             </div>
-            <div>
-              <Editable text={data.profile.studio || "Vanguard Editing"} onSave={v => updateProfile("studio", v)} tag="p" style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase" }} />
-              <p style={{ fontSize: 9, color: "var(--t3)", textTransform: "uppercase", marginTop: 2 }}>Secure Workspace Network</p>
-            </div>
+            <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.02em" }}>VANGUARD</span>
           </div>
 
-          <div style={{ padding: "1.25rem 1rem", display: "flex", flexDirection: "column", gap: 4 }} className="nav-buttons-container">
+          <div className="navigation-menu" style={{ display: "flex", flexDirection: "column", gap: "4px", padding: "0 12px" }}>
             {[
-              { id: "home", icon: "ti-square-dashboard", label: "Studio Control" },
+              { id: "dashboard", icon: "ti-square-dashboard", label: "Studio" },
               { id: "clients", icon: "ti-building-skyscraper", label: "Clients" },
               { id: "projects", icon: "ti-timeline-event", label: "Pipelines" },
-              { id: "finances", icon: "ti-database-dollar", label: "Ledger" },
-              { id: "delivery", icon: "ti-transform", label: "Dispatches" },
-              { id: "settings", icon: "ti-settings", label: "System" }
+              { id: "dispatches", icon: "ti-transform", label: "Dispatches" },
+              { id: "finances", icon: "ti-database-dollar", label: "Ledger" }
             ].map(item => {
-              const active = page === item.id;
+              const active = activeTab === item.id;
               return (
-                <button key={item.id} onClick={() => setPage(item.id)} style={{ display: "flex", alignItems: "center", gap: 14, width: "100%", padding: "11px 16px", borderRadius: 6, background: active ? "var(--acl)" : "transparent", color: active ? "var(--ac)" : "var(--t2)", textAlign: "left" }}>
-                  <i className={`ti ${item.icon}`} style={{ fontSize: 18, color: active ? "var(--ac)" : "var(--t3)" }} />
-                  <span style={{ fontSize: 12, fontWeight: active ? 600 : 400 }}>{item.label}</span>
-                </button>
-              )
+                <div 
+                  key={item.id} 
+                  className="nav-item"
+                  onClick={() => setActiveTab(item.id)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: "12px", padding: "12px 14px", borderRadius: "10px",
+                    background: active ? "rgba(255,255,255,0.08)" : "transparent",
+                    color: active ? "var(--text)" : "var(--text-secondary)", cursor: "pointer"
+                  }}
+                >
+                  <i className={`ti ${item.icon}`} style={{ fontSize: 18, color: active ? "var(--accent)" : "var(--text-secondary)" }} />
+                  <span style={{ fontSize: 13, fontWeight: active ? 600 : 500 }}>{item.label}</span>
+                </div>
+              );
             })}
           </div>
         </div>
 
-        <div style={{ padding: "1.25rem 1rem", borderTop: `1px solid var(--ln)`, display: "flex", flexDirection: "column", gap: 12 }} className="profile-footer-trigger">
-          <Btn variant="danger" onClick={handleLogout} style={{ width: "100%", padding: "8px", fontSize: 11 }}><i className="ti ti-logout" /> Sever Link</Btn>
-        </div>
-      </div>
-
-      {/* Primary Display Windows Layer */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", padding: "3rem" }} className="main-content-stream">
-        {page === "home" && <ViewHome data={data} setData={setData} paid={paidEarnings} pending={pendingEarnings} net={systemNetProfit} hours={loggedTotalSeconds} updateTitle={updateDashboardTitle} updateGoal={updateGoal} activeTimer={activeTimer} setActiveTimer={setActiveTimer} elapsedSeconds={elapsedSeconds} formatTime={formatTime} />}
-        {page === "clients" && <ViewClients data={data} setData={setData} />}
-        {page === "projects" && <ViewProjects data={data} setData={setData} activeTimer={activeTimer} setActiveTimer={setActiveTimer} />}
-        {page === "finances" && <ViewFinances data={data} setData={setData} paid={paidEarnings} pending={pendingEarnings} expenses={absoluteExpenses} net={systemNetProfit} />}
-        {page === "delivery" && <ViewDelivery data={data} setData={setData} />}
-        {page === "settings" && <ViewSettings data={data} setData={setData} updateProfile={updateProfile} />}
-      </div>
-    </div>
-  );
-}
-
-function AuthGate({ onAuthSuccess }) {
-  const [isRegister, setIsRegister] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const handleAuthSubmit = (e) => {
-    e.preventDefault();
-    setError("");
-    const formattedEmail = email.toLowerCase().trim();
-    if (!formattedEmail || !password) { setError("Fill credentials completely."); return; }
-    
-    const registryKey = "vanguard_email_registry";
-    let registry = JSON.parse(localStorage.getItem(registryKey) || "{}");
-
-    if (isRegister) {
-      if (registry[formattedEmail]) { setError("Account email structure already mapped."); return; }
-      registry[formattedEmail] = password;
-      localStorage.setItem(registryKey, JSON.stringify(registry));
-      onAuthSuccess(formattedEmail);
-    } else {
-      if (!registry[formattedEmail] || registry[formattedEmail] !== password) {
-        setError("Invalid identifier credentials.");
-        return;
-      }
-      onAuthSuccess(formattedEmail);
-    }
-  };
-
-  return (
-    <div style={{ height: "100vh", width: "100vw", display: "flex", alignItems: "center", justifyContent: "center", background: "#050508", padding: 20 }} className="fade">
-      <div style={{ width: "100%", maxWidth: 390, background: "#0B0B11", border: "1px solid rgba(212, 175, 55, 0.15)", borderRadius: 16, padding: "2.5rem 2rem" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "2rem" }}>
-          <div style={{ width: 44, height: 44, borderRadius: 8, background: "#D4AF37", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
-            <i className="ti ti-video" style={{ color: "#050508", fontSize: 24 }} />
+        <div className="sidebar-footer" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: 11, color: "var(--text-secondary)" }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: supabaseConnected ? "var(--apple-green)" : "var(--apple-orange)" }} />
+            <span>{supabaseConnected ? "Supabase Core Linked" : "Local Prototype Array Engine"}</span>
           </div>
-          <h2 style={{ fontSize: 16, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#F2F2F7" }}>Vanguard</h2>
-        </div>
-
-        <form onSubmit={handleAuthSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <Field label="Operator Email"><input className="luxury-input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="name@domain.com" required /></Field>
-          <Field label="Passcode Matrix"><input className="luxury-input" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required /></Field>
-          {error && <p style={{ fontSize: 11, color: "var(--re)", textAlign: "center" }}>{error}</p>}
-          <Btn variant="primary" style={{ height: 44, marginTop: 8 }}>{isRegister ? "Construct Account" : "Access Engine"}</Btn>
-        </form>
-
-        <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
-          <button style={{ fontSize: 12, color: "#A1A1AA" }} onClick={() => { setIsRegister(!isRegister); setError(""); }}>
-            {isRegister ? "Verify credentials" : "Build Local Studio Space"}
-          </button>
+          <div onClick={toggleAppearanceFramework} style={{ cursor: "pointer", fontSize: 12, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "6px" }}>
+            <i className={isLightMode ? "ti ti-moon" : "ti ti-sun"} />
+            <span>Toggle Architecture Profile</span>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
 
-function ViewHome({ data, setData, paid, pending, net, hours, updateTitle, updateGoal, activeTimer, setActiveTimer, elapsedSeconds, formatTime }) {
-  const activeProjs = data.projects?.filter(p => p.status !== "Completed") || [];
-  const revProgress = Math.min(100, (paid / (data.goals?.monthlyRevenue || 1)) * 100);
+      {/* Primary Display Windows Space */}
+      <div className="main-window">
+        {activeTab === "dashboard" && (
+          <div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "4px" }}>Studio Overview</h1>
+            <p style={{ color: "var(--text-secondary)", fontSize: 14, marginBottom: "24px" }}>System operational matrix metrics</p>
+            
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "12px", marginBottom: "16px" }}>
+              <div className="apple-card">
+                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase" }}>Settled Yield</span>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "var(--accent)", marginTop: "6px" }} className="accent-glow">${financials.settled_yield.toLocaleString()}</p>
+              </div>
+              <div className="apple-card">
+                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase" }}>Escrow Pipeline</span>
+                <p style={{ fontSize: 22, fontWeight: 700, color: "var(--apple-orange)", marginTop: "6px" }}>${financials.escrow_pipeline.toLocaleString()}</p>
+              </div>
+            </div>
 
-  const stopLiveTimer = () => {
-    if (!activeTimer) return;
-    if (elapsedSeconds > 2) {
-      setData(d => ({
-        ...d,
-        logs: [{
-          id: Date.now(),
-          client: "Active Tracker Array",
-          project: activeTimer.projectTitle,
-          task: "Live Post Session",
-          duration: elapsedSeconds,
-          date: new Date().toISOString().split('T')[0]
-        }, ...d.logs]
-      }));
-    }
-    setActiveTimer(null);
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, textTransform: "uppercase" }}>Executive Dash</h1>
-        </div>
-        {activeTimer && (
-          <Btn variant="danger" onClick={stopLiveTimer} style={{ padding: "8px 12px" }}>
-            <i className="ti ti-player-stop" /> Stop & Commit ({formatTime(elapsedSeconds)})
-          </Btn>
-        )}
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }} className="stat-grid-layout">
-        <Card><p style={{ fontSize: 10, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }}>{data.dashboardTitles.totalRevenue}</p><p style={{ fontSize: 20, fontWeight: 700, color: "var(--ac)", marginTop: 6 }}>${paid.toLocaleString()}</p></Card>
-        <Card><p style={{ fontSize: 10, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }}>{data.dashboardTitles.pending}</p><p style={{ fontSize: 20, fontWeight: 700, color: "var(--ye)", marginTop: 6 }}>${pending.toLocaleString()}</p></Card>
-        <Card><p style={{ fontSize: 10, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }}>{data.dashboardTitles.netProfit}</p><p style={{ fontSize: 20, fontWeight: 700, color: "var(--tx)", marginTop: 6 }}>${net.toLocaleString()}</p></Card>
-        <Card><p style={{ fontSize: 10, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }}>{data.dashboardTitles.hoursLogged}</p><p style={{ fontSize: 20, fontWeight: 700, color: "var(--t2)", marginTop: 6 }}>{(hours / 3600).toFixed(1)}h</p></Card>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20 }} className="split-view-layout">
-        <Card>
-          <p style={{ fontSize: 11, color: "var(--t3)", fontWeight: 700, textTransform: "uppercase", marginBottom: 14 }}>Active Pipelines</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {activeProjs.map(p => (
-              <div key={p.id} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", borderLeft: "3px solid var(--ac)", borderRadius: 8, padding: "12px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, gap: 8 }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title}</p>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "var(--ac)" }}>${p.value}</span>
+            <div className="apple-card">
+              <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: "12px" }}>Active Live Production Channels</h3>
+              {projects.map(p => (
+                <div key={p.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid var(--card-border)" }}>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 600 }}>{p.title}</p>
+                    <p style={{ fontSize: 11, color: "var(--text-secondary)" }}>{p.client}</p>
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{p.render_progress}%</span>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ flex: 1, background: "var(--c3)", height: 3, borderRadius: 2 }}><div style={{ width: `${p.editProgress}%`, background: "var(--ac)", height: "100%" }} /></div>
-                  <span style={{ fontSize: 10, color: "var(--t2)" }}>{p.editProgress}%</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "clients" && (
+          <div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "16px" }}>Clients Index</h1>
+            <div className="apple-card" style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "16px" }}>
+              <input className="apple-input" placeholder="Corporate Entity Identifier Name" />
+              <input className="apple-input" placeholder="Primary Contact Management Link Address" />
+              <button className="apple-btn" style={{ background: "var(--accent)", color: "#000" }}>Provision Client Profile Row</button>
+            </div>
+            {clients.map(c => (
+              <div key={c.id} className="apple-card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <h3 style={{ fontSize: 16, fontWeight: 600 }}>{c.corporate_name}</h3>
+                  <p style={{ fontSize: 12, color: "var(--text-secondary)" }}>Secure Token Signature Line: {c.primary_contact}</p>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--apple-blue)", background: "rgba(10,132,255,0.1)", padding: "4px 8px", borderRadius: "6px" }}>{c.tracking_status}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "projects" && (
+          <div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "16px" }}>Production Pipelines</h1>
+            {projects.map(p => (
+              <div key={p.id} className="apple-card">
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
+                  <div>
+                    <h3 style={{ fontSize: 16, fontWeight: 600 }}>{p.title}</h3>
+                    <p style={{ fontSize: 12, color: "var(--text-secondary)" }}>Firm Anchor Identity: {p.client}</p>
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "var(--accent)" }}>${p.valuation.toLocaleString()}</span>
+                </div>
+                <div style={{ background: "rgba(255,255,255,0.05)", height: "6px", borderRadius: "3px", overflow: "hidden", marginBottom: "8px" }}>
+                  <div style={{ width: `${p.render_progress}%`, background: "var(--accent)", height: "100%" }} />
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--text-secondary)" }}>
+                  <span>Status: {p.pipeline_stage}</span>
+                  <span>Rendering Configuration Array: {p.render_progress}%</span>
                 </div>
               </div>
             ))}
           </div>
-        </Card>
+        )}
 
-        <Card>
-          <p style={{ fontSize: 10, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }}>Fiscal Target</p>
-          <p style={{ fontSize: 22, fontWeight: 700, color: "var(--ac)", margin: "10px 0 4px" }}>${paid.toLocaleString()}</p>
-          <div style={{ background: "var(--c3)", height: 4, borderRadius: 2, overflow: "hidden", marginBottom: 6 }}><div style={{ width: `${revProgress}%`, background: "var(--ac)", height: "100%" }} /></div>
-          <p style={{ fontSize: 10, color: "var(--t3)" }}>Goal Progress: {revProgress.toFixed(0)}%</p>
-        </Card>
-      </div>
-    </div>
-  );
-}
+        {activeTab === "dispatches" && (
+          <div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "16px" }}>Dispatches Cloud</h1>
+            {dispatches.map(d => (
+              <div key={d.id} className="apple-card">
+                <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: "4px" }}>{d.asset_title}</h3>
+                <p style={{ fontSize: 12, color: "var(--apple-blue)", marginBottom: "12px", wordBreak: "break-all" }}>{d.destination_url}</p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "var(--apple-orange)" }}>{d.tracking_status}</span>
+                  <button className="apple-btn" style={{ padding: "6px 12px", fontSize: 12 }} onClick={() => window.open(d.destination_url, '_blank')}>Launch Dispatch Link Mirror</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
-function ViewClients({ data, setData }) {
-  const [form, setForm] = useState({ name: "", type: "", email: "" });
-  
-  const addClient = () => {
-    if (!form.name) return;
-    setData(d => ({ ...d, clients: [...d.clients, { id: Date.now(), name: form.name, type: form.type || "Corporate Node", email: form.email || "internal@verified.film", status: "Active" }] }));
-    setForm({ name: "", type: "", email: "" });
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
-      <div><h1 style={{ fontSize: 20, fontWeight: 700, textTransform: "uppercase" }}>Client Index</h1></div>
-
-      <Card>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 12, alignItems: "flex-end" }} className="form-grid-modifier">
-          <Field label="Client Corporate Name"><input className="luxury-input" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Aether Cinema" /></Field>
-          <Field label="Production Category"><input className="luxury-input" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} placeholder="Commercial" /></Field>
-          <Field label="Secure Email Line"><input className="luxury-input" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="ops@aether.film" /></Field>
-          <Btn variant="primary" onClick={addClient} style={{ height: 44, width: "100%" }}>Link Node</Btn>
-        </div>
-      </Card>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {data.clients.map(c => (
-          <Card key={c.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, overflow: "hidden" }}>
-              <div style={{ width: 36, height: 36, borderRadius: 6, background: "var(--c2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "var(--ac)", flexShrink: 0 }}>{c.name.slice(0,2).toUpperCase()}</div>
-              <div style={{ overflow: "hidden" }}>
-                <p style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</p>
-                <p style={{ fontSize: 11, color: "var(--t3)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.type}</p>
+        {activeTab === "finances" && (
+          <div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "16px" }}>Asset Ledger Matrix</h1>
+            <div className="apple-card" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid var(--card-border)", paddingBottom: "12px" }}>
+                <span style={{ color: "var(--text-secondary)" }}>Settled Liquidity Yield</span>
+                <span style={{ fontWeight: 700, color: "var(--apple-green)" }}>+${financials.settled_yield.toLocaleString()}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid var(--card-border)", paddingBottom: "12px" }}>
+                <span style={{ color: "var(--text-secondary)" }}>Escrow Pipeline Reserve Valuation</span>
+                <span style={{ fontWeight: 700, color: "var(--apple-orange)" }}>+${financials.escrow_pipeline.toLocaleString()}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ color: "var(--text-secondary)" }}>Infrastructure Overhead Engine Operational Cost</span>
+                <span style={{ fontWeight: 700, color: "var(--apple-red)" }}>-${financials.overhead_burn.toLocaleString()}</span>
               </div>
             </div>
-            <button onClick={() => setData(d => ({ ...d, clients: d.clients.filter(item => item.id !== c.id) }))} style={{ color: "var(--t4)" }}><i className="ti ti-trash-x" style={{ fontSize: 18 }} /></button>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ViewProjects({ data, setData, activeTimer, setActiveTimer }) {
-  const [form, setForm] = useState({ title: "", client: "", value: "", deadline: "" });
-
-  const addProject = () => {
-    if (!form.title) return;
-    setData(d => ({ ...d, projects: [...d.projects, { id: Date.now(), title: form.title, client: form.client || data.clients?.[0]?.name || "Independent", value: Number(form.value) || 3000, editProgress: 5, deadline: form.deadline || "2026-09-01", priority: "High", status: "Assembly Cut" }] }));
-    setForm({ title: "", client: "", value: "", deadline: "" });
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
-      <div><h1 style={{ fontSize: 20, fontWeight: 700, textTransform: "uppercase" }}>Post Pipelines</h1></div>
-
-      <Card>
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr auto", gap: 12, alignItems: "flex-end" }} className="form-grid-modifier">
-          <Field label="Campaign Title"><input className="luxury-input" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Master Cut V1" /></Field>
-          <Field label="Client Anchor">
-            <select className="luxury-input" value={form.client} onChange={e => setForm({ ...form, client: e.target.value })}>
-              <option value="">Select Client</option>
-              {data.clients.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-            </select>
-          </Field>
-          <Field label="Valuation Matrix ($)"><input className="luxury-input" value={form.value} onChange={e => setForm({ ...form, value: e.target.value })} placeholder="5000" /></Field>
-          <Field label="Deadline"><input className="luxury-input" type="date" value={form.deadline} onChange={e => setForm({ ...form, deadline: e.target.value })} /></Field>
-          <Btn variant="primary" onClick={addProject} style={{ height: 44, width: "100%" }}>Inject</Btn>
-        </div>
-      </Card>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {data.projects.map(p => {
-          const isCurrentTimer = activeTimer && activeTimer.projectId === p.id;
-          return (
-            <Card key={p.id}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 12 }}>
-                <div>
-                  <p style={{ fontSize: 14, fontWeight: 600 }}>{p.title}</p>
-                  <p style={{ fontSize: 11, color: "var(--t3)", marginTop: 2 }}>Client: <span style={{ color: "var(--ac)" }}>{p.client}</span></p>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  {isCurrentTimer ? (
-                    <Btn variant="danger" style={{ padding: "6px 10px", fontSize: 10 }} onClick={() => setActiveTimer(null)}><i className="ti ti-player-pause" /></Btn>
-                  ) : (
-                    <Btn variant="ghost" style={{ padding: "6px 10px", fontSize: 10, color: "var(--gr)", background: "var(--grl)" }} onClick={() => setActiveTimer({ startTime: new Date(), projectId: p.id, projectTitle: p.title })}><i className="ti ti-player-play" /></Btn>
-                  )}
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--ac)" }}>${p.value}</span>
-                </div>
-              </div>
-              <select value={p.status} onChange={e => setData(d => ({ ...d, projects: d.projects.map(pr => pr.id === p.id ? { ...pr, status: e.target.value } : pr) }))} style={{ background: "var(--c2)", border: "1px solid var(--ln3)", color: "var(--tx)", fontSize: 12, padding: "8px 12px", borderRadius: 6, width: "100%" }}>
-                <option value="Assembly Cut">Assembly Cut</option>
-                <option value="Rough Cut Assembly">Rough Cut</option>
-                <option value="Color Grading">Color Grading Suite</option>
-                <option value="Review Pipeline">Client Review Loop</option>
-                <option value="Completed">Completed & Dispatched</option>
-              </select>
-            </Card>
-          )
-        })}
-      </div>
-    </div>
-  );
-}
-
-function ViewFinances({ data, setData, paid, pending, expenses, net }) {
-  const [formE, setFormE] = useState({ label: "", amount: "" });
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
-      <div><h1 style={{ fontSize: 20, fontWeight: 700, textTransform: "uppercase" }}>Asset Ledger</h1></div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12 }} className="stat-grid-layout">
-        <Card><p style={{ fontSize: 10, color: "var(--t3)" }}>Settled</p><p style={{ fontSize: 16, fontWeight: 700, color: "var(--ac)" }}>${paid}</p></Card>
-        <Card><p style={{ fontSize: 10, color: "var(--t3)" }}>Escrow</p><p style={{ fontSize: 16, fontWeight: 700, color: "var(--ye)" }}>${pending}</p></Card>
-        <Card><p style={{ fontSize: 10, color: "var(--t3)" }}>Overhead</p><p style={{ fontSize: 16, fontWeight: 700, color: "var(--re)" }}>${expenses}</p></Card>
-        <Card><p style={{ fontSize: 10, color: "var(--t3)" }}>Net Return</p><p style={{ fontSize: 16, fontWeight: 700 }}>${net}</p></Card>
-      </div>
-
-      <Card>
-        <p style={{ fontSize: 10, fontWeight: 700, color: "var(--t3)", marginBottom: 12 }}>Log Inflow</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <input className="luxury-input" value={formE.label} onChange={e => setFormE({ ...formE, label: e.target.value })} placeholder="Injection Label Description" />
-          <div style={{ display: "flex", gap: 10 }}>
-            <input className="luxury-input" value={formE.amount} onChange={e => setFormE({ ...formE, amount: e.target.value })} placeholder="Amount ($)" />
-            <Btn variant="primary" onClick={() => {
-              if (!formE.label) return;
-              setData(d => ({ ...d, earnings: [{ id: Date.now(), label: formE.label, amount: Number(formE.amount) || 0, date: "2026-05-22", status: "Paid" }, ...d.earnings] }));
-              setFormE({ label: "", amount: "" });
-            }}>Log</Btn>
           </div>
-        </div>
-      </Card>
-    </div>
-  );
-}
+        )}
 
-function ViewDelivery({ data, setData }) {
-  const [form, setForm] = useState({ client: "", project: "", url: "" });
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
-      <div><h1 style={{ fontSize: 20, fontWeight: 700, textTransform: "uppercase" }}>Dispatches Suite</h1></div>
-      <Card>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <Field label="Campaign Identification"><input className="luxury-input" value={form.project} onChange={e => setForm({ ...form, project: e.target.value })} placeholder="Heritage 60s Final Pass" /></Field>
-          <Field label="Destination Asset URL"><input className="luxury-input" value={form.url} onChange={e => setForm({ ...form, url: e.target.value })} placeholder="https://frame.io/share/..." /></Field>
-          <Btn variant="primary" onClick={() => {
-            if (!form.project) return;
-            setData(d => ({ ...d, delivery: [{ id: Date.now(), client: "Global Network Link", project: form.project, url: form.url || "https://frame.io", status: "Awaiting Review", sent: "2026-05-22" }, ...d.delivery] }));
-            setForm({ client: "", project: "", url: "" });
-          }} style={{ height: 44 }}>Dispatch Architecture Link</Btn>
-        </div>
-      </Card>
-    </div>
-  );
-}
-
-function ViewSettings({ data, setData, updateProfile }) {
-  const exportBackupDatabase = () => {
-    const dataString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataString);
-    downloadAnchor.setAttribute("download", `vanguard_backup.json`);
-    downloadAnchor.click();
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
-      <div><h1 style={{ fontSize: 20, fontWeight: 700, textTransform: "uppercase" }}>System Matrix</h1></div>
-      
-      <Card style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <Field label="Director Studio Handle"><input className="luxury-input" value={data.profile.studio} onChange={e => updateProfile("studio", e.target.value)} /></Field>
-        <div style={{ display: "flex", alignItems: "center", justifycontent: "space-between", background: "var(--c2)", padding: "12px", borderRadius: 8 }}>
-          <span style={{ fontSize: 13, fontWeight: 600 }}>Reflectivity Light Framework</span>
-          <input type="checkbox" checked={data.profile.lightMode} onChange={e => updateProfile("lightMode", e.target.checked)} style={{ width: 24, height: 24, accentColor: "var(--ac)" }} />
-        </div>
-      </Card>
-
-      <Card>
-        <p style={{ fontSize: 10, fontWeight: 700, color: "var(--ac)", textTransform: "uppercase", marginBottom: 10 }}>Local Data Portability</p>
-        <Btn variant="ghost" onClick={exportBackupDatabase} style={{ width: "100%" }}><i className="ti ti-download" /> Export Storage JSON Array</Btn>
-      </Card>
+      </div>
     </div>
   );
 }
@@ -713,5 +413,6 @@ const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<App />);
 </script>
+
 </body>
 </html>
