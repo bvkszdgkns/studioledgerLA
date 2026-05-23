@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Vanguard CRM">
+  <meta name="apple-mobile-web-app-title" content="Vanguard Core">
   
-  <title>Vanguard Studio Engine</title>
+  <title>Vanguard Studio Core — Enterprise Framework</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   
@@ -20,165 +20,204 @@
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
     }
     
+    /* True Apple iOS Human Interface Tokens */
     :root {
-      --bg: #000000;
-      --card-bg: rgba(28, 28, 30, 0.7);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --text: #FFFFFF;
-      --text-secondary: #8E8E93;
-      --text-tertiary: #48484A;
-      --accent: #D4AF37; 
-      --accent-rgb: 212, 175, 55;
-      --apple-blue: #0A84FF;
-      --apple-green: #30D158;
-      --apple-red: #FF453A;
-      --apple-orange: #FF9F0A;
-      --blur: blur(20px);
+      --bg-system: #000000;
+      --material-thick: rgba(22, 22, 23, 0.75);
+      --material-thin: rgba(30, 30, 32, 0.45);
+      --border-thin: rgba(255, 255, 255, 0.065);
+      --border-focus: #FFFFFF;
+      --label-primary: #FFFFFF;
+      --label-secondary: #8E8E93;
+      --label-tertiary: #48484A;
+      
+      --system-gold: #D4AF37;
+      --system-blue: #0A84FF;
+      --system-green: #30D158;
+      --system-red: #FF453A;
+      --system-orange: #FF9F0A;
+      --system-indigo: #5E5CE6;
+      
+      --blur-system: blur(30px);
+      --radius-ios: 13px;
+      --transition-fluid: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .light-mode {
-      --bg: #F2F2F7;
-      --card-bg: rgba(255, 255, 255, 0.8);
-      --card-border: rgba(0, 0, 0, 0.05);
-      --text: #000000;
-      --text-secondary: #636366;
-      --text-tertiary: #C7C7CC;
-      --accent: #A5782A;
-      --accent-rgb: 165, 120, 42;
-      --apple-blue: #007AFF;
-      --apple-green: #34C759;
-      --apple-red: #FF3B30;
-      --apple-orange: #FF9500;
+      --bg-system: #F2F2F7;
+      --material-thick: rgba(255, 255, 255, 0.82);
+      --material-thin: rgba(242, 242, 247, 0.6);
+      --border-thin: rgba(0, 0, 0, 0.055);
+      --border-focus: #000000;
+      --label-primary: #000000;
+      --label-secondary: #636366;
+      --label-tertiary: #C7C7CC;
+      
+      --system-gold: #A5782A;
+      --system-blue: #007AFF;
+      --system-green: #34C759;
+      --system-red: #FF3B30;
+      --system-orange: #FF9500;
+      --system-indigo: #5856D6;
     }
 
     html, body, #root { 
       height: 100%; 
       width: 100%; 
-      background-color: var(--bg); 
-      color: var(--text); 
+      background-color: var(--bg-system); 
+      color: var(--label-primary); 
       overflow: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* iOS App Layout Structure */
-    .app-viewport {
+    /* Core Layout Mechanics */
+    .app-canvas {
       display: flex;
       height: 100%;
       width: 100%;
     }
 
-    .sidebar {
-      width: 280px;
-      background: rgba(18, 18, 18, 0.6);
-      backdrop-filter: var(--blur);
-      -webkit-backdrop-filter: var(--blur);
-      border-right: 1px solid var(--card-border);
+    /* Left Drawer / Navigation Interface Module */
+    .ios-sidebar {
+      width: 260px;
+      background: var(--material-thick);
+      backdrop-filter: var(--blur-system);
+      -webkit-backdrop-filter: var(--blur-system);
+      border-right: 0.5px solid var(--border-thin);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       padding-top: env(safe-area-inset-top);
       padding-bottom: env(safe-area-inset-bottom);
+      z-index: 100;
     }
 
-    .main-window {
+    .view-viewport {
       flex: 1;
       overflow-y: auto;
-      padding: 2rem;
-      padding-top: calc(2rem + env(safe-area-inset-top));
-      padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+      padding: 2.5rem;
+      padding-top: calc(2.5rem + env(safe-area-inset-top));
+      padding-bottom: calc(2.5rem + env(safe-area-inset-bottom));
     }
 
-    /* iPhone/Mobile Adaptability Layer */
+    /* iPhone / Safari Responsive Adaptation Layer */
     @media (max-width: 768px) {
-      .app-viewport {
+      .app-canvas {
         flex-direction: column-reverse;
       }
-      .sidebar {
+      .ios-sidebar {
         width: 100%;
-        height: 75px;
+        height: 74px;
         flex-direction: row;
         border-right: none;
-        border-top: 1px solid var(--card-border);
-        padding: 0 12px;
+        border-top: 0.5px solid var(--border-thin);
+        padding: 0 8px;
         padding-bottom: env(safe-area-inset-bottom);
         justify-content: space-around;
         align-items: center;
         z-index: 999;
       }
-      .sidebar-brand, .sidebar-footer {
+      .ios-sidebar-brand, .ios-sidebar-footer {
         display: none !important;
       }
-      .navigation-menu {
+      .nav-group {
         flex-direction: row !important;
         width: 100%;
         justify-content: space-around;
         gap: 0 !important;
       }
-      .nav-item {
+      .nav-pill {
         flex-direction: column !important;
         align-items: center !important;
-        gap: 4px !important;
-        font-size: 10px !important;
+        gap: 3px !important;
+        font-size: 9px !important;
         padding: 6px 0 !important;
-        width: 50px;
+        width: 60px;
+        border-radius: 0 !important;
+        background: transparent !important;
       }
-      .nav-item i {
-        font-size: 20px !important;
+      .nav-pill i {
+        font-size: 21px !important;
       }
-      .main-window {
-        padding: 1.25rem;
+      .view-viewport {
+        padding: 1.5rem 1.25rem;
         padding-top: calc(1.5rem + env(safe-area-inset-top));
       }
     }
 
-    /* Apple Premium UI Styling Components */
-    .apple-card {
-      background: var(--card-bg);
-      backdrop-filter: var(--blur);
-      -webkit-backdrop-filter: var(--blur);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 1.25rem;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-      margin-bottom: 1rem;
+    /* Premium Apple Card Surfaces */
+    .apple-surface {
+      background: var(--material-thick);
+      backdrop-filter: var(--blur-system);
+      -webkit-backdrop-filter: var(--blur-system);
+      border: 0.5px solid var(--border-thin);
+      border-radius: var(--radius-ios);
+      padding: 1.5rem;
+      box-shadow: 0 4px 34px rgba(0, 0, 0, 0.04);
+      margin-bottom: 1.25rem;
+      transition: var(--transition-fluid);
     }
 
-    .apple-input {
-      background: rgba(120, 120, 128, 0.12);
-      border: none;
-      color: var(--text);
-      font-size: 16px; /* Prevents auto-zoom on iOS safari */
-      padding: 12px 16px;
-      border-radius: 10px;
+    /* iOS System Controls Form Fields */
+    .apple-input-container {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+    }
+    
+    .apple-input-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--label-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding-left: 2px;
+    }
+
+    .apple-input-element {
+      background: var(--material-thin);
+      border: 0.5px solid var(--border-thin);
+      color: var(--label-primary);
+      font-size: 16px; 
+      padding: 14px 16px;
+      border-radius: 11px;
       width: 100%;
       outline: none;
-      transition: background 0.2s ease;
+      transition: var(--transition-fluid);
     }
-    .apple-input:focus {
-      background: rgba(120, 120, 128, 0.2);
+    .apple-input-element:focus {
+      border-color: var(--border-focus);
+      background: rgba(120, 120, 128, 0.14);
     }
 
-    .apple-btn {
-      background: var(--text);
-      color: var(--bg);
+    .apple-action-trigger {
+      background: var(--label-primary);
+      color: var(--bg-system);
       border: none;
-      border-radius: 10px;
-      padding: 12px 20px;
-      font-size: 14px;
+      border-radius: 11px;
+      padding: 14px 24px;
+      font-size: 13px;
       font-weight: 600;
+      letter-spacing: -0.01em;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: opacity 0.2s;
+      transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .apple-btn:active {
-      opacity: 0.7;
+    .apple-action-trigger:active {
+      opacity: 0.65;
     }
 
-    .accent-glow {
-      text-shadow: 0 0 20px rgba(var(--accent-rgb), 0.4);
+    /* Micro Animations */
+    @keyframes iosFadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .ios-animate-view {
+      animation: iosFadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
   </style>
 
@@ -194,211 +233,237 @@
 <script type="text/babel">
 const { useState, useEffect } = React;
 
-// --- SUPABASE CONFIGURATION MATRIX ---
-// Replace these parameters with your real Supabase dashboard endpoints to activate persistent back-ends
 const SUPABASE_URL = "https://your-project-id.supabase.co";
 const SUPABASE_ANON_KEY = "your-anon-public-key";
 const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 function App() {
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [isLightMode, setIsLightMode] = useState(false);
-  const [supabaseConnected, setSupabaseConnected] = useState(false);
+  const [currentView, setCurrentView] = useState("dashboard");
+  const [lightAppearanceMode, setLightAppearanceMode] = useState(false);
 
-  // Structural mock data structures designed to mirror table frames in Supabase
+  // High Fidelity Architectural Enterprise Engine State Data Arrays
   const [clients, setClients] = useState([
-    { id: 1, corporate_name: "Aether Cinema Corp", primary_contact: "Alex Vance", tracking_status: "Active Pipeline" },
-    { id: 2, corporate_name: "Kaufman Luxury Group", primary_contact: "Elena Rostova", tracking_status: "Active Pipeline" }
+    { id: 1, name: "Aether Cinema Corp", type: "VFX Studio Node", pipeline_tier: "Premium Retainer", email: "comms@aether.film" },
+    { id: 2, name: "Kaufman Luxury Group", type: "Commercial Agency Portfolio", pipeline_tier: "Per-Project Account", email: "vault@kaufman.co" }
   ]);
 
   const [projects, setProjects] = useState([
-    { id: 1, title: "The Sovereign Identity — Master Cut", client: "Aether Cinema Corp", pipeline_stage: "Color Grading Suite", valuation: 8400, render_progress: 45 },
-    { id: 2, title: "Excellence Heritage Campaign 60s", client: "Kaufman Luxury Group", pipeline_stage: "Rough Assembly Pass", valuation: 4500, render_progress: 90 }
+    { id: 1, title: "The Sovereign Identity — Master Assembly", client: "Aether Cinema Corp", stage: "Color Pass Grading", revenue: 8400, structural_progress: 68 },
+    { id: 2, title: "Excellence Heritage Campaign 60s Cut", client: "Kaufman Luxury Group", stage: "VFX Composite Engineering", revenue: 4500, structural_progress: 92 }
   ]);
 
-  const [dispatches, setDispatches] = useState([
-    { id: 1, asset_title: "Heritage Promo V3 Super High", destination_url: "https://vanguard.frame.io/kaufman-60s", tracking_status: "Awaiting Client Review" }
+  const [ledgerEntries, setLedgerEntries] = useState([
+    { id: 1, label: "Aether Front-End Architecture Clearance", magnitude: 8400, dynamic_type: "inflow", timeline_stamp: "2026-05-20" },
+    { id: 2, label: "LTO-9 Cold Storage Matrix Allocation", magnitude: 240, dynamic_type: "outflow", timeline_stamp: "2026-05-18" }
   ]);
 
-  const [financials, setFinancials] = useState({
-    settled_yield: 12900,
-    escrow_pipeline: 8400,
-    overhead_burn: 149.99
+  const [integrationChannels, setIntegrationChannels] = useState({
+    discordWebhook: "https://discord.com/api/webhooks/...",
+    operationalEmail: "executive-node@vanguard.studio",
+    discordSyncStatus: "Active Secure Listening",
+    emailSyncStatus: "Imap Listening Online"
   });
 
-  useEffect(() => {
-    if (supabase && SUPABASE_URL !== "https://your-project-id.supabase.co") {
-      setSupabaseConnected(true);
-      // Real-time synchronization hooks from Supabase tables can be pulled safely here
-    }
-  }, []);
-
-  const toggleAppearanceFramework = () => {
-    setIsLightMode(!isLightMode);
+  const toggleSystemAppearance = () => {
+    setLightAppearanceMode(!lightAppearanceMode);
     document.body.classList.toggle("light-mode");
   };
 
   return (
-    <div className="app-viewport">
+    <div className="app-canvas">
       
-      {/* Navigation Ecosystem (Responsive iOS Drawer Bar / Bottom Dock) */}
-      <div className="sidebar">
+      {/* Structural System Bar Menu */}
+      <div className="ios-sidebar">
         <div style={{ width: "100%" }}>
-          <div className="sidebar-brand" style={{ padding: "24px 20px", display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{ width: 30, height: 30, borderRadius: "7px", background: "var(--accent)", display: "flex", alignItems: "center", justifycontent: "center" }}>
-              <i className="ti ti-video" style={{ color: "#000", fontSize: 16 }} />
+          <div className="ios-sidebar-brand" style={{ padding: "30px 24px 20px 24px", display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ width: 28, height: 28, borderRadius: "6px", background: "var(--system-gold)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <i className="ti ti-infinity" style={{ color: "#000", fontSize: 16 }} />
             </div>
-            <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.02em" }}>VANGUARD</span>
+            <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: "-0.03em", textTransform: "uppercase" }}>Vanguard Architecture</span>
           </div>
 
-          <div className="navigation-menu" style={{ display: "flex", flexDirection: "column", gap: "4px", padding: "0 12px" }}>
+          <div className="nav-group" style={{ display: "flex", flexDirection: "column", gap: "3px", padding: "0 10px" }}>
             {[
-              { id: "dashboard", icon: "ti-square-dashboard", label: "Studio" },
-              { id: "clients", icon: "ti-building-skyscraper", label: "Clients" },
-              { id: "projects", icon: "ti-timeline-event", label: "Pipelines" },
-              { id: "dispatches", icon: "ti-transform", label: "Dispatches" },
-              { id: "finances", icon: "ti-database-dollar", label: "Ledger" }
+              { id: "dashboard", icon: "ti-square-dashboard", label: "Studio Hub" },
+              { id: "clients", icon: "ti-users-group", label: "Client Register" },
+              { id: "projects", icon: "ti-layers-intersect", label: "Production" },
+              { id: "ledger", icon: "ti-receipt-2", label: "Ledger Matrix" },
+              { id: "channels", icon: "ti-broadcast", label: "Channels Hub" }
             ].map(item => {
-              const active = activeTab === item.id;
+              const isActive = currentView === item.id;
               return (
                 <div 
                   key={item.id} 
-                  className="nav-item"
-                  onClick={() => setActiveTab(item.id)}
+                  className="nav-pill"
+                  onClick={() => setCurrentView(item.id)}
                   style={{
-                    display: "flex", alignItems: "center", gap: "12px", padding: "12px 14px", borderRadius: "10px",
-                    background: active ? "rgba(255,255,255,0.08)" : "transparent",
-                    color: active ? "var(--text)" : "var(--text-secondary)", cursor: "pointer"
+                    display: "flex", alignItems: "center", gap: "12px", padding: "11px 14px", borderRadius: "10px",
+                    background: isActive ? "rgba(255,255,255,0.07)" : "transparent",
+                    color: isActive ? "var(--label-primary)" : "var(--label-secondary)", cursor: "pointer",
+                    transition: "var(--transition-fluid)"
                   }}
                 >
-                  <i className={`ti ${item.icon}`} style={{ fontSize: 18, color: active ? "var(--accent)" : "var(--text-secondary)" }} />
-                  <span style={{ fontSize: 13, fontWeight: active ? 600 : 500 }}>{item.label}</span>
+                  <i className={`ti ${item.icon}`} style={{ fontSize: 18, color: isActive ? "var(--system-gold)" : "var(--label-secondary)" }} />
+                  <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 500, letterSpacing: "-0.01em" }}>{item.label}</span>
                 </div>
               );
             })}
           </div>
         </div>
 
-        <div className="sidebar-footer" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: 11, color: "var(--text-secondary)" }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: supabaseConnected ? "var(--apple-green)" : "var(--apple-orange)" }} />
-            <span>{supabaseConnected ? "Supabase Core Linked" : "Local Prototype Array Engine"}</span>
-          </div>
-          <div onClick={toggleAppearanceFramework} style={{ cursor: "pointer", fontSize: 12, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "6px" }}>
-            <i className={isLightMode ? "ti ti-moon" : "ti ti-sun"} />
-            <span>Toggle Architecture Profile</span>
+        <div className="ios-sidebar-footer" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div onClick={toggleSystemAppearance} style={{ cursor: "pointer", fontSize: 12, color: "var(--label-secondary)", display: "flex", alignItems: "center", gap: "8px" }}>
+            <i className={lightAppearanceMode ? "ti ti-moon-stars" : "ti ti-sun-high"} style={{ fontSize: 15 }} />
+            <span style={{ fontWeight: 500 }}>System Aesthetics Toggle</span>
           </div>
         </div>
       </div>
 
-      {/* Primary Display Windows Space */}
-      <div className="main-window">
-        {activeTab === "dashboard" && (
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "4px" }}>Studio Overview</h1>
-            <p style={{ color: "var(--text-secondary)", fontSize: 14, marginBottom: "24px" }}>System operational matrix metrics</p>
+      {/* Main Framework Processing Core Views */}
+      <div className="view-viewport">
+        
+        {currentView === "dashboard" && (
+          <div className="ios-animate-view">
+            <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.05em", marginBottom: "2px" }}>Studio Analytics</h1>
+            <p style={{ color: "var(--label-secondary)", fontSize: 14, marginBottom: "28px", letterSpacing: "-0.01em" }}>System Core Telemetry Array</p>
             
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "12px", marginBottom: "16px" }}>
-              <div className="apple-card">
-                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase" }}>Settled Yield</span>
-                <p style={{ fontSize: 22, fontWeight: 700, color: "var(--accent)", marginTop: "6px" }} className="accent-glow">${financials.settled_yield.toLocaleString()}</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "14px", marginBottom: "20px" }}>
+              <div className="apple-surface">
+                <span style={{ fontSize: 10, fontWeight: 700, color: "var(--label-secondary)", textTransform: "uppercase", letterSpacing: "0.02em" }}>Yield Conversion Efficiency</span>
+                <p style={{ fontSize: 26, fontWeight: 700, color: "var(--system-gold)", marginTop: "8px", letterSpacing: "-0.04em" }}>94.2%</p>
+                <div style={{ background: "rgba(255,255,255,0.04)", height: 3, borderRadius: 2, marginTop: 12, overflow: "hidden" }}>
+                  <div style={{ width: "94.2%", background: "var(--system-gold)", height: "100%" }} />
+                </div>
               </div>
-              <div className="apple-card">
-                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase" }}>Escrow Pipeline</span>
-                <p style={{ fontSize: 22, fontWeight: 700, color: "var(--apple-orange)", marginTop: "6px" }}>${financials.escrow_pipeline.toLocaleString()}</p>
+              <div className="apple-surface">
+                <span style={{ fontSize: 10, fontWeight: 700, color: "var(--label-secondary)", textTransform: "uppercase", letterSpacing: "0.02em" }}>Gross Liquid Capital Velocity</span>
+                <p style={{ fontSize: 26, fontWeight: 700, color: "var(--label-primary)", marginTop: "8px", letterSpacing: "-0.04em" }}>$12,900</p>
+                <p style={{ fontSize: 11, color: "var(--system-green)", marginTop: 10, fontWeight: 600 }}><i className="ti ti-trending-up" /> +18.4% Variance Scale</p>
               </div>
             </div>
 
-            <div className="apple-card">
-              <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: "12px" }}>Active Live Production Channels</h3>
-              {projects.map(p => (
-                <div key={p.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid var(--card-border)" }}>
-                  <div>
-                    <p style={{ fontSize: 13, fontWeight: 600 }}>{p.title}</p>
-                    <p style={{ fontSize: 11, color: "var(--text-secondary)" }}>{p.client}</p>
+            <div className="apple-surface">
+              <h3 style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.02em", marginBottom: "16px" }}>Secure Operational Environment Pipeline Traces</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                {projects.map(p => (
+                  <div key={p.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "0.5px solid var(--border-thin)" }}>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 600, letterSpacing: "-0.01em" }}>{p.title}</p>
+                      <p style={{ fontSize: 11, color: "var(--label-secondary)" }}>{p.client} • {p.stage}</p>
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--system-gold)" }}>{p.structural_progress}%</span>
                   </div>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)" }}>{p.render_progress}%</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentView === "clients" && (
+          <div className="ios-animate-view">
+            <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.05em", marginBottom: "20px" }}>Clients Architecture</h1>
+            
+            <div className="apple-surface" style={{ display: "flex", flexDirection: "column", gap: "14px", marginBottom: "20px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }} className="mobile-stack">
+                <div className="apple-input-container">
+                  <label className="apple-input-label">Corporate Handle Label</label>
+                  <input className="apple-input-element" placeholder="e.g., Aether Cinema" />
+                </div>
+                <div className="apple-input-container">
+                  <label className="apple-input-label">Secure Communications Hub Routing Address</label>
+                  <input className="apple-input-element" placeholder="comms@domain.film" />
+                </div>
+              </div>
+              <button className="apple-action-trigger" style={{ background: "var(--system-gold)", color: "#000" }}>Provision New Client Space Array</button>
+            </div>
+
+            {clients.map(c => (
+              <div key={c.id} className="apple-surface" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <h3 style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.02em" }}>{c.name}</h3>
+                  <p style={{ fontSize: 12, color: "var(--label-secondary)", marginTop: "2px" }}>{c.email} • {c.type}</p>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--system-blue)", background: "rgba(10,132,255,0.08)", padding: "5px 10px", borderRadius: "6px" }}>{c.pipeline_tier}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {currentView === "projects" && (
+          <div className="ios-animate-view">
+            <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.05em", marginBottom: "20px" }}>Post Production Architecture</h1>
+            {projects.map(p => (
+              <div key={p.id} className="apple-surface">
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "14px" }}>
+                  <div>
+                    <h3 style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.02em" }}>{p.title}</h3>
+                    <p style={{ fontSize: 12, color: "var(--label-secondary)" }}>Anchor Client Space: {p.client}</p>
+                  </div>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: "var(--system-gold)", letterSpacing: "-0.03em" }}>${p.revenue.toLocaleString()}</span>
+                </div>
+                <div style={{ background: "rgba(255,255,255,0.04)", height: "5px", borderRadius: "3px", overflow: "hidden", marginBottom: "10px" }}>
+                  <div style={{ width: `${p.structural_progress}%`, background: "var(--system-gold)", height: "100%" }} />
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--label-secondary)", fontWeight: 500 }}>
+                  <span>Stage Trace Matrix: {p.stage}</span>
+                  <span>Pipeline Render Progression Array: {p.structural_progress}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {currentView === "ledger" && (
+          <div className="ios-animate-view">
+            <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.05em", marginBottom: "20px" }}>Ledger Allocations Matrix</h1>
+            <div className="apple-surface" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {ledgerEntries.map(e => (
+                <div key={e.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "0.5px solid var(--border-thin)" }}>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 600, letterSpacing: "-0.01em" }}>{e.label}</p>
+                    <p style={{ fontSize: 11, color: "var(--label-secondary)" }}>Timeline Signature: {e.timeline_stamp}</p>
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: e.dynamic_type === "inflow" ? "var(--system-green)" : "var(--system-red)" }}>
+                    {e.dynamic_type === "inflow" ? `+$${e.magnitude.toLocaleString()}` : `-$${e.magnitude.toLocaleString()}`}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {activeTab === "clients" && (
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "16px" }}>Clients Index</h1>
-            <div className="apple-card" style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "16px" }}>
-              <input className="apple-input" placeholder="Corporate Entity Identifier Name" />
-              <input className="apple-input" placeholder="Primary Contact Management Link Address" />
-              <button className="apple-btn" style={{ background: "var(--accent)", color: "#000" }}>Provision Client Profile Row</button>
+        {currentView === "channels" && (
+          <div className="ios-animate-view">
+            <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.05em", marginBottom: "2px" }}>Unified Channels</h1>
+            <p style={{ color: "var(--label-secondary)", fontSize: 14, marginBottom: "24px" }}>External Network Pipelines Control Center Terminal Array</p>
+            
+            <div className="apple-surface">
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+                <i className="ti ti-brand-discord" style={{ fontSize: 22, color: "var(--system-indigo)" }} />
+                <h3 style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>Discord Production Telemetry Sync Array</h3>
+              </div>
+              <div className="apple-input-container" style={{ marginBottom: "12px" }}>
+                <label className="apple-input-label">Automated System Hook Core Endpoint Webhook Link Matrix</label>
+                <input className="apple-input-element" value={integrationChannels.discordWebhook} onChange={(e) => setIntegrationChannels({...integrationChannels, discordWebhook: e.target.value})} />
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 11 }}>
+                <span style={{ color: "var(--label-secondary)" }}>Channel Pipeline Node Echo Verification Frame</span>
+                <span style={{ fontWeight: 600, color: "var(--system-green)" }}><i className="ti ti-circle-check" /> {integrationChannels.discordSyncStatus}</span>
+              </div>
             </div>
-            {clients.map(c => (
-              <div key={c.id} className="apple-card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <h3 style={{ fontSize: 16, fontWeight: 600 }}>{c.corporate_name}</h3>
-                  <p style={{ fontSize: 12, color: "var(--text-secondary)" }}>Secure Token Signature Line: {c.primary_contact}</p>
-                </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: "var(--apple-blue)", background: "rgba(10,132,255,0.1)", padding: "4px 8px", borderRadius: "6px" }}>{c.tracking_status}</span>
-              </div>
-            ))}
-          </div>
-        )}
 
-        {activeTab === "projects" && (
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "16px" }}>Production Pipelines</h1>
-            {projects.map(p => (
-              <div key={p.id} className="apple-card">
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
-                  <div>
-                    <h3 style={{ fontSize: 16, fontWeight: 600 }}>{p.title}</h3>
-                    <p style={{ fontSize: 12, color: "var(--text-secondary)" }}>Firm Anchor Identity: {p.client}</p>
-                  </div>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "var(--accent)" }}>${p.valuation.toLocaleString()}</span>
-                </div>
-                <div style={{ background: "rgba(255,255,255,0.05)", height: "6px", borderRadius: "3px", overflow: "hidden", marginBottom: "8px" }}>
-                  <div style={{ width: `${p.render_progress}%`, background: "var(--accent)", height: "100%" }} />
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--text-secondary)" }}>
-                  <span>Status: {p.pipeline_stage}</span>
-                  <span>Rendering Configuration Array: {p.render_progress}%</span>
-                </div>
+            <div className="apple-surface">
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+                <i className="ti ti-mail" style={{ fontSize: 22, color: "var(--system-blue)" }} />
+                <h3 style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>IMAP Enterprise Communications Router</h3>
               </div>
-            ))}
-          </div>
-        )}
-
-        {activeTab === "dispatches" && (
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "16px" }}>Dispatches Cloud</h1>
-            {dispatches.map(d => (
-              <div key={d.id} className="apple-card">
-                <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: "4px" }}>{d.asset_title}</h3>
-                <p style={{ fontSize: 12, color: "var(--apple-blue)", marginBottom: "12px", wordBreak: "break-all" }}>{d.destination_url}</p>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: "var(--apple-orange)" }}>{d.tracking_status}</span>
-                  <button className="apple-btn" style={{ padding: "6px 12px", fontSize: 12 }} onClick={() => window.open(d.destination_url, '_blank')}>Launch Dispatch Link Mirror</button>
-                </div>
+              <div className="apple-input-container" style={{ marginBottom: "12px" }}>
+                <label className="apple-input-label">Director Communications Target Address Node</label>
+                <input className="apple-input-element" value={integrationChannels.operationalEmail} onChange={(e) => setIntegrationChannels({...integrationChannels, operationalEmail: e.target.value})} />
               </div>
-            ))}
-          </div>
-        )}
-
-        {activeTab === "finances" && (
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "16px" }}>Asset Ledger Matrix</h1>
-            <div className="apple-card" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid var(--card-border)", paddingBottom: "12px" }}>
-                <span style={{ color: "var(--text-secondary)" }}>Settled Liquidity Yield</span>
-                <span style={{ fontWeight: 700, color: "var(--apple-green)" }}>+${financials.settled_yield.toLocaleString()}</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid var(--card-border)", paddingBottom: "12px" }}>
-                <span style={{ color: "var(--text-secondary)" }}>Escrow Pipeline Reserve Valuation</span>
-                <span style={{ fontWeight: 700, color: "var(--apple-orange)" }}>+${financials.escrow_pipeline.toLocaleString()}</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ color: "var(--text-secondary)" }}>Infrastructure Overhead Engine Operational Cost</span>
-                <span style={{ fontWeight: 700, color: "var(--apple-red)" }}>-${financials.overhead_burn.toLocaleString()}</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 11 }}>
+                <span style={{ color: "var(--label-secondary)" }}>Structural Engine Daemon Link Listening Framework State</span>
+                <span style={{ fontWeight: 600, color: "var(--system-blue)" }}><i className="ti ti-activity" /> {integrationChannels.emailSyncStatus}</span>
               </div>
             </div>
           </div>
