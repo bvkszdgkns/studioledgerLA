@@ -21,7 +21,7 @@
       --t2: #A1A1AA;
       --t3: #6F6F76;
       --t4: #3E3E42;
-      --ac: #D4AF37; /* Premium Gold / Champagne Accent */
+      --ac: #D4AF37; 
       --ach: #C5A028;
       --acl: rgba(212, 175, 55, 0.08);
       --acl2: rgba(212, 175, 55, 0.04);
@@ -117,8 +117,8 @@
 <script type="text/babel">
 const { useState, useEffect, useMemo, useRef } = React;
 
-const GLOBAL_AUTH_KEY = "vanguard_auth_session";
-const USER_DATA_PREFIX = "vanguard_studio_data_";
+const GLOBAL_AUTH_KEY = "vanguard_auth_email_session";
+const USER_DATA_PREFIX = "vanguard_studio_vault_";
 
 const defaultUserDataStructure = {
   profile: { name: "Creative Director", studio: "Vanguard Editing", avatar: "VE", color: "#D4AF37", lightMode: false, showGlows: true },
@@ -190,14 +190,14 @@ const Field = ({ label, children }) => (
 );
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(() => localStorage.getItem(GLOBAL_AUTH_KEY));
+  const [currentUserEmail, setCurrentUserEmail] = useState(() => localStorage.getItem(GLOBAL_AUTH_KEY));
   const [data, setData] = useState(null);
   const [page, setPage] = useState("home");
 
-  // Load User Data upon dynamic auth validation
+  // Load User Data based on authenticated unique email string
   useEffect(() => {
-    if (currentUser) {
-      const userStorageKey = USER_DATA_PREFIX + currentUser.toLowerCase().trim();
+    if (currentUserEmail) {
+      const userStorageKey = USER_DATA_PREFIX + btoa(currentUserEmail.toLowerCase().trim());
       const savedData = localStorage.getItem(userStorageKey);
       if (savedData) {
         setData(JSON.parse(savedData));
@@ -209,28 +209,28 @@ function App() {
     } else {
       setData(null);
     }
-  }, [currentUser]);
+  }, [currentUserEmail]);
 
-  // Sync data updates to personal user track channel
+  // Save changes locally to this specified email signature channel
   useEffect(() => {
-    if (currentUser && data) {
-      const userStorageKey = USER_DATA_PREFIX + currentUser.toLowerCase().trim();
+    if (currentUserEmail && data) {
+      const userStorageKey = USER_DATA_PREFIX + btoa(currentUserEmail.toLowerCase().trim());
       localStorage.setItem(userStorageKey, JSON.stringify(data));
       if (data.profile?.lightMode) document.body.classList.add("light-mode");
       else document.body.classList.remove("light-mode");
     }
-  }, [data, currentUser]);
+  }, [data, currentUserEmail]);
 
   const handleLogout = () => {
     localStorage.removeItem(GLOBAL_AUTH_KEY);
-    setCurrentUser(null);
+    setCurrentUserEmail(null);
     document.body.classList.remove("light-mode");
   };
 
-  if (!currentUser || !data) {
-    return <AuthGate onAuthSuccess={(username) => {
-      localStorage.setItem(GLOBAL_AUTH_KEY, username);
-      setCurrentUser(username);
+  if (!currentUserEmail || !data) {
+    return <AuthGate onAuthSuccess={(email) => {
+      localStorage.setItem(GLOBAL_AUTH_KEY, email);
+      setCurrentUserEmail(email);
     }} />;
   }
 
@@ -287,14 +287,14 @@ function App() {
             </div>
             <div style={{ flex: 1, overflow: "hidden" }}>
               <p style={{ fontSize: 13, fontWeight: 600, color: "var(--tx)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.profile.name}</p>
-              <p style={{ fontSize: 10, color: "var(--t3)", letterSpacing: "0.02em" }}>Director Parameters</p>
+              <p style={{ fontSize: 9, color: "var(--t3)", letterSpacing: "0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentUserEmail}</p>
             </div>
           </div>
           <Btn variant="danger" onClick={handleLogout} style={{ width: "100%", padding: "8px", fontSize: 11 }}><i className="ti ti-logout" /> Sever Link</Btn>
         </div>
       </div>
 
-      {/* Main Framework Block Area */}
+      {/* Main Container Area */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", padding: "3rem" }}>
         {page === "home" && <ViewHome data={data} setData={setData} paid={paidEarnings} pending={pendingEarnings} net={systemNetProfit} hours={loggedTotalSeconds} updateTitle={updateDashboardTitle} updateGoal={updateGoal} />}
         {page === "clients" && <ViewClients data={data} setData={setData} />}
@@ -309,39 +309,44 @@ function App() {
   );
 }
 
-// Authentication Matrix UI Gate
+// Authentication Matrix UI Gate with Email Config Options
 function AuthGate({ onAuthSuccess }) {
   const [isRegister, setIsRegister] = useState(false);
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleAuthSubmit = (e) => {
     e.preventDefault();
     setError("");
-    const userKey = username.toLowerCase().trim();
-    if (!userKey || !password) { setError("Fill credentials completely."); return; }
+    
+    const formattedEmail = email.toLowerCase().trim();
+    if (!formattedEmail || !password) { setError("Fill credentials completely."); return; }
+    
+    // Check basic email syntax validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formattedEmail)) { setError("Provide a validated email configuration."); return; }
 
-    const registryKey = "vanguard_user_registry";
+    const registryKey = "vanguard_email_registry";
     let registry = JSON.parse(localStorage.getItem(registryKey) || "{}");
 
     if (isRegister) {
-      if (registry[userKey]) { setError("Account key occupied."); return; }
-      registry[userKey] = password;
+      if (registry[formattedEmail]) { setError("Account email structure already mapped."); return; }
+      registry[formattedEmail] = password;
       localStorage.setItem(registryKey, JSON.stringify(registry));
-      onAuthSuccess(username);
+      onAuthSuccess(formattedEmail);
     } else {
-      if (!registry[userKey] || registry[userKey] !== password) {
-        setError("Invalid identity matching keys.");
+      if (!registry[formattedEmail] || registry[formattedEmail] !== password) {
+        setError("Invalid identifier or password parameters.");
         return;
       }
-      onAuthSuccess(username);
+      onAuthSuccess(formattedEmail);
     }
   };
 
   return (
     <div style={{ height: "100vh", width: "100vw", display: "flex", alignItems: "center", justifyContent: "center", background: "#050508" }} className="fade">
-      <div style={{ width: 380, background: "#0B0B11", border: "1px solid rgba(212, 175, 55, 0.15)", borderRadius: 16, padding: "2.5rem 2rem", boxShadow: "0 20px 60px rgba(0,0,0,0.7)" }}>
+      <div style={{ width: 390, background: "#0B0B11", border: "1px solid rgba(212, 175, 55, 0.15)", borderRadius: 16, padding: "2.5rem 2rem", boxShadow: "0 20px 60px rgba(0,0,0,0.7)" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "2rem" }}>
           <div style={{ width: 44, height: 44, borderRadius: 8, background: "#D4AF37", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 0 20px rgba(212,175,55,0.2)" }}>
             <i className="ti ti-layers-linked" style={{ color: "#050508", fontSize: 24 }} />
@@ -351,11 +356,11 @@ function AuthGate({ onAuthSuccess }) {
         </div>
 
         <form onSubmit={handleAuthSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <Field label="Operator Identifier Account">
-            <input className="luxury-input" value={username} onChange={e => setUsername(e.target.value)} placeholder="Username / Studio Node" />
+          <Field label="Google / Operator Email Address">
+            <input className="luxury-input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="name@domain.com" required />
           </Field>
           <Field label="System Passcode Matrix">
-            <input className="luxury-input" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
+            <input className="luxury-input" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
           </Field>
 
           {error && <p style={{ fontSize: 11, color: "var(--re)", textAlign: "center", letterSpacing: "0.02em" }}>{error}</p>}
@@ -365,7 +370,7 @@ function AuthGate({ onAuthSuccess }) {
 
         <div style={{ textAlign: "center", marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: "1rem" }}>
           <button style={{ fontSize: 12, color: "#A1A1AA", letterSpacing: "0.02em" }} onClick={() => { setIsRegister(!isRegister); setError(""); }}>
-            {isRegister ? "Already registered? Verify credentials" : "Need private system space? Register"}
+            {isRegister ? "Already registered? Verify credentials" : "Need unique local studio vault? Sign Up"}
           </button>
         </div>
       </div>
@@ -513,7 +518,7 @@ function ViewClients({ data, setData }) {
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {(data.clients || []).map(c => (
-          <Card key={c.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+          <Card key={c.id} style={{ display: "flex", alignItems: "center", justifyCongent: "space-between", gap: 16 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 16, flex: 1 }}>
               <div style={{ width: 40, height: 40, borderRadius: 6, background: "var(--c2)", border: "1px solid var(--ln)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "var(--ac)" }}>
                 {c.name.slice(0, 2).toUpperCase()}
@@ -953,7 +958,7 @@ function ViewSettings({ data, setData, updateProfile }) {
       <Card style={{ border: "1px solid rgba(255,69,58,0.15)", background: "rgba(255,69,58,0.01)" }}>
         <p style={{ fontSize: 10, fontWeight: 700, color: "var(--re)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Clear Space Allocation Engine</p>
         <p style={{ fontSize: 12, color: "var(--t2)", marginTop: 4, marginBottom: 14 }}>Purge all local track arrays bound to this custom operator profile profile account cache.</p>
-        <Btn variant="danger" onClick={() => { if(confirm("Purge localized user instance configuration arrays?")) { localStorage.removeItem(USER_DATA_PREFIX + localStorage.getItem(GLOBAL_AUTH_KEY).toLowerCase().trim()); window.location.reload(); } }}><i className="ti ti-refresh-alert" /> Wipe Local Workspace State</Btn>
+        <Btn variant="danger" onClick={() => { if(confirm("Purge localized user instance configuration arrays?")) { localStorage.removeItem(USER_DATA_PREFIX + btoa(localStorage.getItem(GLOBAL_AUTH_KEY).toLowerCase().trim())); window.location.reload(); } }}><i className="ti ti-refresh-alert" /> Wipe Local Workspace State</Btn>
       </Card>
     </div>
   );
