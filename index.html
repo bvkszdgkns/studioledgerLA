@@ -3,677 +3,917 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EditDesk Ultra Pro</title>
+  <title>EditDesk Ultra Pro — Premium Video Editor CRM</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body, #root { height: 100%; width: 100%; background: #07070b; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif; color: #f0f0f4; -webkit-font-smoothing: antialiased; }
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    
+    :root {
+      --bg: #030305;
+      --c1: #09090e;
+      --c2: #101017;
+      --c3: #161622;
+      --c4: #1d1d2b;
+      --c5: #252537;
+      --ln: rgba(255, 255, 255, 0.05);
+      --ln2: rgba(255, 255, 255, 0.09);
+      --ln3: rgba(255, 255, 255, 0.16);
+      --tx: #f5f5f7;
+      --t2: #a1a1aa;
+      --t3: #71717a;
+      --t4: #3f3f46;
+      --ac: #ff4500;
+      --ach: #ff5714;
+      --acl: rgba(255, 69, 0, 0.12);
+      --acl2: rgba(255, 69, 0, 0.06);
+      --glass: rgba(16, 16, 23, 0.7);
+      --blur: blur(20px);
+      --sh: 0 4px 30px rgba(0, 0, 0, 0.4);
+      --sh2: 0 12px 40px rgba(0, 0, 0, 0.6);
+      --sh-glow: 0 0 20px rgba(255, 69, 0, 0.15);
+      --gr: #34c759;
+      --grl: rgba(52, 199, 89, 0.12);
+      --bl: #007aff;
+      --bll: rgba(0, 122, 255, 0.12);
+      --ye: #ff9500;
+      --yel: rgba(255, 149, 0, 0.12);
+      --re: #ff3b30;
+      --rel: rgba(255, 59, 48, 0.12);
+    }
+
+    .light-mode {
+      --bg: #f5f5f7;
+      --c1: #ffffff;
+      --c2: #f2f2f7;
+      --c3: #e5e5ea;
+      --c4: #d1d1d6;
+      --c5: #aeaeb2;
+      --ln: rgba(0, 0, 0, 0.05);
+      --ln2: rgba(0, 0, 0, 0.09);
+      --ln3: rgba(0, 0, 0, 0.15);
+      --tx: #1c1c1e;
+      --t2: #48484a;
+      --t3: #8e8e93;
+      --t4: #aeaeaebd;
+      --ac: #ff4500;
+      --ach: #e03d00;
+      --acl: rgba(255, 69, 0, 0.15);
+      --acl2: rgba(255, 69, 0, 0.08);
+      --glass: rgba(255, 255, 255, 0.8);
+      --blur: blur(20px);
+      --sh: 0 4px 20px rgba(0, 0, 0, 0.05);
+      --sh2: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    html, body, #root { height: 100%; width: 100%; background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; color: var(--tx); -webkit-font-smoothing: antialiased; overflow: hidden; transition: background-color 0.3s ease; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .12); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb { background: var(--ln3); border-radius: 10px; }
     input, select, textarea { outline: none; font-family: inherit; }
     button { cursor: pointer; font-family: inherit; border: none; background: none; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .fade { animation: fadeUp .35s cubic-bezier(.16, 1, .3, 1) both; }
-    .fade2 { animation: fadeUp .35s .07s cubic-bezier(.16, 1, .3, 1) both; }
-    .fade3 { animation: fadeUp .35s .14s cubic-bezier(.16, 1, .3, 1) both; }
-    .fade4 { animation: fadeUp .35s .21s cubic-bezier(.16, 1, .3, 1) both; }
-    .fade5 { animation: fadeUp .35s .28s cubic-bezier(.16, 1, .3, 1) both; }
+    .fade { animation: fadeUp .4s cubic-bezier(.16, 1, .3, 1) both; }
+    
+    /* Contenteditable styling */
+    [contenteditable="true"] {
+      border-radius: 4px;
+      padding: 1px 4px;
+      transition: all 0.2s ease;
+      display: inline-block;
+    }
+    [contenteditable="true"]:hover {
+      background: var(--ln2);
+      box-shadow: 0 0 0 1px var(--ln3);
+    }
+    [contenteditable="true"]:focus {
+      background: var(--c3);
+      outline: none;
+      box-shadow: 0 0 0 2px var(--ac);
+    }
   </style>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 <div id="root"></div>
+
 <script type="text/babel">
-const { useState, useEffect, useRef, useCallback, useMemo } = React;
+const { useState, useEffect, useRef, useMemo } = React;
 
-const T = {
-  bg: "#07070b", c1: "#0d0d12", c2: "#13131a", c3: "#1a1a24", c4: "#23232f", c5: "#2c2c3a",
-  ln: "rgba(255,255,255,.045)", ln2: "rgba(255,255,255,.09)", ln3: "rgba(255,255,255,.15)",
-  tx: "#f0f0f4", t2: "#9ca3af", t3: "#6b7280", t4: "#3f3f50",
-  ac: "#ff4f2b", ach: "#e83d1a", acl: "rgba(255,79,43,.1)", acl2: "rgba(255,79,43,.06)",
-  gr: "#10b981", grl: "rgba(16,185,129,.1)",
-  bl: "#3b82f6", bll: "rgba(59,130,246,.1)",
-  ye: "#f59e0b", yel: "rgba(245,158,11,.1)",
-  re: "#ef4444", rel: "rgba(239,68,68,.1)",
-  pu: "#a78bfa", pul: "rgba(167,139,250,.1)",
-  cy: "#06b6d4", cyl: "rgba(6,182,212,.1)",
-  ff: "'SF Pro Display',-apple-system,BlinkMacSystemFont,sans-serif",
-  r4: "4px", r6: "6px", r8: "8px", r12: "12px", r16: "16px", r20: "20px"
-};
+const STORAGE_KEY = "editdesk_ultra_pro_v2_data";
 
-const STORAGE_KEY = "editdesk_ultra_pro_v1";
-const USERS_KEY = "editdesk_users_v1";
-const getUsers = () => { try { return JSON.parse(localStorage.getItem(USERS_KEY) || "{}") } catch { return {} } };
-const saveUsers = u => { try { localStorage.setItem(USERS_KEY, JSON.stringify(u)) } catch {} };
-const getUserData = (uid) => { try { return JSON.parse(localStorage.getItem(`${STORAGE_KEY}_${uid}`) || "null") } catch { return null } };
-const saveUserData = (uid, data) => { try { localStorage.setItem(`${STORAGE_KEY}_${uid}`, JSON.stringify(data)) } catch {} };
-
-const defaultUserData = (name) => ({
-  profile: { name, studio: "My Studio", avatar: name.slice(0,2).toUpperCase(), timezone: "EST", currency: "USD", hourlyRate: 75 },
+const defaultData = {
+  profile: { name: "Alex Rivera", studio: "Vivid Cut Studios", avatar: "AR", color: "#ff4500", lightMode: false, showGlows: true },
+  dashboardTitles: { totalRevenue: "Total Revenue", pending: "Pending Funds", netProfit: "Net Profit", hoursLogged: "Hours Tracker" },
   clients: [
-    { id: 1, name: "Alex Rivera", type: "YouTube Channel", email: "alex@email.com", phone: "", avatar: "AR", color: "#ff4f2b", status: "Active" },
-    { id: 2, name: "Zoe Chen", type: "Commercial Reels", email: "zoe@email.com", phone: "", avatar: "ZC", color: "#10b981", status: "Active" },
-    { id: 3, name: "Vanguard Media", type: "Corporate Film", email: "hello@vanguard.com", phone: "", avatar: "VM", color: "#3b82f6", status: "Active" }
+    { id: 1, name: "Nexus Tech Channel", type: "YouTube Engine", email: "contact@nexus.io", status: "Active" },
+    { id: 2, name: "Sarah Jenkins Commercials", type: "Reels Content", email: "sarah@reels.co", status: "Active" },
+    { id: 3, name: "Vanguard Enterprise Films", type: "Corporate Media", email: "info@vanguard.com", status: "Active" }
   ],
   projects: [
-    { id: 1, title: "Episode 47 — Tech Deep Dive", client: "Alex Rivera", status: "In Progress", value: 850, editProgress: 65, deadline: "2026-06-10", notes: "B-roll needs grading pass", priority: "High" },
-    { id: 2, title: "May Fashion Haul", client: "Zoe Chen", status: "Review", value: 600, editProgress: 90, deadline: "2026-06-05", notes: "Client requested color pop on cuts", priority: "Medium" },
-    { id: 3, title: "Brand Manifesto 2026", client: "Vanguard Media", status: "In Progress", value: 2400, editProgress: 25, deadline: "2026-06-20", notes: "First rough cut due next week", priority: "High" }
+    { id: 1, title: "Episode 104: Quantum Systems Review", client: "Nexus Tech Channel", status: "In Progress", value: 1200, editProgress: 65, deadline: "2026-06-12", priority: "High" },
+    { id: 2, title: "Summer Line Drop Promo Main Cut", client: "Sarah Jenkins Commercials", status: "Review", value: 850, editProgress: 90, deadline: "2026-06-04", priority: "Medium" },
+    { id: 3, title: "Global Expansion Manifesto 2026", client: "Vanguard Enterprise Films", status: "In Progress", value: 3400, editProgress: 25, deadline: "2026-06-25", priority: "High" }
   ],
   logs: [
-    { id: 1, client: "Alex Rivera", project: "Episode 47 — Tech Deep Dive", task: "VFX Masking & Grade", duration: 5400, date: "2026-05-15" },
-    { id: 2, client: "Zoe Chen", project: "May Fashion Haul", task: "B-Roll Audio Sync", duration: 3200, date: "2026-05-14" }
+    { id: 1, client: "Nexus Tech Channel", project: "Episode 104", task: "VFX Grading Pass", duration: 7200, date: "2026-05-20" },
+    { id: 2, client: "Sarah Jenkins Commercials", project: "Summer Line Drop", task: "Sound Mix Syncing", duration: 4100, date: "2026-05-18" }
   ],
   earnings: [
-    { id: 1, label: "Alex Rivera — April", amount: 1200, date: "2026-04-28", method: "Stripe", status: "Paid" },
-    { id: 2, label: "Zoe Chen — April", amount: 600, date: "2026-04-15", method: "PayPal", status: "Paid" },
-    { id: 3, label: "Vanguard — Q1 Retainer", amount: 2400, date: "2026-03-31", method: "Wire", status: "Paid" },
-    { id: 4, label: "Alex Rivera — May", amount: 850, date: "2026-05-20", method: "Stripe", status: "Pending" },
-    { id: 5, label: "Zoe Chen — May", amount: 600, date: "2026-05-18", method: "PayPal", status: "Paid" }
+    { id: 1, label: "Nexus Tech — Apr Base Milestone", amount: 1200, date: "2026-04-28", status: "Paid" },
+    { id: 2, label: "Sarah Jenkins — Reels Package 1", amount: 850, date: "2026-04-15", status: "Paid" },
+    { id: 3, label: "Vanguard — Q2 Retainer Front", amount: 3400, date: "2026-05-01", status: "Paid" },
+    { id: 4, label: "Nexus Tech — Episode 104 Finalization", amount: 1200, date: "2026-05-22", status: "Pending" }
   ],
   expenses: [
-    { id: 1, name: "Adobe Creative Cloud", amount: 54.99, cat: "Software", date: "2026-05-01" },
-    { id: 2, name: "Epidemic Sound", amount: 15.00, cat: "Audio", date: "2026-05-01" },
-    { id: 3, name: "Frame.io", amount: 25.00, cat: "Delivery", date: "2026-05-01" },
-    { id: 4, name: "SSD Storage — 2TB", amount: 89.99, cat: "Hardware", date: "2026-05-10" }
+    { id: 1, name: "Adobe Creative Cloud Suite", amount: 59.99, cat: "Software", date: "2026-05-01" },
+    { id: 2, name: "Epidemic Audio Engine Tier", amount: 29.00, cat: "Audio", date: "2026-05-01" },
+    { id: 3, name: "Frame.io Team Workspace", amount: 50.00, cat: "Delivery", date: "2026-05-01" }
   ],
   delivery: [
-    { id: 1, client: "Alex Rivera", project: "Episode 47", url: "https://frame.io/share/node-x78b", status: "Awaiting Review", password: "", sent: "2026-05-19" },
-    { id: 2, client: "Zoe Chen", project: "May Fashion Haul", url: "https://drive.google.com/drive/prod-reels", status: "Approved", password: "", sent: "2026-05-17" }
+    { id: 1, client: "Nexus Tech Channel", project: "Episode 104 Cut 2", url: "https://frame.io/share/nx-78", status: "Awaiting Review", sent: "2026-05-21" },
+    { id: 2, client: "Sarah Jenkins Commercials", project: "Summer Drop V3", url: "https://drive.google.com/drive/sh-9", status: "Approved", sent: "2026-05-19" }
   ],
   templates: [
-    { id: 1, title: "Review Ready", subject: "Your edit is ready for review — {project}", body: "Hi {name},\n\nYour review cut for \"{project}\" is live. Please leave timestamped notes by {deadline}.\n\nAccess link: {link}\n\nLooking forward to your feedback!\n\n— {studio}" },
-    { id: 2, title: "Final Delivery", subject: "Final files delivered — {project}", body: "Hi {name},\n\nAll final exports for \"{project}\" are ready. Your invoice is attached.\n\nDownload: {link}\n\nA pleasure working with you!\n\n— {studio}" }
+    { id: 1, title: "Review Draft Link Delivery", subject: "Review Cut Ready — {project}", body: "Hey {name},\n\nYour review timeline pass for \"{project}\" is now online. Leave any requested markers on the workspace frame link below.\n\nWorkspace Link: {link}\n\nBest,\n{studio}" },
+    { id: 2, title: "Final Archive & Master Release", subject: "Masters Dispatched — {project}", body: "Hi {name},\n\nAll high-fidelity final renders for \"{project}\" are processed. Your production archive package and matching files are at the link below.\n\nSecure Mirror Download: {link}\n\nBest,\n{studio}" }
   ],
-  portfolio: [
-    { id: 1, title: "AI Content Workflow Strategy", client: "Alex Rivera", views: "284K", url: "https://youtube.com", platform: "YouTube" },
-    { id: 2, title: "Spring Capsule Wardrobe Promo", client: "Zoe Chen", views: "192K", url: "https://instagram.com", platform: "Instagram" }
-  ],
-  integrations: { discord: "", youtube: "", instagram: "", notion: "", slack: "" },
-  goals: { monthlyRevenue: 5000, weeklyHours: 40, clientTarget: 5 },
-  timer: { running: false, seconds: 0, client: "", task: "" }
-});
-
-const Spinner = () => <div style={{ width: 16, height: 16, border: `2px solid ${T.ln2}`, borderTopColor: T.ac, borderRadius: "50%", animation: "spin .7s linear infinite" }} />;
-
-const Badge = ({ children, color = "dim", dot = false }) => {
-  const m = { green: [T.grl, T.gr], blue: [T.bll, T.bl], yellow: [T.yel, T.ye], red: [T.rel, T.re], ac: [T.acl, T.ac], purple: [T.pul, T.pu], cyan: [T.cyl, T.cy], dim: ["rgba(255,255,255,.04)", T.t2] };
-  const [bg, fg] = m[color] || m.dim;
-  return <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: bg, color: fg, fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: T.r4, letterSpacing: ".04em", textTransform: "uppercase" }}>
-    {dot && <span style={{ width: 5, height: 5, borderRadius: "50%", background: fg, flexShrink: 0 }} />}
-    {children}
-  </span>
+  goals: { monthlyRevenue: 10000 }
 };
 
-const Avatar = ({ label = "", color = "#ff4f2b", size = 34 }) => {
-  return <div style={{ width: size, height: size, borderRadius: "50%", background: color + "22", border: `1px solid ${color}44`, color: color, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: size * .35, flexShrink: 0 }}>{label.slice(0, 2).toUpperCase()}</div>
+// Generic UI Building Blocks
+const Badge = ({ color = "dim", children }) => {
+  const scheme = {
+    green: ["var(--grl)", "var(--gr)"], blue: ["var(--bll)", "var(--bl)"],
+    yellow: ["var(--yel)", "var(--ye)"], red: ["var(--rel)", "var(--re)"],
+    ac: ["var(--acl)", "var(--ac)"], dim: ["var(--ln)", "var(--t2)"]
+  }[color] || ["var(--ln)", "var(--t2)"];
+  return <span style={{ background: scheme[0], color: scheme[1], display: "inline-flex", alignItems: "center", fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>{children}</span>
 };
 
-const Btn = ({ children, v = "ghost", sz = "md", style = {}, loading = false, ...p }) => {
-  const [hov, sh] = useState(false);
-  const sizes = { sm: { padding: "4px 10px", fontSize: 11 }, md: { padding: "7px 14px", fontSize: 12 }, lg: { padding: "10px 20px", fontSize: 13 } };
-  const variants = {
-    primary: { background: hov ? T.ach : T.ac, color: "#fff", fontWeight: 600 },
-    ghost: { background: hov ? "rgba(255,255,255,.05)" : "rgba(255,255,255,.015)", color: T.tx, border: `1px solid ${T.ln}`, fontWeight: 500 },
-    danger: { background: hov ? T.rel : "transparent", color: T.re, border: `1px solid ${T.rel}`, fontWeight: 500 },
-    subtle: { background: "transparent", color: T.t2, fontWeight: 400 },
-    green: { background: hov ? "rgba(16,185,129,.18)" : T.grl, color: T.gr, border: `1px solid rgba(16,185,129,.2)`, fontWeight: 600 }
-  };
-  return <button {...p} disabled={loading || p.disabled} onMouseEnter={() => sh(true)} onMouseLeave={() => sh(false)}
-    style={{ display: "inline-flex", alignItems: "center", gap: 6, borderRadius: T.r8, transition: "all .15s", cursor: p.disabled ? "not-allowed" : "pointer", opacity: p.disabled ? .5 : 1, ...sizes[sz], ...(variants[v] || variants.ghost), ...style }}>
-    {loading ? <Spinner /> : children}
-  </button>
-};
-
-const Input = ({ style = {}, ...p }) => {
-  const [f, sf] = useState(false);
-  return <input {...p} onFocus={e => { sf(true); p.onFocus && p.onFocus(e) }} onBlur={e => { sf(false); p.onBlur && p.onBlur(e) }}
-    style={{ background: T.c3, border: `1px solid ${f ? T.ac : T.ln}`, borderRadius: T.r8, color: T.tx, fontSize: 13, padding: "9px 12px", width: "100%", transition: "border-color .15s", ...style }} />;
-};
-
-const Select = ({ children, style = {}, ...p }) => {
-  return <select {...p} style={{ background: T.c3, border: `1px solid ${T.ln}`, borderRadius: T.r8, color: T.tx, fontSize: 13, padding: "9px 12px", width: "100%", ...style }}>{children}</select>
-};
-
-const Textarea = ({ style = {}, ...p }) => {
-  const [f, sf] = useState(false);
-  return <textarea {...p} onFocus={() => sf(true)} onBlur={() => sf(false)}
-    style={{ background: T.c3, border: `1px solid ${f ? T.ac : T.ln}`, borderRadius: T.r8, color: T.tx, fontSize: 13, padding: "9px 12px", width: "100%", resize: "vertical", minHeight: 80, fontFamily: T.ff, transition: "border-color .15s", ...style }} />;
-};
-
-const Card = ({ children, style = {}, onClick, glow = false }) => {
-  const [hov, sh] = useState(false);
-  return <div onClick={onClick} onMouseEnter={() => sh(true)} onMouseLeave={() => sh(false)}
-    style={{ background: T.c1, border: `1px solid ${hov && onClick ? T.ln2 : T.ln}`, borderRadius: T.r12, padding: "1.25rem", transition: "all .2s cubic-bezier(.16,1,.3,1)", cursor: onClick ? "pointer" : "default", transform: hov && onClick ? "translateY(-1px)" : "none", boxShadow: glow && hov ? "0 0 0 1px " + T.ac + "33" : "none", ...style }}>
-    {children}
-  </div>
-};
-
-const Modal = ({ children, onClose, width = 400 }) => <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(3,3,7,.88)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(16px)", padding: "1rem" }}>
-  <div onClick={e => e.stopPropagation()} style={{ background: T.c1, border: `1px solid ${T.ln2}`, borderRadius: T.r20, padding: "1.75rem", width, maxWidth: "92vw", maxHeight: "90vh", overflowY: "auto", animation: "fadeUp .25s cubic-bezier(.16,1,.3,1)" }}>
-    {children}
-  </div>
-</div>;
-
-const SectionLabel = ({ children, style = {} }) => <p style={{ margin: "0 0 .5rem", fontSize: 10, fontWeight: 700, color: T.t3, textTransform: "uppercase", letterSpacing: ".1em", ...style }}>{children}</p>;
-const Divider = () => <div style={{ height: 1, background: T.ln, margin: "1rem 0" }} />;
-
-const ProgressBar = ({ value = 0, color = T.ac, height = 3 }) => <div style={{ background: "rgba(255,255,255,.06)", height, borderRadius: 2, overflow: "hidden", width: "100%" }}>
-  <div style={{ width: `${Math.min(100, value)}%`, height: "100%", background: color, borderRadius: 2, transition: "width .5s cubic-bezier(.16,1,.3,1)" }} />
-</div>;
-
-const StatCard = ({ label, value, sub, color = T.tx, icon, trend, style = {} }) => <div style={{ background: T.c2, border: `1px solid ${T.ln}`, borderRadius: T.r12, padding: "1.1rem 1.25rem", ...style }}>
-  <div style={{ display: "flex", justifySpaceBetween: "space-between", justifyContent: "space-between", alignItems: "flex-start" }}>
-    <div>
-      <SectionLabel>{label}</SectionLabel>
-      <p style={{ fontSize: 24, fontWeight: 800, color, margin: "2px 0 0", letterSpacing: "-0.03em" }}>{value}</p>
-      {sub && <p style={{ fontSize: 11, color: T.t3, margin: "3px 0 0" }}>{sub}</p>}
-    </div>
-    {icon && <div style={{ width: 36, height: 36, borderRadius: T.r8, background: "rgba(255,255,255,.03)", border: `1px solid ${T.ln}`, display: "flex", alignItems: "center", justifyCenter: "center", justifyContent: "center" }}>
-      <i className={`ti ${icon}`} style={{ fontSize: 16, color: T.t2 }} />
-    </div>}
-  </div>
-</div>;
-
-function AuthScreen({ onAuth }) {
-  const [mode, setMode] = useState("login");
-  const [form, setForm] = useState({ email: "", password: "", name: "", studio: "" });
-  const [err, setErr] = useState("");
-  const [loading, setLoading] = useState(false);
-  const up = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
-
-  const handle = async () => {
-    setErr(""); setLoading(true);
-    await new Promise(r => setTimeout(r, 600));
-    const users = getUsers();
-    if (mode === "login") {
-      const user = users[form.email.toLowerCase()];
-      if (!user) { setErr("No account found with that email."); setLoading(false); return; }
-      if (user.password !== form.password) { setErr("Incorrect password."); setLoading(false); return; }
-      onAuth({ ...user, email: form.email.toLowerCase() });
-    } else {
-      if (!form.email || !form.password || !form.name) { setErr("Please fill in all fields."); setLoading(false); return; }
-      if (form.password.length < 6) { setErr("Password must be at least 6 characters."); setLoading(false); return; }
-      const key = form.email.toLowerCase();
-      if (users[key]) { setErr("An account already exists with that email."); setLoading(false); return; }
-      const uid = `user_${Date.now()}`;
-      users[key] = { uid, email: key, password: form.password, name: form.name, studio: form.studio || form.name + " Studio", joined: new Date().toISOString() };
-      saveUsers(users);
-      const data = defaultUserData(form.name);
-      data.profile.studio = form.studio || form.name + " Studio";
-      saveUserData(uid, data);
-      onAuth({ ...users[key] });
+const Editable = ({ text, onSave, tag: Tag = "span", numeric = false, style = {} }) => {
+  const blurHandler = (e) => {
+    let val = e.target.innerText.trim();
+    if (numeric) {
+      val = parseFloat(val.replace(/[^0-9.-]/g, "")) || 0;
     }
-    setLoading(false);
+    onSave(val);
   };
+  const keyHandler = (e) => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } };
+  return <Tag contentEditable="true" suppressContentEditableWarning onBlur={blurHandler} onKeyDown={keyHandler} style={{ minWidth: "20px", display: "inline-block", ...style }}>{text}</Tag>;
+};
 
-  return <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: T.bg, padding: "2rem" }}>
-    <div style={{ width: "100%", maxWidth: 400 }}>
-      <div style={{ textAlign: "center", marginBottom: "2.5rem" }} className="fade">
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: "1rem" }}>
-          <div style={{ width: 32, height: 32, borderRadius: T.r8, background: T.ac, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <i className="ti ti-cut" style={{ fontSize: 16, color: "#fff" }} />
-          </div>
-          <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff" }}>EditDesk <span style={{ color: T.ac }}>Ultra</span></span>
-        </div>
-        <p style={{ fontSize: 13, color: T.t3, margin: 0 }}>The professional OS for video editors</p>
-      </div>
-
-      <div style={{ background: T.c1, border: `1px solid ${T.ln2}`, borderRadius: T.r20, padding: "2rem" }} className="fade2">
-        <div style={{ display: "flex", background: T.c3, borderRadius: T.r8, padding: 3, marginBottom: "1.5rem" }}>
-          {["login", "signup"].map(m => <button key={m} onClick={() => { setMode(m); setErr("") }} style={{ flex: 1, padding: "7px", borderRadius: T.r6, background: mode === m ? T.c1 : "transparent", color: mode === m ? T.tx : T.t3, fontSize: 12, fontWeight: mode === m ? 600 : 400, transition: "all .2s" }}>
-            {m === "login" ? "Sign In" : "Create Account"}
-          </button>)}
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {mode === "signup" && <>
-            <div><SectionLabel>Full Name</SectionLabel><Input placeholder="Your name" value={form.name} onChange={up("name")} /></div>
-            <div><SectionLabel>Studio Name</SectionLabel><Input placeholder="e.g. RiverCut Studio" value={form.studio} onChange={up("studio")} /></div>
-          </>}
-          <div><SectionLabel>Email</SectionLabel><Input type="email" placeholder="you@studio.com" value={form.email} onChange={up("email")} /></div>
-          <div><SectionLabel>Password</SectionLabel><Input type="password" placeholder="••••••••" value={form.password} onChange={up("password")} onKeyDown={e => e.key === "Enter" && handle()} /></div>
-        </div>
-
-        {err && <div style={{ marginTop: 12, padding: "9px 12px", borderRadius: T.r8, background: T.rel, border: `1px solid rgba(239,68,68,.2)`, fontSize: 12, color: T.re }}><i className="ti ti-alert-circle" style={{ marginRight: 5 }} />{err}</div>}
-
-        <Btn v="primary" sz="lg" style={{ width: "100%", justifyContent: "center", marginTop: 16 }} onClick={handle} loading={loading}>
-          {mode === "login" ? "Sign In to Workspace" : "Create My Studio →"}
-        </Btn>
-      </div>
-    </div>
+const Card = ({ children, style = {}, glow = false, globalGlow = true }) => (
+  <div style={{ background: "var(--c1)", border: `1px solid var(--ln)`, borderRadius: 16, padding: "1.25rem", boxShadow: (glow && globalGlow) ? "var(--sh-glow)" : "var(--sh)", transition: "all 0.25s ease", ...style }}>
+    {children}
   </div>
-}
+);
 
-const NAV = [
-  { id: "home", icon: "ti-layout-dashboard", label: "Dashboard" },
-  { id: "clients", icon: "ti-users", label: "Clients" },
-  { id: "projects", icon: "ti-layout-kanban", label: "Projects" },
-  { id: "finance", icon: "ti-receipt", label: "Finances" },
-  { id: "timer", icon: "ti-clock", label: "Tracker" },
-  { id: "delivery", icon: "ti-package", label: "Delivery" },
-  { id: "templates", icon: "ti-template", label: "Templates" }
-];
+const Btn = ({ children, variant = "ghost", onClick, style = {} }) => {
+  const styles = {
+    primary: { background: "var(--ac)", color: "#fff", fontWeight: 600 },
+    ghost: { background: "var(--c3)", color: "var(--tx)", border: `1px solid var(--ln2)` },
+    danger: { background: "var(--rel)", color: "var(--re)", border: `1px solid rgba(255,59,48,0.2)` }
+  }[variant];
+  return <button onClick={onClick} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, padding: "8px 14px", borderRadius: 10, transition: "opacity 0.15s", fontWeight: 500, ...styles, ...style }} onMouseEnter={e => e.currentTarget.style.opacity = 0.85} onMouseLeave={e => e.currentTarget.style.opacity = 1}>{children}</button>
+};
 
-function Sidebar({ page, setPage, user, data, onLogout }) {
-  const paid = data.earnings?.filter(e => e.status === "Paid").reduce((s, e) => s + e.amount, 0) || 0;
-  const active = data.projects?.filter(p => p.status !== "Completed").length || 0;
-  return <div style={{ width: 220, minWidth: 220, background: T.c1, borderRight: `1px solid ${T.ln}`, display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }}>
-    <div style={{ padding: "1.25rem 1rem", borderBottom: `1px solid ${T.ln}` }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <div style={{ width: 28, height: 28, borderRadius: T.r6, background: T.ac, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <i className="ti ti-cut" style={{ fontSize: 13, color: "#fff" }} />
-        </div>
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 800, color: "#fff", margin: 0 }}>EditDesk</p>
-          <p style={{ fontSize: 9, color: T.ac, margin: 0, fontWeight: 600, letterSpacing: ".05em", textTransform: "uppercase" }}>Ultra Pro</p>
-        </div>
-      </div>
-    </div>
+const Field = ({ label, children }) => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}><p style={{ fontSize: 10, color: "var(--t3)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</p>{children}</div>
+);
 
-    <div style={{ padding: "1rem", borderBottom: `1px solid ${T.ln}` }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Avatar label={data.profile?.avatar || user.name} color={T.ac} size={32} />
-        <div style={{ overflow: "hidden" }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: T.tx, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.profile?.name || user.name}</p>
-          <p style={{ fontSize: 10, color: T.t3, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.profile?.studio}</p>
-        </div>
-      </div>
-    </div>
-
-    <nav style={{ flex: 1, overflowY: "auto", padding: "0.5rem" }}>
-      {NAV.map(n => {
-        const a = page === n.id;
-        return <button key={n.id} onClick={() => setPage(n.id)}
-          style={{ display: "flex", alignItems: "center", gap: 9, width: "100%", padding: "8px 10px", borderRadius: T.r8, background: a ? T.acl2 : "transparent", color: a ? "#fff" : T.t2, border: a ? `1px solid ${T.acl}` : "1px solid transparent", fontSize: 12, fontWeight: a ? 600 : 400, transition: "all .15s", marginBottom: 1, textAlign: "left" }}>
-          <i className={`ti ${n.icon}`} style={{ fontSize: 14, color: a ? T.ac : T.t3, flexShrink: 0 }} />
-          {n.label}
-          {n.id === "projects" && active > 0 && <span style={{ marginLeft: "auto", background: T.ac, color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 5px", borderRadius: 3 }}>{active}</span>}
-        </button>
-      })}
-    </nav>
-
-    <div style={{ padding: "0.75rem", borderTop: `1px solid ${T.ln}` }}>
-      <button onClick={onLogout} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "7px 10px", borderRadius: T.r8, color: T.t3, fontSize: 12, transition: "all .15s" }}
-        onMouseEnter={e => { e.currentTarget.style.color = T.re }} onMouseLeave={e => { e.currentTarget.style.color = T.t3 }}>
-        <i className="ti ti-logout" style={{ fontSize: 14 }} /> Sign Out
-      </button>
-    </div>
-  </div>
-}
-
-function Dashboard({ data, setPage }) {
-  const paidEarnings = data.earnings.filter(e => e.status === "Paid").reduce((s, e) => s + e.amount, 0);
-  const pendingEarnings = data.earnings.filter(e => e.status === "Pending").reduce((s, e) => s + e.amount, 0);
-  const totalExpenses = data.expenses.reduce((s, e) => s + e.amount, 0);
-  const netProfit = paidEarnings - totalExpenses;
-  const activeProjects = data.projects.filter(p => p.status !== "Completed");
-  const totalLoggedSec = data.logs.reduce((s, l) => s + l.duration, 0);
-  const goal = data.goals || { monthlyRevenue: 5000 };
-  const revenueProgress = Math.min(100, (paidEarnings / goal.monthlyRevenue) * 100);
-
-  return <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-    <div className="fade">
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12 }}>
-        <StatCard label="Total Revenue" value={`$${paidEarnings.toLocaleString()}`} sub="All time collected" color={T.gr} icon="ti-cash" />
-        <StatCard label="Pending" value={`$${pendingEarnings.toLocaleString()}`} sub="Awaiting payment" color={T.ye} icon="ti-clock-pause" />
-        <StatCard label="Net Profit" value={`$${netProfit.toLocaleString()}`} sub="After expenses" color={netProfit >= 0 ? T.gr : T.re} icon="ti-trending-up" />
-        <StatCard label="Hours Logged" value={`${Math.floor(totalLoggedSec / 3600)}h`} sub={`${data.logs.length} sessions`} color={T.bl} icon="ti-clock" />
-      </div>
-    </div>
-
-    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14 }} className="fade2">
-      <Card>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-          <div>
-            <SectionLabel>Active Production Pipeline</SectionLabel>
-            <p style={{ margin: 0, fontSize: 13, color: T.t2 }}>{activeProjects.length} projects in flight</p>
-          </div>
-          <Btn v="ghost" sz="sm" onClick={() => setPage("projects")}><i className="ti ti-arrow-right" style={{ fontSize: 12 }} />View All</Btn>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {activeProjects.map(p => (
-            <div key={p.id} style={{ background: T.c2, border: `1px solid ${T.ln}`, borderRadius: T.r8, padding: "10px 14px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{p.title}</span>
-                  <Badge color={p.status === "Review" ? "yellow" : p.priority === "High" ? "ac" : "blue"}>{p.status}</Badge>
-                </div>
-                <span style={{ fontSize: 12, fontWeight: 700, color: T.gr }}>${p.value.toLocaleString()}</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <ProgressBar value={p.editProgress || 0} color={p.status === "Review" ? T.ye : T.ac} />
-                <span style={{ fontSize: 10, color: T.t3, minWidth: 28 }}>{p.editProgress || 0}%</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <Card>
-          <SectionLabel>Monthly Goal</SectionLabel>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", margin: "4px 0 8px" }}>
-            <span style={{ fontSize: 18, fontWeight: 700, color: T.gr }}>${paidEarnings.toLocaleString()}</span>
-            <span style={{ fontSize: 11, color: T.t4 }}>/ ${goal.monthlyRevenue.toLocaleString()}</span>
-          </div>
-          <ProgressBar value={revenueProgress} color={T.gr} height={6} />
-          <p style={{ margin: "6px 0 0", fontSize: 11, color: T.t3 }}>{revenueProgress.toFixed(0)}% reached</p>
-        </Card>
-
-        <Card>
-          <SectionLabel>Quick Operations</SectionLabel>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
-            <Btn v="primary" style={{ justifyContent: "center", width: "100%" }} onClick={() => setPage("timer")}><i className="ti ti-clock" />Launch Tracker</Btn>
-            <Btn v="ghost" style={{ justifyContent: "center", width: "100%" }} onClick={() => setPage("delivery")}><i className="ti ti-package" />Dispatch Assets</Btn>
-          </div>
-        </Card>
-      </div>
-    </div>
-  </div>
-}
-
-function Clients({ data, setData }) {
-  const [modal, setModal] = useState(null);
-  const [form, setForm] = useState({ name: "", type: "", email: "" });
-  const up = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
-
-  const save = () => {
-    if (!form.name) return;
-    const nc = { id: Date.now(), name: form.name, type: form.type, email: form.email, avatar: form.name.slice(0,2), color: T.ac, status: "Active" };
-    setData(d => ({ ...d, clients: [...d.clients, nc] }));
-    setModal(null);
-  };
-
-  return <div>
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-      <div>
-        <h2 style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>Client Roster</h2>
-        <p style={{ fontSize: 12, color: T.t3 }}>{data.clients.length} profiles linked</p>
-      </div>
-      <Btn v="primary" onClick={() => { setForm({ name: "", type: "", email: "" }); setModal("add") }}><i className="ti ti-plus" />Add New Profile</Btn>
-    </div>
-
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {data.clients.map(c => (
-        <Card key={c.id} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <Avatar label={c.avatar || c.name} color={c.color || T.ac} size={40} />
-          <div style={{ flex: 1 }}>
-            <p style={{ margin: 0, fontWeight: 700, color: "#fff" }}>{c.name}</p>
-            <p style={{ margin: 0, fontSize: 11, color: T.t3 }}>{c.type} • {c.email || "No email verified"}</p>
-          </div>
-          <Badge color="green">{c.status}</Badge>
-        </Card>
-      ))}
-    </div>
-
-    {modal && <Modal onClose={() => setModal(null)}>
-      <h3 style={{ color: "#fff", marginBottom: 16 }}>New Client Profile</h3>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <div><SectionLabel>Client or Agency Name</SectionLabel><Input value={form.name} onChange={up("name")} placeholder="Corporate Producer" /></div>
-        <div><SectionLabel>Category Type</SectionLabel><Input value={form.type} onChange={up("type")} placeholder="Commercial / YouTube" /></div>
-        <div><SectionLabel>Email Endpoint</SectionLabel><Input value={form.email} onChange={up("email")} placeholder="billing@agency.com" /></div>
-        <Btn v="primary" onClick={save} style={{ marginTop: 8, justifyContent: "center" }}>Commit Profile</Btn>
-      </div>
-    </Modal>}
-  </div>
-}
-
-function Projects({ data, setData }) {
-  const [modal, setModal] = useState(null);
-  const [form, setForm] = useState({ title: "", client: "", status: "In Progress", value: "", editProgress: 0, priority: "Medium" });
-  const up = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
-
-  const save = () => {
-    if (!form.title) return;
-    const np = { ...form, id: Date.now(), value: Number(form.value || 0), editProgress: Number(form.editProgress || 0) };
-    setData(d => ({ ...d, projects: [...d.projects, np] }));
-    setModal(null);
-  };
-
-  return <div>
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-      <div>
-        <h2 style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>Project Matrix</h2>
-        <p style={{ fontSize: 12, color: T.t3 }}>{data.projects.length} timeline entities tracked</p>
-      </div>
-      <Btn v="primary" onClick={() => setModal("add")}><i className="ti ti-plus" />Provision Timeline</Btn>
-    </div>
-
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {data.projects.map(p => (
-        <Card key={p.id}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-            <div>
-              <p style={{ fontWeight: 700, color: "#fff", fontSize: 14 }}>{p.title}</p>
-              <p style={{ fontSize: 11, color: T.t3 }}>{p.client} • Priority: {p.priority}</p>
-            </div>
-            <span style={{ fontWeight: 700, color: T.gr }}>${p.value}</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <ProgressBar value={p.editProgress} color={T.ac} />
-            <span style={{ fontSize: 11, color: T.t2, width: 30 }}>{p.editProgress}%</span>
-          </div>
-        </Card>
-      ))}
-    </div>
-
-    {modal && <Modal onClose={() => setModal(null)}>
-      <h3 style={{ color: "#fff", marginBottom: 16 }}>Provision Production Timeline</h3>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <div><SectionLabel>Timeline Title</SectionLabel><Input value={form.title} onChange={up("title")} placeholder="Rough Cut Ep. 2" /></div>
-        <div>
-          <SectionLabel>Assigned Client Relationship</SectionLabel>
-          <Select value={form.client} onChange={up("client")}>
-            <option value="">Select Account</option>
-            {data.clients.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-          </Select>
-        </div>
-        <div><SectionLabel>Value Gross ($)</SectionLabel><Input type="number" value={form.value} onChange={up("value")} /></div>
-        <div><SectionLabel>Production Phase Progress (%)</SectionLabel><Input type="number" value={form.editProgress} onChange={up("editProgress")} /></div>
-        <Btn v="primary" onClick={save} style={{ justifyContent: "center", marginTop: 8 }}>Deploy Matrix Entry</Btn>
-      </div>
-    </Modal>}
-  </div>
-}
-
-function Finances({ data, setData }) {
-  const [form, setForm] = useState({ label: "", amount: "", status: "Paid" });
-  const up = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
-
-  const addE = () => {
-    if (!form.label || !form.amount) return;
-    const ne = { id: Date.now(), label: form.label, amount: Number(form.amount), date: "2026-05-22", method: "Stripe", status: form.status };
-    setData(d => ({ ...d, earnings: [ne, ...d.earnings] }));
-    setForm({ label: "", amount: "", status: "Paid" });
-  };
-
-  return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-    <Card>
-      <h3 style={{ color: "#fff", marginBottom: 12, fontSize: 14 }}>Log Inflow Entity</h3>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <div><SectionLabel>Statement Label</SectionLabel><Input value={form.label} onChange={up("label")} placeholder="Milestone Delivery" /></div>
-        <div><SectionLabel>Gross Allocation ($)</SectionLabel><Input type="number" value={form.amount} onChange={up("amount")} /></div>
-        <div>
-          <SectionLabel>Status Matrix</SectionLabel>
-          <Select value={form.status} onChange={up("status")}>
-            <option value="Paid">Cleared / Settled</option>
-            <option value="Pending">Awaiting Escrow</option>
-          </Select>
-        </div>
-        <Btn v="primary" onClick={addE} style={{ justifyContent: "center" }}>Inject Entry</Btn>
-      </div>
-    </Card>
-
-    <Card style={{ display: "flex", flexDirection: "column" }}>
-      <h3 style={{ color: "#fff", marginBottom: 12, fontSize: 14 }}>Ledger Streams</h3>
-      <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8, maxHeight: 300 }}>
-        {data.earnings.map(e => (
-          <div key={e.id} style={{ display: "flex", justifyContent: "space-between", background: T.c2, padding: "8px 12px", borderRadius: T.r8, alignItems: "center" }}>
-            <div>
-              <p style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>{e.label}</p>
-              <p style={{ fontSize: 10, color: T.t3 }}>{e.date} • {e.method}</p>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: e.status === "Paid" ? T.gr : T.ye }}>${e.amount}</p>
-              <Badge color={e.status === "Paid" ? "green" : "yellow"}>{e.status}</Badge>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Card>
-  </div>
-}
-
-function Tracker({ data, setData }) {
-  const [running, setRunning] = useState(false);
-  const [sec, setSec] = useState(0);
-  const tRef = useRef(null);
-
-  useEffect(() => {
-    if (running) {
-      tRef.current = setInterval(() => setSec(s => s + 1), 1000);
-    } else {
-      clearInterval(tRef.current);
-    }
-    return () => clearInterval(tRef.current);
-  }, [running]);
-
-  const format = (s) => {
-    const h = Math.floor(s / 3600).toString().padStart(2, '0');
-    const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
-    const sc = (s % 60).toString().padStart(2, '0');
-    return `${h}:${m}:${sc}`;
-  };
-
-  return <div style={{ maxWidth: 460, margin: "0 auto", textAlign: "center" }}>
-    <Card style={{ padding: "2.5rem 1.5rem" }}>
-      <SectionLabel>Production Engine Session</SectionLabel>
-      <h1 style={{ fontSize: 48, fontFamily: "monospace", fontWeight: 800, margin: "12px 0 24px", color: running ? T.ac : "#fff", letterSpacing: "2px" }}>{format(sec)}</h1>
-      <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-        <Btn v={running ? "danger" : "primary"} sz="lg" onClick={() => setRunning(!running)}>
-          <i className={running ? "ti ti-player-pause" : "ti ti-player-play"} />
-          {running ? "Halt Chrono" : "Engage Chrono"}
-        </Btn>
-        <Btn v="ghost" sz="lg" onClick={() => { setRunning(false); setSec(0); }} disabled={sec === 0}>Flush</Btn>
-      </div>
-    </Card>
-  </div>
-}
-
-function Delivery({ data, setData }) {
-  const [form, setForm] = useState({ client: "", project: "", url: "" });
-  const up = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
-
-  const deploy = () => {
-    if (!form.url) return;
-    const nd = { id: Date.now(), client: form.client || "External", project: form.project || "Master Assets", url: form.url, status: "Awaiting Review", sent: "2026-05-22" };
-    setData(d => ({ ...d, delivery: [nd, ...d.delivery] }));
-    setForm({ client: "", project: "", url: "" });
-  };
-
-  return <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-    <Card>
-      <h3 style={{ color: "#fff", marginBottom: 12, fontSize: 14 }}>Deploy Secure Pipeline Node</h3>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, alignItems: "end" }}>
-        <div><SectionLabel>Project Token</SectionLabel><Input value={form.project} onChange={up("project")} placeholder="V1 Render Cut" /></div>
-        <div><SectionLabel>Endpoint Pipeline CDN Asset URL</SectionLabel><Input value={form.url} onChange={up("url")} placeholder="https://frame.io/xyz" /></div>
-        <Btn v="primary" onClick={deploy} style={{ height: 38, justifyContent: "center" }}>Initialize Deployment</Btn>
-      </div>
-    </Card>
-
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {data.delivery.map(d => (
-        <Card key={d.id} style={{ display: "flex", justifySpaceBetween: "space-between", justifyContent: "space-between", alignItems: "center" }}>
-          <div>
-            <p style={{ fontWeight: 700, color: "#fff" }}>{d.project}</p>
-            <p style={{ fontSize: 11, color: T.t3 }}>Target Client: {d.client} • Initialized: {d.sent}</p>
-            <a href={d.url} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: T.bl, textDecoration: "none" }}>{d.url}</a>
-          </div>
-          <Badge color={d.status === "Approved" ? "green" : "yellow"}>{d.status}</Badge>
-        </Card>
-      ))}
-    </div>
-  </div>
-}
-
-function Templates({ data, setData }) {
-  return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-    {data.templates.map(t => (
-      <Card key={t.id} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <h4 style={{ color: "#fff", fontWeight: 700 }}>{t.title}</h4>
-          <i className="ti ti-copy" style={{ color: T.t3, cursor: "pointer" }} />
-        </div>
-        <p style={{ fontSize: 11, color: T.t2, background: T.c3, padding: 6, borderRadius: T.r4 }}>Subject: {t.subject}</p>
-        <div style={{ whiteSpace: "pre-wrap", fontSize: 12, color: T.t3, background: T.c2, padding: 8, borderRadius: T.r6, fontFamily: "monospace", flex: 1 }}>{t.body}</div>
-      </Card>
-    ))}
-  </div>
-}
-
-function Workspace() {
-  const [user, setUser] = useState(null);
-  const [data, setData] = useState(null);
+export default function App() {
+  const [data, setData] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : defaultData;
+  });
   const [page, setPage] = useState("home");
 
   useEffect(() => {
-    const active = localStorage.getItem("editdesk_active_uid");
-    if (active) {
-      const users = getUsers();
-      const matched = Object.values(users).find(u => u.uid === active);
-      if (matched) {
-        setUser(matched);
-        setData(getUserData(active) || defaultUserData(matched.name));
-      }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    if (data.profile.lightMode) document.body.classList.add("light-mode");
+    else document.body.classList.remove("light-mode");
+  }, [data]);
+
+  // Sync operations helpers
+  const updateProfile = (key, val) => setData(d => ({ ...d, profile: { ...d.profile, [key]: val } }));
+  const updateGoal = (val) => setData(d => ({ ...d, goals: { ...d.goals, monthlyRevenue: val } }));
+  const updateDashboardTitle = (key, val) => setData(d => ({ ...d, dashboardTitles: { ...d.dashboardTitles, [key]: val } }));
+
+  // Dynamic calculations based on state arrays
+  const paidEarnings = useMemo(() => data.earnings.filter(e => e.status === "Paid").reduce((acc, curr) => acc + Number(curr.amount), 0), [data.earnings]);
+  const pendingEarnings = useMemo(() => data.earnings.filter(e => e.status === "Pending").reduce((acc, curr) => acc + Number(curr.amount), 0), [data.earnings]);
+  const absoluteExpenses = useMemo(() => data.expenses.reduce((acc, curr) => acc + Number(curr.amount), 0), [data.expenses]);
+  const systemNetProfit = paidEarnings - absoluteExpenses;
+  const loggedTotalSeconds = useMemo(() => data.logs.reduce((acc, curr) => acc + Number(curr.duration), 0), [data.logs]);
+
+  return (
+    <div style={{ display: "flex", height: "100vh", width: "100vw", background: "var(--bg)", color: "var(--tx)" }}>
+      {/* Sidebar navigation panel */}
+      <div style={{ width: 240, background: "var(--c1)", borderRight: `1px solid var(--ln)`, display: "flex", flexDirection: "column", justifySpaceBetween: "space-between" }}>
+        <div>
+          <div style={{ padding: "1.5rem", display: "flex", alignItems: "center", gap: 10, borderBottom: `1px solid var(--ln)` }}>
+            <div style={{ width: 32, height: 32, borderRadius: 10, background: "var(--ac)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: data.profile.showGlows ? "0 0 12px var(--ac)" : "none" }}>
+              <i className="ti ti-cut" style={{ color: "#fff", fontSize: 16 }} />
+            </div>
+            <div>
+              <Editable text={data.profile.studio} onSave={v => updateProfile("studio", v)} tag="p" style={{ fontSize: 13, fontWeight: 700, color: "var(--tx)" }} />
+              <p style={{ fontSize: 9, color: "var(--ac)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>Ultra Custom CRM</p>
+            </div>
+          </div>
+
+          <div style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: 2 }}>
+            {[
+              { id: "home", icon: "ti-smart-home", label: "Dashboard" },
+              { id: "clients", icon: "ti-users-group", label: "Client Roster" },
+              { id: "projects", icon: "ti-layers-intersect", label: "Production Pipe" },
+              { id: "finances", icon: "ti-wallet", label: "Financial Ledger" },
+              { id: "delivery", icon: "ti-cloud-upload", label: "Deliveries" },
+              { id: "templates", icon: "ti-mail-opened", label: "Communications" },
+              { id: "analytics", icon: "ti-chart-arcs", label: "Business Analytics" }
+            ].map(item => {
+              const active = page === item.id;
+              return (
+                <button key={item.id} onClick={() => setPage(item.id)} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", padding: "10px 14px", borderRadius: 12, background: active ? "var(--acl2)" : "transparent", color: active ? "var(--tx)" : "var(--t2)", transition: "all 0.15s ease", border: active ? "1px solid var(--ln2)" : "1px solid transparent", textAlign: "left" }}>
+                  <i className={`ti ${item.icon}`} style={{ fontSize: 16, color: active ? "var(--ac)" : "var(--t3)" }} />
+                  <span style={{ fontSize: 13, fontWeight: active ? 600 : 400 }}>{item.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        <div style={{ padding: "1rem", borderTop: `1px solid var(--ln)` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => setPage("settings")}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--c4)", border: `1px solid var(--ln3)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: "var(--ac)" }}>
+              {data.profile.avatar}
+            </div>
+            <div style={{ flex: 1, overflow: "hidden" }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--tx)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.profile.name}</p>
+              <p style={{ fontSize: 10, color: "var(--t3)" }}><i className="ti ti-settings" style={{ marginRight: 2 }} /> Studio Profiles</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Dynamic Viewport */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", padding: "2rem" }}>
+        {page === "home" && <ViewHome data={data} setData={setData} paid={paidEarnings} pending={pendingEarnings} net={systemNetProfit} hours={loggedTotalSeconds} updateTitle={updateDashboardTitle} updateGoal={updateGoal} />}
+        {page === "clients" && <ViewClients data={data} setData={setData} />}
+        {page === "projects" && <ViewProjects data={data} setData={setData} />}
+        {page === "finances" && <ViewFinances data={data} setData={setData} paid={paidEarnings} pending={pendingEarnings} expenses={absoluteExpenses} net={systemNetProfit} />}
+        {page === "delivery" && <ViewDelivery data={data} setData={setData} />}
+        {page === "templates" && <ViewTemplates data={data} setData={setData} />}
+        {page === "analytics" && <ViewAnalytics data={data} paid={paidEarnings} pending={pendingEarnings} expenses={absoluteExpenses} net={systemNetProfit} />}
+        {page === "settings" && <ViewSettings data={data} setData={setData} updateProfile={updateProfile} />}
+      </div>
+    </div>
+  );
+}
+
+// ---------------- SUB VIEWS ----------------
+
+function ViewHome({ data, setData, paid, pending, net, hours, updateTitle, updateGoal }) {
+  const activeProjs = data.projects.filter(p => p.status !== "Completed");
+  const revProgress = Math.min(100, (paid / (data.goals?.monthlyRevenue || 1)) * 100);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
+      <div>
+        <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>Active Workspace</h1>
+        <p style={{ fontSize: 13, color: "var(--t3)" }}>Click directly on any number or title metric label to adjust system metrics instantly.</p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
+        <Card glow>
+          <Editable text={data.dashboardTitles.totalRevenue} onSave={v => updateTitle("totalRevenue", v)} style={{ fontSize: 10, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }} />
+          <div style={{ display: "flex", alignItems: "baseline", gap: 2, marginTop: 6, color: "var(--gr)" }}>
+            <span style={{ fontSize: 22, fontWeight: 800 }}>$</span>
+            <Editable text={paid} numeric onSave={v => {
+              setData(d => ({ ...d, earnings: [{ id: Date.now(), label: "Manual Direct Adjustment Adjustment", amount: v, date: "2026-05-22", status: "Paid" }] }));
+            }} style={{ fontSize: 26, fontWeight: 800 }} />
+          </div>
+          <p style={{ fontSize: 11, color: "var(--t3)", marginTop: 4 }}>Auto calculated cash ledger</p>
+        </Card>
+
+        <Card>
+          <Editable text={data.dashboardTitles.pending} onSave={v => updateTitle("pending", v)} style={{ fontSize: 10, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }} />
+          <div style={{ display: "flex", alignItems: "baseline", gap: 2, marginTop: 6, color: "var(--ye)" }}>
+            <span style={{ fontSize: 22, fontWeight: 800 }}>$</span>
+            <Editable text={pending} numeric onSave={v => {
+              setData(d => ({ ...d, earnings: [...d.earnings.filter(e => e.status !== "Pending"), { id: Date.now(), label: "Pending Pipeline Value Holder", amount: v, date: "2026-05-22", status: "Pending" }] }));
+            }} style={{ fontSize: 26, fontWeight: 800 }} />
+          </div>
+          <p style={{ fontSize: 11, color: "var(--t3)", marginTop: 4 }}>Pipelines review processing</p>
+        </Card>
+
+        <Card>
+          <Editable text={data.dashboardTitles.netProfit} onSave={v => updateTitle("netProfit", v)} style={{ fontSize: 10, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }} />
+          <div style={{ display: "flex", alignItems: "baseline", gap: 2, marginTop: 6, color: net >= 0 ? "var(--gr)" : "var(--re)" }}>
+            <span style={{ fontSize: 22, fontWeight: 800 }}>$</span>
+            <span style={{ fontSize: 26, fontWeight: 800 }}>{net.toLocaleString()}</span>
+          </div>
+          <p style={{ fontSize: 11, color: "var(--t3)", marginTop: 4 }}>Gross income minus expenses</p>
+        </Card>
+
+        <Card>
+          <Editable text={data.dashboardTitles.hoursLogged} onSave={v => updateTitle("hoursLogged", v)} style={{ fontSize: 10, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }} />
+          <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginTop: 6, color: "var(--bl)" }}>
+            <span style={{ fontSize: 26, fontWeight: 800 }}>{Math.floor(hours / 3600)}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: "var(--t2)" }}>hrs logged</span>
+          </div>
+          <p style={{ fontSize: 11, color: "var(--t3)", marginTop: 4 }}>Calculated track loops</p>
+        </Card>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20 }}>
+        <Card>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem" }}>
+            <div>
+              <p style={{ fontSize: 11, color: "var(--t3)", fontWeight: 700, textTransform: "uppercase" }}>Active Pipelines</p>
+              <p style={{ fontSize: 13, color: "var(--t2)", marginTop: 2 }}>Inline content editable values</p>
+            </div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {activeProjs.map(p => (
+              <div key={p.id} style={{ background: "var(--c2)", border: "1px solid var(--ln)", borderRadius: 12, padding: "12px 16px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <Editable text={p.title} onSave={v => setData(d => ({ ...d, projects: d.projects.map(pr => pr.id === p.id ? { ...pr, title: v } : pr) }))} style={{ fontSize: 13, fontWeight: 600, color: "var(--tx)" }} />
+                    <Badge color={p.status === "Review" ? "yellow" : "ac"}>{p.status}</Badge>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 2, color: "var(--gr)", fontSize: 13, fontWeight: 700 }}>
+                    <span>$</span>
+                    <Editable text={p.value} numeric onSave={v => setData(d => ({ ...d, projects: d.projects.map(pr => pr.id === p.id ? { ...pr, value: Number(v) } : pr) }))} />
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ flex: 1, background: "var(--ln2)", height: 4, borderRadius: 2 }}>
+                    <div style={{ width: `${p.editProgress}%`, background: "var(--ac)", height: "100%", borderRadius: 2 }} />
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--t2)", display: "flex", alignItems: "center" }}>
+                    <Editable text={p.editProgress} numeric onSave={v => setData(d => ({ ...d, projects: d.projects.map(pr => pr.id === p.id ? { ...pr, editProgress: Math.min(100, Math.max(0, Number(v))) } : pr) }))} />%
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <Card>
+            <p style={{ fontSize: 10, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }}>Monthly Goal Engine</p>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", margin: "10px 0 6px" }}>
+              <span style={{ fontSize: 20, fontWeight: 700, color: "var(--gr)" }}>${paid.toLocaleString()}</span>
+              <span style={{ fontSize: 11, color: "var(--t3)" }}>
+                target: $<Editable text={data.goals?.monthlyRevenue} numeric onSave={v => updateGoal(v)} style={{ fontWeight: 600 }} />
+              </span>
+            </div>
+            <div style={{ background: "var(--ln2)", height: 6, borderRadius: 3, overflow: "hidden", marginBottom: 6 }}>
+              <div style={{ width: `${revProgress}%`, background: "var(--gr)", height: "100%" }} />
+            </div>
+            <p style={{ fontSize: 10, color: "var(--t3)" }}>{revProgress.toFixed(0)}% Completed</p>
+          </Card>
+
+          <Card style={{ background: "linear-gradient(135deg, var(--c1) 0%, var(--acl2) 100%)" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "var(--ac)", textTransform: "uppercase" }}>Quick Action Track</p>
+            <p style={{ fontSize: 12, color: "var(--t2)", marginTop: 4, marginBottom: 12 }}>Tracking operations configuration</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <button style={{ background: "var(--c3)", border: "1px solid var(--ln)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 12, textAlign: "left" }} onClick={() => {
+                const s = prompt("Log direct hours duration (in hours):");
+                if (s && !isNaN(s)) {
+                  setData(d => ({ ...d, logs: [...d.logs, { id: Date.now(), client: "Internal Studio", project: "Direct Adjustment Pipeline", task: "Direct Injected Time", duration: Number(s) * 3600, date: "2026-05-22" }] }));
+                }
+              }}><i className="ti ti-plus" style={{ color: "var(--ac)", marginRight: 6 }} />Inject Live Time Session</button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ViewClients({ data, setData }) {
+  const [form, setForm] = useState({ name: "", type: "", email: "" });
+  
+  const addClient = () => {
+    if (!form.name) return;
+    const nc = { id: Date.now(), name: form.name, type: form.type || "General Account", email: form.email || "client@verified.com", status: "Active" };
+    setData(d => ({ ...d, clients: [...d.clients, nc] }));
+    setForm({ name: "", type: "", email: "" });
+  };
+
+  const deleteClient = (id) => setData(d => ({ ...d, clients: d.clients.filter(c => c.id !== id) }));
+  
+  const updateClientField = (id, key, value) => {
+    setData(d => ({ ...d, clients: d.clients.map(c => c.id === id ? { ...c, [key]: value } : c) }));
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>Client Directory</h1>
+          <p style={{ fontSize: 13, color: "var(--t3)" }}>Inline editable directory roster cards. Click any item text field parameters to change details.</p>
+        </div>
+      </div>
+
+      <Card>
+        <p style={{ fontSize: 11, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase", marginBottom: 12 }}>Register Client Framework</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 12, alignItems: "flex-end" }}>
+          <Field label="Client / Company Identification"><input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} placeholder="Nexus Alpha Media" /></Field>
+          <Field label="Categorization Label"><input value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} placeholder="YouTube Channel Suite" /></Field>
+          <Field label="Communications Relay"><input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} placeholder="hq@nexusmedia.net" /></Field>
+          <Btn variant="primary" onClick={addClient} style={{ height: 36 }}><i className="ti ti-user-plus" /> Link</Btn>
+        </div>
+      </Card>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {data.clients.map(c => (
+          <Card key={c.id} style={{ display: "flex", alignItems: "center", justifySpaceBetween: "space-between", justifyContent: "space-between", gap: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, flex: 1 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 12, background: "var(--acl2)", border: "1px solid var(--ln)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "var(--ac)" }}>
+                {c.name.slice(0, 2).toUpperCase()}
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
+                <Editable text={c.name} onSave={v => updateClientField(c.id, "name", v)} style={{ fontSize: 14, fontWeight: 700, color: "var(--tx)" }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, color: "var(--t2)" }}>
+                  <Editable text={c.type} onSave={v => updateClientField(c.id, "type", v)} />
+                  <span>•</span>
+                  <Editable text={c.email} onSave={v => updateClientField(c.id, "email", v)} style={{ color: "var(--t3)" }} />
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <Badge color="green">{c.status}</Badge>
+              <button onClick={() => deleteClient(c.id)} style={{ padding: 6, color: "var(--t3)" }} onMouseEnter={e => e.currentTarget.style.color = "var(--re)"} onMouseLeave={e => e.currentTarget.style.color = "var(--t3)"}>
+                <i className="ti ti-trash" style={{ fontSize: 16 }} />
+              </button>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ViewProjects({ data, setData }) {
+  const [form, setForm] = useState({ title: "", client: "", value: "", deadline: "" });
+
+  const addProject = () => {
+    if (!form.title) return;
+    const np = { id: Date.now(), title: form.title, client: form.client || data.clients[0]?.name || "Independent External", value: Number(form.value) || 500, editProgress: 10, deadline: form.deadline || "2026-07-01", priority: "Medium", status: "In Progress" };
+    setData(d => ({ ...d, projects: [...d.projects, np] }));
+    setForm({ title: "", client: "", value: "", deadline: "" });
+  };
+
+  const deleteProject = (id) => setData(d => ({ ...d, projects: d.projects.filter(p => p.id !== id) }));
+  const updateProjField = (id, key, value) => setData(d => ({ ...d, projects: d.projects.map(p => p.id === id ? { ...p, [key]: value } : p) }));
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
+      <div>
+        <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>Production Pipelines</h1>
+        <p style={{ fontSize: 13, color: "var(--t3)" }}>Direct editable management cards. Control timeline variables and rate conversions.</p>
+      </div>
+
+      <Card>
+        <p style={{ fontSize: 11, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase", marginBottom: 12 }}>Initialize Production Pipeline Matrix</p>
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr auto", gap: 12, alignItems: "flex-end" }}>
+          <Field label="Production / Project Title"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} placeholder="Vlog Edit Base Cuts Pass" /></Field>
+          <Field label="Assigned Roster Node">
+            <select value={form.client} onChange={e => setForm({ ...form, client: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13, width: "100%" }}>
+              <option value="">Choose Node Link</option>
+              {data.clients.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+            </select>
+          </Field>
+          <Field label="Finances Node Valuation"><input value={form.value} onChange={e => setForm({ ...form, value: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} placeholder="1500" /></Field>
+          <Field label="Target Milestone Deadline"><input type="date" value={form.deadline} onChange={e => setForm({ ...form, deadline: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} /></Field>
+          <Btn variant="primary" onClick={addProject} style={{ height: 36 }}>Build</Btn>
+        </div>
+      </Card>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {data.projects.map(p => (
+          <Card key={p.id}>
+            <div style={{ display: "flex", justifySpaceBetween: "space-between", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+              <div>
+                <Editable text={p.title} onSave={v => updateProjField(p.id, "title", v)} style={{ fontSize: 15, fontWeight: 700, color: "var(--tx)" }} />
+                <p style={{ fontSize: 11, color: "var(--t2)", marginTop: 2 }}>Node Link: <span style={{ fontWeight: 600, color: "var(--ac)" }}>{p.client}</span></p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 2, color: "var(--gr)", fontWeight: 700, fontSize: 15 }}>
+                  <span>$</span>
+                  <Editable text={p.value} numeric onSave={v => updateProjField(p.id, "value", Number(v))} />
+                </div>
+                <button onClick={() => deleteProject(p.id)} style={{ color: "var(--t4)" }} onMouseEnter={e => e.currentTarget.style.color = "var(--re)"} onMouseLeave={e => e.currentTarget.style.color = "var(--t4)"}>
+                  <i className="ti ti-x" style={{ fontSize: 18 }} />
+                </button>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", justifySpaceBetween: "space-between", justifyContent: "space-between", gap: 24, background: "var(--c2)", padding: "10px 14px", borderRadius: 10, border: "1px solid var(--ln)" }}>
+              <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 10, color: "var(--t3)", fontWeight: 700, textTransform: "uppercase" }}>Progress Metric:</span>
+                <div style={{ flex: 1, background: "var(--ln2)", height: 6, borderRadius: 3, overflow: "hidden" }}>
+                  <div style={{ width: `${p.editProgress}%`, background: "var(--ac)", height: "100%" }} />
+                </div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "var(--tx)", display: "flex", alignItems: "center" }}>
+                  <Editable text={p.editProgress} numeric onSave={v => updateProjField(p.id, "editProgress", Math.min(100, Math.max(0, Number(v))))} />%
+                </div>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <div style={{ fontSize: 11, color: "var(--t2)" }}>
+                  <i className="ti ti-calendar-event" style={{ marginRight: 4, color: "var(--t3)" }} />
+                  <Editable text={p.deadline} onSave={v => updateProjField(p.id, "deadline", v)} />
+                </div>
+                <select value={p.status} onChange={e => updateProjField(p.id, "status", e.target.value)} style={{ background: "var(--c3)", border: "1px solid var(--ln2)", color: "var(--tx)", fontSize: 11, padding: "3px 8px", borderRadius: 6 }}>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Review">Review</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ViewFinances({ data, setData, paid, pending, expenses, net }) {
+  const [formE, setFormE] = useState({ label: "", amount: "", status: "Paid" });
+  const [formX, setFormX] = useState({ name: "", amount: "", cat: "Software" });
+
+  const addEarning = () => {
+    if (!formE.label) return;
+    const ne = { id: Date.now(), label: formE.label, amount: Number(formE.amount) || 0, date: "2026-05-22", status: formE.status };
+    setData(d => ({ ...d, earnings: [...d.earnings, ne] }));
+    setFormE({ label: "", amount: "", status: "Paid" });
+  };
+
+  const addExpense = () => {
+    if (!formX.name) return;
+    const nx = { id: Date.now(), name: formX.name, amount: Number(formX.amount) || 0, cat: formX.cat, date: "2026-05-22" };
+    setData(d => ({ ...d, expenses: [...d.expenses, nx] }));
+    setFormX({ name: "", amount: "", cat: "Software" });
+  };
+
+  const deleteEarning = (id) => setData(d => ({ ...d, earnings: d.earnings.filter(e => e.id !== id) }));
+  const deleteExpense = (id) => setData(d => ({ ...d, expenses: d.expenses.filter(x => x.id !== id) }));
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
+      <div>
+        <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>Financial Ledger</h1>
+        <p style={{ fontSize: 13, color: "var(--t3)" }}>Fully interactive double-entry balance accounts tracking ledger architecture.</p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+        <Card><p style={{ fontSize: 10, color: "var(--t3)", fontWeight: 700, textTransform: "uppercase" }}>Paid Settled</p><p style={{ fontSize: 22, fontWeight: 800, color: "var(--gr)", marginTop: 4 }}>${paid.toLocaleString()}</p></Card>
+        <Card><p style={{ fontSize: 10, color: "var(--t3)", fontWeight: 700, textTransform: "uppercase" }}>Pending Liquid</p><p style={{ fontSize: 22, fontWeight: 800, color: "var(--ye)", marginTop: 4 }}>${pending.toLocaleString()}</p></Card>
+        <Card><p style={{ fontSize: 10, color: "var(--t3)", fontWeight: 700, textTransform: "uppercase" }}>Operating Cost</p><p style={{ fontSize: 22, fontWeight: 800, color: "var(--re)", marginTop: 4 }}>${expenses.toLocaleString()}</p></Card>
+        <Card glow><p style={{ fontSize: 10, color: "var(--t3)", fontWeight: 700, textTransform: "uppercase" }}>Net Profit Yield</p><p style={{ fontSize: 22, fontWeight: 800, color: "var(--tx)", marginTop: 4 }}>${net.toLocaleString()}</p></Card>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+        {/* Inflows column */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <Card>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase", marginBottom: 12 }}>Inject Capital Inflow Stream</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <input value={formE.label} onChange={e => setFormE({ ...formE, label: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} placeholder="Nexus Retainer Ledger Node" />
+              <div style={{ display: "flex", gap: 8 }}>
+                <input value={formE.amount} onChange={e => setFormE({ ...formE, amount: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13, flex: 1 }} placeholder="Amount ($)" />
+                <select value={formE.status} onChange={e => setFormE({ ...formE, status: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }}>
+                  <option value="Paid">Paid</option>
+                  <option value="Pending">Pending</option>
+                </select>
+                <Btn variant="primary" onClick={addEarning}>Log</Btn>
+              </div>
+            </div>
+          </Card>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {data.earnings.map(e => (
+              <div key={e.id} style={{ background: "var(--c1)", border: "1px solid var(--ln)", padding: "12px 16px", borderRadius: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <Editable text={e.label} onSave={v => setData(d => ({ ...d, earnings: d.earnings.map(item => item.id === e.id ? { ...item, label: v } : item) }))} style={{ fontSize: 12, fontWeight: 600, color: "var(--tx)" }} />
+                  <p style={{ fontSize: 10, color: "var(--t3)", marginTop: 2 }}>{e.date}</p>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: e.status === "Paid" ? "var(--gr)" : "var(--ye)" }}>
+                    $<Editable text={e.amount} numeric onSave={v => setData(d => ({ ...d, earnings: d.earnings.map(item => item.id === e.id ? { ...item, amount: Number(v) } : item) }))} />
+                  </span>
+                  <button onClick={() => deleteEarning(e.id)} style={{ color: "var(--t4)" }} onMouseEnter={el => el.currentTarget.style.color = "var(--re)"} onMouseLeave={el => el.currentTarget.style.color = "var(--t4)"}><i className="ti ti-trash" /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Outflows column */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <Card>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase", marginBottom: 12 }}>Log Operational Outflow Debit</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <input value={formX.name} onChange={e => setFormX({ ...formX, name: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} placeholder="Asset Storage Array Drive" />
+              <div style={{ display: "flex", gap: 8 }}>
+                <input value={formX.amount} onChange={e => setFormX({ ...formX, amount: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13, flex: 1 }} placeholder="Cost ($)" />
+                <input value={formX.cat} onChange={e => setFormX({ ...formX, cat: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13, flex: 1 }} placeholder="Category" />
+                <Btn variant="ghost" onClick={addExpense} style={{ background: "var(--ln2)" }}>Debit</Btn>
+              </div>
+            </div>
+          </Card>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {data.expenses.map(x => (
+              <div key={x.id} style={{ background: "var(--c1)", border: "1px solid var(--ln)", padding: "12px 16px", borderRadius: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <Editable text={x.name} onSave={v => setData(d => ({ ...d, expenses: d.expenses.map(item => item.id === x.id ? { ...item, name: v } : item) }))} style={{ fontSize: 12, fontWeight: 600, color: "var(--tx)" }} />
+                  <p style={{ fontSize: 10, color: "var(--t3)", marginTop: 2 }}>{x.cat} • {x.date}</p>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--re)" }}>
+                    -$$<Editable text={x.amount} numeric onSave={v => setData(d => ({ ...d, expenses: d.expenses.map(item => item.id === x.id ? { ...item, amount: Number(v) } : item) }))} />
+                  </span>
+                  <button onClick={() => deleteExpense(x.id)} style={{ color: "var(--t4)" }} onMouseEnter={el => el.currentTarget.style.color = "var(--re)"} onMouseLeave={el => el.currentTarget.style.color = "var(--t4)"}><i className="ti ti-trash" /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ViewDelivery({ data, setData }) {
+  const [form, setForm] = useState({ client: "", project: "", url: "" });
+
+  const addDelivery = () => {
+    if (!form.project) return;
+    const nd = { id: Date.now(), client: form.client || "External Broker Node", project: form.project, url: form.url || "https://frame.io", status: "Awaiting Review", sent: "2026-05-22" };
+    setData(d => ({ ...d, delivery: [...d.delivery, nd] }));
+    setForm({ client: "", project: "", url: "" });
+  };
+
+  const deleteDelivery = (id) => setData(d => ({ ...d, delivery: d.delivery.filter(item => item.id !== id) }));
+  const updateDeliveryField = (id, key, value) => setData(d => ({ ...d, delivery: d.delivery.map(item => item.id === id ? { ...item, [key]: value } : item) }));
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
+      <div>
+        <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>Dispatched Deliveries Workspace</h1>
+        <p style={{ fontSize: 13, color: "var(--t3)" }}>Inline editable link dispatch framework tracking master node deliveries.</p>
+      </div>
+
+      <Card>
+        <p style={{ fontSize: 11, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase", marginBottom: 12 }}>Dispatch Digital Asset Link Bundle</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 2fr auto", gap: 12, alignItems: "flex-end" }}>
+          <Field label="Roster Client Target">
+            <select value={form.client} onChange={e => setForm({ ...form, client: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13, width: "100%" }}>
+              <option value="">Select Target Node</option>
+              {data.clients.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+            </select>
+          </Field>
+          <Field label="Project Pipeline Node Ident"><input value={form.project} onChange={e => setForm({ ...form, project: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} placeholder="Episode 104 Render V2" /></Field>
+          <Field label="Asset Delivery Absolute URL Link"><input value={form.url} onChange={e => setForm({ ...form, url: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} placeholder="https://frame.io/share/nodes-matrix..." /></Field>
+          <Btn variant="primary" onClick={addDelivery} style={{ height: 36 }}><i className="ti ti-rocket" /> Link</Btn>
+        </div>
+      </Card>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {data.delivery.map(del => (
+          <Card key={del.id} style={{ display: "flex", alignItems: "center", justifySpaceBetween: "space-between", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <Editable text={del.project} onSave={v => updateDeliveryField(del.id, "project", v)} style={{ fontSize: 14, fontWeight: 700 }} />
+                <Badge color={del.status === "Approved" ? "green" : "yellow"}>{del.status}</Badge>
+              </div>
+              <div style={{ fontSize: 11, color: "var(--t2)", display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+                <span>Node: <strong>{del.client}</strong></span>
+                <span>•</span>
+                <i className="ti ti-link" style={{ color: "var(--t3)" }} />
+                <Editable text={del.url} onSave={v => updateDeliveryField(del.id, "url", v)} style={{ color: "var(--bl)", fontFamily: "monospace" }} />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <select value={del.status} onChange={e => updateDeliveryField(del.id, "status", e.target.value)} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", color: "var(--tx)", fontSize: 11, padding: "4px 8px", borderRadius: 6 }}>
+                <option value="Awaiting Review">Awaiting Review</option>
+                <option value="Approved">Approved</option>
+                <option value="Changes Requested">Changes Requested</option>
+              </select>
+              <button onClick={() => deleteDelivery(del.id)} style={{ color: "var(--t4)", padding: 4 }} onMouseEnter={e => e.currentTarget.style.color = "var(--re)"} onMouseLeave={e => e.currentTarget.style.color = "var(--t4)"}>
+                <i className="ti ti-trash" style={{ fontSize: 16 }} />
+              </button>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ViewTemplates({ data, setData }) {
+  const [form, setForm] = useState({ title: "", subject: "", body: "" });
+
+  const addTemplate = () => {
+    if (!form.title) return;
+    const nt = { id: Date.now(), title: form.title, subject: form.subject || "Project update", body: form.body || "Hello" };
+    setData(d => ({ ...d, templates: [...d.templates, nt] }));
+    setForm({ title: "", subject: "", body: "" });
+  };
+
+  const deleteTemplate = (id) => setData(d => ({ ...d, templates: d.templates.filter(t => t.id !== id) }));
+  const updateTemplateField = (id, key, value) => setData(d => ({ ...d, templates: d.templates.map(t => t.id === id ? { ...t, [key]: value } : t) }));
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
+      <div>
+        <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>Communications System</h1>
+        <p style={{ fontSize: 13, color: "var(--t3)" }}>Fully interactive copy-paste workspace dispatch templates. Click fields inside blocks to edit blocks directly.</p>
+      </div>
+
+      <Card>
+        <p style={{ fontSize: 11, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase", marginBottom: 12 }}>Assemble Communication Layout Matrix</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} placeholder="System Protocol Layout Key (e.g. Mid Cut Dispatched Layout)" />
+            <input value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} placeholder="Email Subject Header String" />
+          </div>
+          <textarea value={form.body} onChange={e => setForm({ ...form, body: e.target.value })} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "10px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13, minHeight: 70, resize: "vertical" }} placeholder="Body content block array context parameters..." />
+          <Btn variant="primary" onClick={addTemplate} style={{ alignSelf: "flex-end" }}><i className="ti ti-clipboard-list" /> Inject Block</Btn>
+        </div>
+      </Card>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
+        {data.templates.map(t => (
+          <Card key={t.id}>
+            <div style={{ display: "flex", justifySpaceBetween: "space-between", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--ln)", paddingBottom: 10, marginBottom: 10 }}>
+              <Editable text={t.title} onSave={v => updateTemplateField(t.id, "title", v)} style={{ fontSize: 14, fontWeight: 700, color: "var(--ac)" }} />
+              <button onClick={() => deleteTemplate(t.id)} style={{ color: "var(--t4)" }} onMouseEnter={e => e.currentTarget.style.color = "var(--re)"} onMouseLeave={e => e.currentTarget.style.color = "var(--t4)"}>
+                <i className="ti ti-trash" style={{ fontSize: 15 }} />
+              </button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ fontSize: 12, color: "var(--t2)" }}>
+                <span style={{ color: "var(--t3)", fontWeight: 600 }}>Subject Line:</span> <Editable text={t.subject} onSave={v => updateTemplateField(t.id, "subject", v)} style={{ width: "80%" }} />
+              </div>
+              <div style={{ background: "var(--c2)", border: "1px solid var(--ln)", borderRadius: 10, padding: 12, fontSize: 12, color: "var(--tx)", whiteSpace: "pre-wrap", fontFamily: "monospace" }}>
+                <Editable text={t.body} onSave={v => updateTemplateField(t.id, "body", v)} style={{ width: "100%", display: "block" }} />
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ViewAnalytics({ paid, pending, expenses, net }) {
+  const chartRef = useRef(null);
+  const chartInstance = useRef(null);
+
+  useEffect(() => {
+    if (chartRef.current) {
+      if (chartInstance.current) chartInstance.current.destroy();
+
+      const isDark = !document.body.classList.contains("light-mode");
+      const gridColor = isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)";
+      const labelColor = isDark ? "#a1a1aa" : "#48484a";
+
+      const ctx = chartRef.current.getContext("2d");
+      chartInstance.current = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: ["Liquid Income", "Pipeline Hold", "Loss Operational", "Yield Yield"],
+          datasets: [{
+            label: "Value Matrix Core Account Level ($)",
+            data: [paid, pending, expenses, net],
+            backgroundColor: ["#34c759", "#ff9500", "#ff3b30", "#007aff"],
+            borderRadius: 8,
+            borderWidth: 0,
+            barThickness: 32
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: labelColor, font: { family: "-apple-system" } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: labelColor, font: { family: "-apple-system" } }
+            }
+          }
+        }
+      });
     }
-  }, []);
+    return () => { if (chartInstance.current) chartInstance.current.destroy(); };
+  }, [paid, pending, expenses, net]);
 
-  const handleAuth = (u) => {
-    localStorage.setItem("editdesk_active_uid", u.uid);
-    setUser(u);
-    setData(getUserData(u.uid) || defaultUserData(u.name));
-  };
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
+      <div>
+        <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>Business Analytics Processing Engine</h1>
+        <p style={{ fontSize: 13, color: "var(--t3)" }}>Realtime analytical evaluation processing loop calculations engine matrices.</p>
+      </div>
 
-  const handleLogout = () => {
-    if (user) saveUserData(user.uid, data);
-    localStorage.removeItem("editdesk_active_uid");
-    setUser(null);
-    setData(null);
-  };
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 20 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <Card>
+            <p style={{ fontSize: 10, color: "var(--t3)", fontWeight: 700, textTransform: "uppercase" }}>Liquid Conversion Optimization Rate</p>
+            <p style={{ fontSize: 24, fontWeight: 800, marginTop: 4, color: "var(--gr)" }}>
+              {((paid / (paid + pending || 1)) * 100).toFixed(1)}%
+            </p>
+            <p style={{ fontSize: 11, color: "var(--t3)", marginTop: 2 }}>Conversion of total backlog valuation pipeline assets to paid settlement arrays.</p>
+          </Card>
+          <Card>
+            <p style={{ fontSize: 10, color: "var(--t3)", fontWeight: 700, textTransform: "uppercase" }}>Operating Cost Margin Index</p>
+            <p style={{ fontSize: 24, fontWeight: 800, marginTop: 4, color: "var(--re)" }}>
+              {((expenses / (paid || 1)) * 100).toFixed(1)}%
+            </p>
+            <p style={{ fontSize: 11, color: "var(--t3)", marginTop: 2 }}>Operational drag ratio factor relative to total cash ledger deposits tracking loops.</p>
+          </Card>
+        </div>
 
-  const syncData = (updater) => {
-    setData(prev => {
-      const updated = typeof updater === 'function' ? updater(prev) : updater;
-      if (user) saveUserData(user.uid, updated);
-      return updated;
-    });
-  };
+        <Card style={{ minHeight: 280, display: "flex", flexDirection: "column" }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase", marginBottom: 16 }}>Ledger Performance Visual Matrix Graph</p>
+          <div style={{ flex: 1, position: "relative" }}>
+            <canvas ref={chartRef}></canvas>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}
 
-  if (!user || !data) return <AuthScreen onAuth={handleAuth} />;
+function ViewSettings({ data, setData, updateProfile }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }} className="fade">
+      <div>
+        <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em" }}>System Variables Workspace</h1>
+        <p style={{ fontSize: 13, color: "var(--t3)" }}>Configure interface theme structures, toggle engine switches, and change local storage arrays.</p>
+      </div>
 
-  return <div style={{ display: "flex", width: "100%", minHeight: "100vh", background: T.bg }}>
-    <Sidebar page={page} setPage={setPage} user={user} data={data} onLogout={handleLogout} />
-    <main style={{ flex: 1, padding: "1.75rem 2.25rem", overflowX: "hidden" }}>
-      {page === "home" && <Dashboard data={data} setPage={setPage} />}
-      {page === "clients" && <Clients data={data} setData={syncData} />}
-      {page === "projects" && <Projects data={data} setData={syncData} />}
-      {page === "finance" && <Finances data={data} setData={syncData} />}
-      {page === "timer" && <Tracker data={data} setData={syncData} />}
-      {page === "delivery" && <Delivery data={data} setData={syncData} />}
-      {page === "templates" && <Templates data={data} setData={syncData} />}
-    </main>
-  </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+        <Card style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }}>Identity Token Context Configuration</p>
+          
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 3fr", gap: 12 }}>
+            <Field label="Avatar Node"><input value={data.profile.avatar} onChange={e => updateProfile("avatar", e.target.value.toUpperCase().slice(0,2))} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13, textAlign: "center", fontWeight: 700 }} /></Field>
+            <Field label="Identity Signature Handle Identification"><input value={data.profile.name} onChange={e => updateProfile("name", e.target.value)} style={{ background: "var(--c2)", border: "1px solid var(--ln2)", padding: "8px 12px", borderRadius: 10, color: "var(--tx)", fontSize: 13 }} /></Field>
+          </div>
+        </Card>
+
+        <Card style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: "var(--t3)", textTransform: "uppercase" }}>Interface Mode Controllers</p>
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", justifySpaceBetween: "space-between", justifyContent: "space-between" }}>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 600 }}>System Light Mode Framework</p>
+                <p style={{ fontSize: 11, color: "var(--t3)" }}>Flip base layout colors to high ambient reflectivity index parameters.</p>
+              </div>
+              <input type="checkbox" checked={data.profile.lightMode} onChange={e => updateProfile("lightMode", e.target.checked)} style={{ width: 40, height: 20, accentColor: "var(--ac)", cursor: "pointer" }} />
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", justifySpaceBetween: "space-between", justifyContent: "space-between", borderTop: "1px solid var(--ln)", paddingTop: 12 }}>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 600 }}>Premium Card Glow Radiance</p>
+                <p style={{ fontSize: 11, color: "var(--t3)" }}>Project targeted visual highlight radiance backdrops underneath containers.</p>
+              </div>
+              <input type="checkbox" checked={data.profile.showGlows} onChange={e => updateProfile("showGlows", e.target.checked)} style={{ width: 40, height: 20, accentColor: "var(--ac)", cursor: "pointer" }} />
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <Card style={{ border: "1px solid rgba(255,59,48,0.2)", background: "rgba(255,59,48,0.02)" }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: "var(--re)", textTransform: "uppercase" }}>Danger Layer Root Clearance</p>
+        <p style={{ fontSize: 12, color: "var(--t2)", marginTop: 4, marginBottom: 12 }}>Wipe the entire system storage cache configuration state structure block to defaults instantly.</p>
+        <Btn variant="danger" onClick={() => { if(confirm("Purge absolute configuration arrays?")) { localStorage.removeItem(STORAGE_KEY); window.location.reload(); } }}><i className="ti ti-refresh-alert" /> Wipe & Purge Storage Engine Cache</Btn>
+      </Card>
+    </div>
+  );
 }
 
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
-root.render(<Workspace />);
+root.render(<App />);
 </script>
 </body>
 </html>
